@@ -1,0 +1,158 @@
+<style>
+  
+    
+  html, body {
+  height: 100%;
+  margin: 0;
+}
+    
+    
+.bodycontent {
+ min-height: calc(100vh - 70px);
+  margin: 0 auto -50px;
+}
+
+footer {
+  background: #00bcd4;
+  color: white;
+  padding: 0 20px;
+}
+   
+</style>
+<header id="header" class="page-topbar">
+    <!-- start header nav-->
+    <div class="navbar-fixed">
+        <nav class="cyan">
+            <div class="nav-wrapper">
+                <ul class="left">
+                    <li>
+                        <h1 class="logo-wrapper">
+                            <a  class="brand-logo darken-1"><img src="images/logo.png" alt="S.I.S logo"></a> <span class="logo-text">S.I.S</span>
+                        </h1>
+                    </li>
+                </ul>
+                <div class="header-search-wrapper">
+                    <!-- <i class="material-icons active">search</i><input type="text" name="Search" class="header-search-input z-depth-2" >-->
+                </div>
+                <ul class="right hide-on-med-and-down ">
+                    <li class="">
+                        <div id="notificationContainer">
+                            <div id="notificationsBody" class="notifications page-wrapper scrollbar-macosx">
+                                <div class="content" style="width:100%">
+                                    <div style="width:85%; position:relative; float:left;height:auto; line-height:160%">Sample Text</div>
+                                    <div style="width:15%; position:relative;  float:left; height:auto; line-height:160%"><i class="material-icons" style="height:35px; line-height:35px">cancel</i></div>
+                                </div>
+                            </div>
+                            <div id="notificationFooter"><a href="#">See All</a></div>
+                        </div>
+                    </li>
+                    <li><a  onclick="logout()" class="waves-effect waves-block waves-light" title="Logout"><i class="material-icons">power_settings_new</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!-- end header nav-->
+</header>
+<!-- END HEADER -->
+<!-- START MAIN -->
+<div id="main">
+    <!-- START WRAPPER -->
+    <div class="wrapper">
+        <!-- START LEFT SIDEBAR NAV-->
+        <aside id="left-sidebar-nav">
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y {{class}}" ng-class="class">
+                <li class="user-details cyan darken-2">
+                    <div class="row" style="cursor:pointer;" ng-click="onProfile()">
+                        <div class="col col s4 m4 l4"><img ng-src="{{userProfile}}" alt="" class="circle responsive-img valign profile-image" width="50px" height="50px"></div>
+                        <div class="col col s8 m8 l8" style="padding-top:15px">
+                           <p class="user-roal ellipse"><b>{{common_name}} </b></p>
+                            <p class="user-roal">{{common_designation}}</p>
+                            <p class="user-roal">{{common_department}}</p>
+
+                        </div>
+                    </div>
+                    
+           
+                    
+                </li>
+                <ul class="nav navbar-nav mscroll" my-directive>
+                    <li><a ui-sref="home.dashboard" ng-if="width > 768">Dashboard</a>
+                     <a ui-sref="home.dashboard"  ng-if="width < 769" ng-click="changeClass()">Dashboard</a>
+                     </li>
+                    
+                    <li ng-if="project_perm">
+                    <a ui-sref="home.projects" ng-if="width > 768">Projects</a>
+                    <a ui-sref="home.projects"  ng-if="width < 769" ng-click="changeClass()">Projects</a>
+                    </li>
+                    
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" type="button" data-toggle="dropdown">Materials&nbsp;<span class="caret"></span></a>
+                        <ul class="dropdown-menu ddscroll">
+                            <li>
+                            <a ui-sref="home.materials" ng-if="width > 768">Dashboard</a>
+                            <a ui-sref="home.materials"  ng-if="width < 769" ng-click="changeClass()">Dashboard</a>
+                            </li>
+                            <li ng-if="indent_perm">
+                            <a ui-sref="home.indent({filter: ''})" ng-if="width > 768">Indent</a>
+                            <a ui-sref="home.indent({filter: ''})" ng-if="width < 769" ng-click="changeClass()">Indent</a>
+                            </li>
+                            <li ng-if="quotation_perm" >
+                            <a ui-sref="home.quotation({filter: ''})" ng-if="width > 768">Quotation</a>
+                            <a ui-sref="home.quotation({filter: ''})"  ng-if="width < 769" ng-click="changeClass()">Quotation</a>
+                            </li>
+                            <li ng-if="order_perm" >
+                            <a ui-sref="home.orders({filter: ''})"  ng-if="width > 768">Purchase</a>
+                            <a ui-sref="home.orders({filter: ''})" ng-if="width < 769" ng-click="changeClass()">Purchase</a>
+                            </li>
+                            <li ng-if="product_perm" >
+                            <a ui-sref="home.products"   ng-if="width > 768">Products</a>
+                            <a ui-sref="home.products" ng-if="width < 769" ng-click="changeClass()">Products</a>
+                            </li>
+                            <li ng-if="vendor_perm">
+                            <a ui-sref="home.vendors" ng-if="width > 768">Vendors</a>
+                            <a ui-sref="home.vendors" ng-if="width < 769" ng-click="changeClass()">Vendors</a>
+                            </li>
+                            <li ng-if="inventory_perm">
+                            <a ui-sref="home.inventory" ng-if="width > 768">Material Ordered</a>
+                            <a ui-sref="home.inventory" ng-if="width < 769" ng-click="changeClass()">Material Ordered</a>
+                            </li>
+                            <li ng-if="inventory_use_perm">
+                            <a ui-sref="home.category({filter: 'inventory_use'})" ng-if="width > 768">Material Stock</a>
+                             <a ui-sref="home.category({filter: 'inventory_use'})" ng-if="width < 769" ng-click="changeClass()">Material Stock</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li ng-if="userlist_perm">
+                    <a ui-sref="home.userlist({filter: ''})" ng-if="width > 768">User Details</a>
+                    <a ui-sref="home.userlist({filter: ''})" ng-if="width < 769" ng-click="changeClass()">User Details</a>
+                    </li>
+                    <li ng-if="accounts_perm">
+                    <a ui-sref="home.accounts" ng-if="width > 768">Accounts</a>
+                    <a ui-sref="home.accounts" ng-if="width < 769" ng-click="changeClass()">Accounts</a>
+                    </li>
+                    <li ng-if="billing_perm">
+                    <a ui-sref="home.bill_list({filter: ''})" ng-if="width > 768">Billing</a>
+                    <a ui-sref="home.bill_list({filter: ''})" ng-if="width < 769" ng-click="changeClass()">Billing</a>
+                    </li>
+                </ul>
+            </ul>
+
+            <a class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"><i ng-click="changeClass()" class="material-icons">menu</i></a>
+        </aside>
+        <!-- END LEFT SIDEBAR NAV-->
+        <!-- START CONTENT -->
+        <div ui-view></div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END WRAPPER -->
+</div>
+<!-- END MAIN -->
+<footer class="footer">
+    <div class="">
+        <div class="container" style="padding-top: 20px"> <span class="leftspace">&copy;  <a class="grey-text text-lighten-4" href="#" target="_blank">Copyright South India Shelters Pvt.Ltd. </a> All rights reserved.</span> <span class="right rightspace"> Design and Developed by <a class="grey-text text-lighten-4" href="#">S.I.S</a></span> </div>
+    </div>
+</footer>
+<!-- START FOOTER -->
+
+
+

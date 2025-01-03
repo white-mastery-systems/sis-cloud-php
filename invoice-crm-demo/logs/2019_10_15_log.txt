@@ -1,0 +1,11 @@
+IP: 122.15.146.120 TIME: 2019-10-15 11:13:54 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-10-15 11:14:08 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2019-10-15 11:14:08 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-10-15 11:15:26 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:37:54 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:38:15 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:38:18 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:38:38 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:39:15 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:39:16 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-10-15 17:39:36 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36Action :Order Page

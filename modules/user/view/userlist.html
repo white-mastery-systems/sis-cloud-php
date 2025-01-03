@@ -1,0 +1,362 @@
+<script src="./js/session.js"></script>
+<script type="text/javascript" src="modules/user/controller/userimport.js"></script>
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+<div class="container-title">
+<div class="row">
+<div class="col s12 m12 l12">
+<h5 id="ord-head" class="breadcrumbs-title">User List</h5>
+<span id="ord-headright" class="right rightspace navigations">  
+<ul id="menu" class="mfb-component--tr mfb-zoomin" data-mfb-toggle="hover">
+<li class="mfb-component__wrap">
+<a ui-sref="home.user({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">add</i><i class="mfb-component__main-icon--active material-icons">close</i></a>
+<ul ng-if="addPermission=='1'" class="mfb-component__list">
+    <li class="mbtn">
+        <a ng-click="addUser()" title="Add User" class="mfb-component__button--child">
+            <i class="mfb-component__child-icon material-icons">person_add</i>
+        </a> 
+    </li>
+    <li class="mbtn">
+        <form class="mfb-component__button--child" id="upload_csv" name="upload_csv" method="post" enctype="multipart/form-data" title="User Import">
+            <input type="file" id="files" name="employee_file" class="hidden" accept=".csv"/>
+            <label for="files"><i class="mfb-component__child-icon ion-social-twitter material-icons" style="color: white ! important;
+            cursor: pointer;">import_export</i></label>
+        </form>
+    </li>
+    <li class="mbtn">
+        <a  data-mfb-label="Add Products" title="User Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i></a>
+    </li>
+</ul></li></ul></span>
+
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ui-sref="home.userlist({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
+</li></ul>
+</span>
+
+<span id="ord-headright" class="right navigations" style="margin-right: 60px">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click='multiple_delete()' ng-show="showDelBtn" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+</li></ul>
+</span>
+</div></div></div></div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+<div class="row">
+    <div class="row" style="padding:10px 0 0 30px;">
+        <div class="col-md-2 col-xs-6 pr20">
+            <label>Sort by status:</label><br>
+            <select ng-model="status" ng-change="tableData()" ng-options="item.status as item.status for item in dynamic | unique:'status'"></select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">
+            <label>Sort by site:</label><br>  
+            <select ng-model="site" ng-change="tableData()" ng-options="item.site as item.site for item in dynamic | filter:status | unique:'site'"></select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">
+            <label>Sort by	Dept:</label><br>
+            <select ng-model="department" ng-change="tableData()" ng-options="item.department as item.department for item in dynamic | filter:{status: status, site: site} | unique:'department'">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">
+            <label>PageSize:</label><br>
+            <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()">
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pull-right padt13 pr20">
+            <label><i class="material-icons ihide">search</i>
+            <input id="searchitems" type="text" ng-model="search"  placeholder="search" /> </label>
+        </div>
+    </div>
+    
+    <div ng-show="alert"><strong><p>{{alert_content}}</p></strong></div>
+    <b id="excel_resp"></b>
+    
+    <!--userdata table list-->
+    <div id="exportable" data-ng-init="tableData()">
+    <div>
+        <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table hidecol avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="10%">Emp Id<a ng-click="sort_by('emp_id');"><i class="material-icons  tiny1" style="cursor: default;">sort</i></a> </th>
+                    <th width="15%">Username</th>
+                    <th width="15%" class="hidden-xs hidden-sm">Designation</th> 
+                    <th width="10%">Site<a ng-click="sort_by('site');"><i class="material-icons  tiny1" style="cursor: default;">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">Department</th>
+                    <th width="15%" class="hidden-xs hidden-sm">Email</th>
+                    <th width="10%" class="hidden-xs hidden-sm">Mobile</th>
+                    <th width="15%">Action</th>
+                </tr>
+            </thead>
+            <tbody ng-show="filteredItems > 0">
+            <tr ng-repeat="x in filtered = (list | filter:search  | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                <td width="5%">
+                    <input type="checkbox" ng-model="x.singlecheck" ng-change="deleteShow()" id="{{x.emp_id}}"/><label for="{{x.emp_id}}"></label>
+                </td>
+                <td width="10%">{{x.emp_id}}</td>
+                <td width="15%" ng-click="onEdit(x.emp_id)"><a>{{x.name}}</a></td>
+                <td width="10%" class="hidden-xs hidden-sm">{{x.designation}} </td>
+                <td width="10%">{{x.site}}</td>
+                <td width="10%" class="hidden-xs hidden-sm">{{x.department}}</td>
+                <td width="15%" class="hidden-xs hidden-sm">{{x.email}}</td>
+                <td width="10%" class="hidden-xs hidden-sm">{{x.officeno}}</td>
+                <td width="15%" style="cursor: pointer; color: #e91e63;">
+                    <span ng-if="deletePermission=='1'" class="material-icons m-i" ng-click="onDelete(x.emp_id)" title="Delete">delete</span>
+                    <i class="material-icons m-i" ng-click="salaryhistory(x.emp_id)" aria-hidden="true" title="Salary History">info_outline</i>
+                    <i ng-if="x.pdf_status==1" class="material-icons m-i" ng-click="salaryslip(x.emp_id)" title="Salary pdf">picture_as_pdf</i>
+                    <i ng-if="leavePermission=='1' && x.status=='Active'" class="material-icons m-i" ng-click="userleave(x.emp_id)" title="Employee Leave">face</i>
+                    <i ng-if="deletePermission=='1' && x.status=='Active'" class="material-icons" ng-click="onPermission(x.emp_id)" title="User Permissions">lock_open</i>
+                </td>
+            </tr>
+            </tbody>
+            <tbody ng-show="filteredItems == 0">
+                <tr><td colspan="8">No records found</td></tr>
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div> </div>
+
+<!-- leave modal -->
+<div id="user_leave" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Leave Details</h4>
+            </div>
+            <form name="leaveForm" ng-submit="leaveinsert()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 padr20">
+                        <label>leave taken from</label>
+                        <input type="text" ng-model="leaveForm.leavefrom" required commondatepicker />
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <label>leave taken to</label>
+                        <input type="text" ng-model="leaveForm.leaveto" required commondatepicker />
+                    </div>
+                    <div class="col-sm-6 col-md-12">
+                        <label>Reason for leave</label>
+                        <textarea class="materialize-textarea" rows="4" cols="30" ng-model="leaveForm.reason" required></textarea>
+                    </div>
+                    <div class="col-sm-6 col-md-6 padr20">
+                        <label>No of Leave</label>
+                        <input type="text" ng-model="leaveForm.leave" onkeypress='IsNumeric(event)' required />
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <div class="pull-right"><br>
+                            <button type="button" class="btn btn-default" ng-click="holidayCalc()">Calculate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default">Submit</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- salary histroy -->
+<div id="salaryModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Salary Histroy</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a data-target="#tab1" role="tab" data-toggle="tab">Salary Details</a></li>
+                    <li role="presentation"><a data-target="#tab2" role="tab" data-toggle="tab">Leave Details</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="tab1"><br>
+                        <table class="table">
+                        <thead>
+                            <th>#</th>
+                            <th>Salary credted date</th>
+                            <th>Credited salary</th>
+                            <th>Mode of payment</th>
+                            <th>increment</th>
+                        </thead>
+                        <tbody ng-if="salary_data.length > 0">
+                          <tr ng-repeat="x in salary_data | orderBy:'$index':true | startFrom:(currentModalPage-1)*10 | limitTo:10">
+                            <td>{{ ((currentModalPage-1)*10)+$index+1 }}</td>
+                            <td>{{x.credited}} <span ng-show="x.credited == null">-</span></td>
+                            <td>{{x.gross | currency:"&#8377;":0}}</td>
+                            <td>{{x.mode}}</td>
+                            <td>{{x.inc}} <span ng-show="x.inc == null">0%</span></td>
+                          </tr> 
+                        </tbody>
+                        <tbody ng-if="salary_data.length == 0">
+                            <tr><td colspan="5">No records found</td></tr>
+                        </tbody>
+                        </table>
+                        <div class="p-r" ng-if="salary_data.length > 0">
+                            <ul uib-pagination boundary-links="true" total-items="salary_data.length"  items-per-page="10" ng-model="currentModalPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                        </div>
+                    </div>
+
+                    <div role="tabpanel" class="tab-pane" id="tab2"><br>
+                       <div class="col-xs-6">
+                        <select ng-model="leave.year" ng-options="item.year as item.year for item in financial_year" ng-change="leavechange()" style="margin-bottom:20px;">
+                            <option value="">Select Financial Year</option>
+                        </select></div> <br>
+                        <table class="table">
+                          <thead>
+                            <th>#</th>
+                            <th>Leave taken date from</th>
+                            <th>Leave taken date to</th>
+                            <th>No of days leave taken </th>
+                            <th>Total no of days  </th>
+                          </thead>
+                          <tbody ng-if="leave_details.length > 0">
+                            <tr ng-repeat="x in leave_details | startFrom:(currentLeavePage-1)*10 | limitTo:10">
+                              <td>{{ ((currentLeavePage-1)*10)+$index+1 }}</td>
+                              <td>{{x.leave_from}}</td>
+                              <td>{{x.leave_to}}</td>
+                              <td>{{x.leave}}</td>
+                              <td>{{x.totalleave}}</td>
+                            </tr>
+                          </tbody>
+                          <tbody ng-if="leave_details.length == 0">
+                            <tr><td colspan="5">No records found</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="p-r" ng-if="leave_details.length > 0">
+                            <ul uib-pagination boundary-links="true" total-items="leave_details.length" items-per-page="10" ng-model="currentLeavePage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn  btn-success  btn-xs" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- slary slip generation -->
+<div class="modal fade" id="salaryslipModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Salary Slip</h4>
+            </div>
+            <form name="salaryForm" ng-submit="sallastmonth()">
+            <div class="modal-body">
+                <label> Choose Your Director name</label>
+                <select  ng-options="list.emp_id as list.name for list in director_list" ng-model="salaryForm.dirname" required> 
+                    <option value="">-- Select director --</option>
+                </select>
+                <input type="hidden" ng-model="salaryForm.emp_id" />
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-default" value="genrate" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>{{ alert_msg }}</p>
+              <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ft { }
+.mbtn {}
+    .del{}
+           
+       
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px)  
+{
+    .ft{
+        top: 10px ! important;
+    }
+    
+    .del
+    {
+       
+       right: -20px ! important; 
+        position: absolute ! important;
+    }
+    
+     .mbtn
+    {
+           top: -20px ! important;
+    }
+}
+ @media only screen and (min-device-width: 568px) and (max-device-width: 854px) 
+{
+    .ft{
+        top: -10px ! important;
+         width: 50px ! important;
+     height: 50px ! important;
+    }
+    
+     .ft i
+     {
+         line-height: 50px ! important;
+     }
+    
+   
+    .del
+    {
+       
+       right: -10px ! important; 
+        position: absolute ! important;
+        margin-top: -100px ! important;
+        width: 50px ! important;
+        height: 50px ! important;
+        top: 33px ! important;
+    }
+     
+     .del i
+     {
+         line-height: 50px ! important;
+     }
+    
+}
+    
+    
+</style>
+
+
+
+
+
+
+

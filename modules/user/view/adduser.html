@@ -1,0 +1,412 @@
+<script>
+$(document).ready(function () {
+    $('.datepicker1').datepicker({
+        dateFormat: "dd-mm-yy",
+        yearRange: '1970:2020',
+        changeYear: true,
+        changeMonth: true,
+        autoclose: true
+    }).val()
+    
+    $("#datepicker").datepicker({
+        dateFormat: "dd-mm-yy",
+        maxDate: '0',
+        changeYear: true,
+        changeMonth: true,
+        autoclose: true
+    }).val()
+});
+</script>
+<script src="./js/session.js"></script>
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+          <div class="col s12 m12 l12">
+	       <h5 id="prod" class="breadcrumbs-title">Add User</h5>
+            <div id="prod" class='left leftspace navigations'>
+                <a ui-sref="home.userlist({filter: ''})" class="btn btn-floating btn-large waves-effect waves-light pink">
+                    <i class="material-icons">keyboard_backspace</i>
+                </a>
+            </div>
+          </div>
+        </div> 
+    </div>
+</div>
+
+<div class="container">
+  <div class="mainpart">
+<div class="stepwizard col-md-offset-3" align="center" style="margin-top: 50px">
+    <div class="stepwizard-row setup-panel">
+        <div class="stepwizard-step"> <a ng-href="#step-1" class="btn btn-primary btn-circle" style="background-color: #e91e63 ">1</a>  <p>Basic Information</p></div>
+        <div class="stepwizard-step"> <a ng-href="#step-2" class="btn btn-default btn-circle" disabled="disabled" style="background-color: #e91e63 ">2</a>
+        <p>Personal Details</p>
+        </div>
+    </div>
+</div>
+<form role="form" id="myform" name="addForm" method="Post" ng-submit="insert()">
+    <div class="z-depth-1" style="padding: 20px">
+        <div class="row setup-content" id="step-1">
+            <div class="col-md-12">
+                <div class=" col-md-2  pull-right"> <span> <b>Emp No: {{emp_id}} </b></span> </div>
+            </div>
+            <div class="col-md-12">
+                <h3>Basic Information</h3>
+                <div class="col-md-1 padr20">
+                    <label>SurName</label><br>
+                    <select ng-model="user.sirname">
+                        <option value="">Select</option>
+                        <option value="Mr.">Mr.</option>
+                        <option value="Ms.">Ms.</option>
+                        <option value="Mrs.">Mrs.</option>
+                    </select>
+                </div>
+                <div class=" col-md-4 padr20">
+                    <label>FirstName<span style="color:red;" id="valid1">*</span></label><br>
+                    <input type="text" name="question" ng-model="user.firstname" required>
+                </div>
+                <div class=" col-md-4 padr20">
+                    <label>LastName</label>
+                    <input type="text" name="name" ng-model="user.lastname">
+                </div>
+                <div class=" col-md-3 padr20">
+                    <div class="">
+                        <label> Site Location<span style="color:red;" id="valid1">*</span></label>
+                        <select ng-model="user.site" name="site" ng-options="item.project_name as item.project_name for item in project_list | filter : { project_name: '!' + 'Common' }" required>
+                            <option value="">Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div> <div class="clearfix"> &nbsp; </div>
+            <div class="col-md-12">
+                <div class="  col-md-4 padr20">
+                    <label>Department</label>
+                    <select ng-model="user.department" ng-options="item.department as item.department for item in department | unique:'department'"> 
+                        <option value="">Select Department</option>
+                    </select>
+                </div>
+                <div class=" col-md-4 padr20">
+                    <label>Designation</label>
+                    <select ng-disabled="!user.department" ng-model="user.designation" ng-options="item.designation as item.designation for item in department | filter:user.department">
+                        <option value="">Select Designation</option>
+                    </select>
+                </div>
+                <div class="col-md-4 padr20">
+                    <div class="">
+                        <label>Date of joining</label>
+                        <input type="text" id="datepicker" ng-model="user.doj" required>
+                    </div>
+                </div>
+            </div> <div class="clearfix"> &nbsp; </div>
+            <div class="col-md-12">
+                <div class="col-md-4 padr20">
+                    <div class="">
+                        <label>Official Email</label>
+                        <input type="email" name="email" ng-model="user.email"> 
+                    </div>
+                </div>
+                <div class="col-md-4 padr20">
+                    <div class="">
+                        <label>Official Mobile No</label>
+                        <input type="text" onkeypress='IsNumeric(event)' ng-model="user.officeno" pattern=".{10,10}">
+                    </div>
+                </div>
+                <div class="col-md-4 padr20">
+                    <div class="">
+                        <label>Employee salary</label>
+                        <input type="text" onkeypress='IsNumeric(event)' name="empsalary" ng-model="user.empsalary" required>
+                    </div>
+                </div>
+            </div> 
+            <div class="col-md-12" style="padding-top: 20px;">
+            <button class="btn btn-primary nextBtn btn-lg pull-right" id="btn" type="submit">Next</button></div>
+        </div>
+     
+        <div class="row setup-content" id="step-2">
+            <div class="col-md-12">
+                <h3>Personal Details</h3>
+                <div class="col-md-12">
+                    <div class="col-md-4 padr20">
+                        <div class="">
+                            <label>Mobile No</label>
+                            <input type="text" onkeypress='IsNumeric(event)' ng-model="user.mobile" pattern=".{10,10}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4 padr20">
+                        <div class=" newsletter-signup">
+                            <label>Personnel Email</label>
+                            <input type="email" ng-model="user.personnel_email" >
+                        </div>
+                    </div>
+                    <div class="  col-md-4 padr20">
+                        <label>Date of Birth</label>
+                        <input type="text" class="datepicker1" ng-model="user.dob">
+                    </div>
+                </div> <div class="clearfix"> &nbsp; </div>
+                <div class="col-md-12 padr20">
+                    <div class="">
+                        <label>Address</label><br>
+                        <textarea class="materialize-textarea" cols="8" ng-model="user.address" required></textarea>
+                    </div>
+                </div> <div class="clearfix"> &nbsp; </div>
+                <div class="col-md-12">
+                    <div class="col-md-4 padr20">
+                        <div class="">
+                            <label>Blood group</label>
+                            <select ng-model="user.bloodgroup">
+                                <option value="">Select Blood Group</option>
+                                <option value="O-ve">O-ve</option>
+                                <option value="O+ve">O+ve</option>
+                                <option value="A-ve">A-ve</option>
+                                <option value="A1+ve">A1+ve</option>
+                                <option value="A1-ve">A1-ve</option>
+                                <option value="A+ve">A+ve</option>
+                                <option value="AB-ve">AB-ve</option>
+                                <option value="AB+ve">AB+ve</option>
+                                <option value="A1B-ve">A1B-ve</option>
+                                <option value="A1B+ve">A1B+ve</option>
+                                <option value="B-ve">B-ve</option>
+                                <option value="B+ve">B+ve</option>
+                                <option value="B1+ve">B1+ve</option>
+                                <option value="B1-ve">B1-ve</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4 padr20">
+                        <div class="">
+                            <label>Emergency Contact No</label>
+                            <input type="text" name="contactno" ng-model="user.emergency_conno"> 
+                        </div>
+                    </div>
+                    <div class="col-md-4 padr20">
+                        <div class="">
+                            <label>Relationship</label>
+                            <input type="text" name="relationship" ng-model="user.relationship">
+                        </div>
+                    </div> <div class="clearfix"> &nbsp; </div>
+                    <div class="col-md-12">
+                        <div class="col-md-4 padr20">
+                            <div class="">
+                                <label>Education qualification</label>
+                                <input type="text" name="qualification" ng-model="user.qualification" >
+                            </div>
+                        </div>
+                        <div class="col-md-4 padr20">
+                            <div class="">
+                                <label>Total No of Experience</label><br>
+                                <select ng-model="user.companyexperience">
+                                    <option value="">Select</option>
+                                    <option value="0 year">0 year</option>
+                                    <option value="1 year">1 year</option>
+                                    <option value="2 years">2 years</option>
+                                    <option value="3 years">3 years</option>
+                                    <option value="4 years">4 years</option>
+                                    <option value="5 years">5 years</option>
+                                    <option value="6 years">6 years</option>
+                                    <option value="7 years">7 years</option>
+                                    <option value="8 years">8 years</option>
+                                    <option value="9 years">9 years</option>
+                                    <option value="10 years">10 years</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 padr20">
+                            <div class="file-upload">
+                              <div class="file-select">
+                                <div class="file-select-button" id="fileName"><i class="material-icons" style="font-size: 25px">attach_file</i></div>
+                                <div class="file-select-name" id="noFile"></div> 
+                                <input type="file" name="chooseFile" id="chooseFile" file-input="files" accept="image/*">
+                              </div>
+                            </div>
+                        </div>
+                    </div> <div class="clearfix"> &nbsp; </div>
+                </div>
+                <div ng-show="alert">
+                    <strong style="color:red;">Failure !!!</strong>
+                </div>
+                <button class="btn btn-primary prevBtn btn-lg pull-left" type="button">Previous</button>
+                <button class="btn btn-primary nextBtn btn-lg pull-right" id="btn" type="submit">Finish</button>
+            </div>
+        </div>
+    </div>
+</form>
+   </div> 
+</div>
+<script>
+$(document).ready(function () {
+    var navListItems = $('div.setup-panel div a'),
+    allWells = $('.setup-content'),
+    allNextBtn = $('.nextBtn'),
+    allPrevBtn = $('.prevBtn');
+    allWells.hide();
+    navListItems.click(function (e) {
+        e.preventDefault();
+        var $target = $($(this).attr('href')),
+        $item = $(this);
+        if (!$item.hasClass('disabled')) {
+            navListItems.removeClass('btn-primary').addClass('btn-default');
+            $item.addClass('btn-primary');
+            allWells.hide();
+            $target.show();
+            $target.find('input:eq(0)').focus();
+        }
+    });
+    allPrevBtn.click(function () {
+        var curStep = $(this).closest(".setup-content"),
+        curStepBtn = curStep.attr("id"),
+        prevStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().prev().children("a");
+        prevStepWizard.removeAttr('disabled').trigger('click');
+    });
+    allNextBtn.click(function () {
+        var curStep = $(this).closest(".setup-content"),
+        curStepBtn = curStep.attr("id"),
+        nextStepWizard = $('div.setup-panel div a[href="#' + curStepBtn + '"]').parent().next().children("a"),
+        curInputs = curStep.find("input[type='text'],input[type='url'], select"),
+        isValid = true;
+        $(".form-group").removeClass("has-error");
+        for(var i = 0; i < curInputs.length; i++) {
+            if(!curInputs[i].validity.valid) {
+                isValid = false;
+                $(curInputs[i]).closest(".form-group").addClass("has-error");
+            }
+        }
+        if (isValid) nextStepWizard.removeAttr('disabled').trigger('click');
+    });
+    $('div.setup-panel div a.btn-primary').trigger('click');
+});
+    
+$('#chooseFile').bind('change', function () {
+    var filename = $("#chooseFile").val();
+    if (/^\s*$/.test(filename)) {
+        $(".file-upload").removeClass('active');
+        $("#noFile").text("No file chosen..."); 
+    }
+    else {
+        $(".file-upload").addClass('active');
+        $("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
+    }
+});
+</script>
+
+<style>
+    
+    .stepwizard-step p {
+        margin-top: 10px;
+    }
+    
+    .stepwizard-row {
+        display: table-row;
+    }
+    
+    
+    
+    .stepwizard-step button[disabled] {
+        opacity: 1 !important;
+        filter: alpha(opacity=100) !important;
+    }
+    
+    .stepwizard-row:before {
+        top: 14px;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+        z-order: 0;
+    }
+    
+    .stepwizard-step {
+        display: table-cell;
+        text-align: center;
+        position: relative;
+    }
+    
+    @media only screen and (min-width: 321px) and (max-device-width: 568px) {
+        .stepwizard {
+            display: table;
+            width: 100%;
+            position: relative;
+        }
+    }
+    
+    @media only screen and (min-width: 768px) and (max-device-width: 1024px) {
+        .stepwizard {
+            display: table;
+            width: 100%;
+            position: relative;
+        }
+    }
+    
+    .btn-circle {
+        width: 30px !important;
+        height: 30px !important;
+        text-align: center !important;
+        padding: 6px 0 !important;
+        font-size: 12px !important;
+        line-height: 1.428571429 !important;
+        border-radius: 15px !important;
+    }
+    
+    .btn.btn-primary,
+    .btn.btn-primary:hover,
+    .btn.btn-primary:focus,
+    .btn.btn-primary:active,
+    .btn.btn-primary.active,
+    .btn.btn-primary:active:focus,
+    .btn.btn-primary:active:hover,
+    .btn.btn-primary.active:focus,
+    .btn.btn-primary.active:hover,
+    .open > .btn.btn-primary.dropdown-toggle,
+    .open > .btn.btn-primary.dropdown-toggle:focus,
+    .open > .btn.btn-primary.dropdown-toggle:hover {
+        background-color: #00bcd4 !important;
+    }
+    
+    .mdl-button--file input {
+        cursor: pointer;
+        height: 100%;
+        right: 0;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        width: 300px;
+        z-index: 4;
+    }
+    
+    .mdl-textfield--file .mdl-textfield__input {
+        box-sizing: border-box;
+        width: calc(100% - 32px);
+    }
+    
+    .mdl-textfield--file .mdl-button--file {
+        right: 0;
+    }
+    
+    .m-i {
+        font-size: 25px;
+        background: gainsboro;
+        border-radius: 50%;
+        margin-top: 25px;
+        vertical-align: middle;
+    }
+    
+.file-upload{display:block;text-align:center;font-family: Helvetica, Arial, sans-serif;font-size: 12px;}
+.file-upload .file-select{display:block;border-bottom: 1px solid #ccc;color: #34495e;cursor:pointer;height:40px;line-height:40px;text-align:left;background:#FFFFFF;overflow:hidden;position:relative; margin-top: 10px;}
+.file-upload .file-select .file-select-button{padding:0 10px;display:inline-block;height:40px;line-height:40px;}
+.file-upload .file-select .file-select-name{line-height:40px;display:inline-block;padding:0 10px;}
+
+
+.file-upload.active .file-select{border-bottom: 2px solid #e91e63;transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+.file-upload.active .file-select .file-select-button{transition:all .2s ease-in-out;-moz-transition:all .2s ease-in-out;-webkit-transition:all .2s ease-in-out;-o-transition:all .2s ease-in-out;}
+.file-upload .file-select input[type=file]{z-index:100;cursor:pointer;position:absolute;height:100%;width:100%;top:0;left:0;opacity:0;filter:alpha(opacity=0);}
+.file-upload .file-select.file-select-disabled{opacity:0.65;}
+.file-upload .file-select.file-select-disabled:hover{cursor:default;display:block;border: 2px solid #dce4ec;color: #34495e;cursor:pointer;height:40px;line-height:40px;margin-top:5px;text-align:left;background:#FFFFFF;overflow:hidden;position:relative;}
+.file-upload .file-select.file-select-disabled:hover .file-select-button{background:#dce4ec;color:#666666;padding:0 10px;display:inline-block;height:40px;line-height:40px;}
+.file-upload .file-select.file-select-disabled:hover .file-select-name{line-height:40px;display:inline-block;padding:0 10px;}
+</style>
+
+
+
+
+
+

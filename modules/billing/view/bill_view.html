@@ -1,0 +1,212 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+  <div class="container-title">
+    <div class="row">
+      <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">{{ billForm.sis_bill_no }}</h5>
+        <span id="ord-headright" class="left navigations padl130">  
+          <ul id="menu" class="mfb-component--tr" >
+            <li class="mfb-component__wrap">
+              <a ng-click="onBack()" class="mfb-component__button--main">
+                <i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i>
+              </a>
+            </li>
+          </ul>
+        </span>
+      </div>
+    </div> 
+  </div>
+</div>
+
+<html>
+<head>
+  <style>
+    .container-fluid{
+      margin-top: 1.5%;
+      margin-left: 1%;
+      margin-right: 1%;
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader"></div>
+  <div class="mainpart">
+    <div class='container-fluid' style="line-height:25px !important;">
+      <div class="row">
+        <div class="col-sm-4">
+          <b>Vendor Bill No:</b> {{ billForm.vendor_bill_no }} ({{ billForm.vendor_bill_date }})
+        </div>
+        <div class="col-sm-4" align="center">
+          <b>Site:</b> {{ billForm.project_name }}
+        </div>
+        <div class="col-sm-4">
+          <div class="pull-right">
+            <b>PO Numbers:</b> {{ billForm.po_list }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <b>Vendor Name:</b> {{ billForm.vendor_name }}
+        </div>
+        <div class="col-sm-4" align="center">
+          <b>Block:</b> {{ billForm.block_list }}
+        </div>
+        <div class="col-sm-4">
+          <div class="pull-right">
+            <b>DC Numbers:</b> {{ billForm.dc_list }}
+          </div>
+        </div>
+      </div>
+      <div class="row"></div>
+      <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                          <table width="100%">
+                            <tbody ng-show="billForm.bill_list.length > 0">
+                              <tr ng-repeat="parentTable in billForm.bill_list track by $index" ng-init="poIndex = $index">
+                                <td>
+                                  <div class="row" align="left">
+                                    <b>{{poIndex+1}}) PO Number:</b> {{ parentTable.po_number }} ({{ parentTable.po_date }})
+                                  </div>
+                                  <div class="row" align="left">
+                                    <b>DC Number:</b> <li ng-repeat="x in parentTable.dc_list track by $index">{{x.dc_no}} ({{x.dc_date}})</li>
+                                  </div>
+
+                                  <table class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th width="5%">#</th>
+                                        <th>HSN CODE</th>
+                                        <th>PRODUCT NAME</th>
+                                        <th ng-if="parentTable.po_type=='Steel'">DETAILS</th>
+                                        <th ng-if="parentTable.po_type=='Door'">SIZE</th>
+                                        <th>QTY</th>
+                                        <th ng-if="parentTable.po_type=='Door'">CFT</th>
+                                        <th>Price &#8377;</th>
+                                        <th>Amount &#8377;</th>
+                                        <th>GST %</th>
+                                        <th>SGST &#8377;</th>
+                                        <th>CGST &#8377;</th>
+                                        <th ng-if="parentTable.po_type=='Steel'">Make</th>
+                                        <th class='text-right'>Total &#8377;&nbsp;</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody ng-show="parentTable.bill_item_list.length > 0">
+                                      <tr ng-repeat="x in parentTable.bill_item_list track by $index" ng-init="itemIndex = $index">
+                                        <td>{{ itemIndex+1 }}</td>
+                                        <td>{{ x.code }}</td>
+                                        <td>{{ x.item }}</td>
+                                        <td ng-if="parentTable.po_type=='Steel'">{{ x.details }}</td>
+                                        <td ng-if="parentTable.po_type=='Door'">{{ x.size }}</td>
+                                        <td>{{ x.unbilled_qty }} {{ x.unit }}</td>
+                                        <td ng-if="parentTable.po_type=='Door'">{{ x.cft }}</td>
+                                        <td>{{ x.price | currency:"":2 }}</td>
+                                        <td>{{ x.amount | currency:"":2 }}</td>
+                                        <td>{{ x.sgst + x.cgst }}</td>
+                                        <td>{{ x.sgst_amount | currency:"":2 }}</td>
+                                        <td>{{ x.cgst_amount | currency:"":2 }}</td>
+                                        <td ng-if="parentTable.po_type=='Steel'">{{ x.make }}</td>
+                                        <td>{{ x.total | currency:"":2 }}</td>
+                                      </tr>
+
+                                      <!-- Standard -->
+                                      <tr ng-if="parentTable.po_type=='Standard'">
+                                        <td colspan="1" rowspan="1">
+                                          <button type="button" class="btn btn-danger" ng-click="removeModalRow(poIndex)">-</button>
+                                        </td>
+                                        <td colspan="8" style="text-align: right;">Cutting, Loading and Unloading</td>
+                                        <td>{{ parentTable.unloading_cost | currency:"":2 }}</td>
+                                      </tr>
+									<tr ng-if="parentTable.po_type=='Standard' && parentTable.transport_tax>0">
+                                        <td colspan="9" style="text-align: right;">Tax for Cutting, Loading and Unloading ({{parentTable.loading_tax}}%)</td>
+                                        <td>{{ parentTable.loading_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard'">
+                                        <td colspan="9" style="text-align: right;">Transport</td>
+                                        <td>{{ parentTable.transport_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard' && parentTable.loading_tax>0">
+                                        <td colspan="9" style="text-align: right;">Transport GST ({{parentTable.transport_tax}}%)</td>
+                                        <td>{{ parentTable.transport_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard' && billForm.bill_list.length > 1">
+                                        <td colspan="9" style="text-align: right;">Sub Total</td>
+                                        <td>{{ parentTable.sub_total | currency:"":2 }}</td>
+                                      </tr>
+
+                                      <!-- Door or Steel -->
+                                      <tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="1" rowspan="1">
+                                          <button type="button" class="btn btn-danger" ng-click="removeModalRow(poIndex)">-</button>
+                                        </td>
+                                        <td colspan="10" style="text-align: right;">Loading and Unloading</td>
+                                        <td>{{ parentTable.unloading_cost | currency:"":2 }}</td>
+                                      </tr>
+										<tr ng-if="parentTable.po_type!='Standard' && parentTable.loading_tax>0">
+                                        <td colspan="11" style="text-align: right;">Tax for Cutting, Loading and Unloading ({{parentTable.loading_tax}}%)</td>
+                                        <td>{{ parentTable.loading_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+										<tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Total CFT</td>
+                                        <td>{{ parentTable.sum_cft | currency:"":2 }}</td>
+                                      </tr>
+									<tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Plaining Charges</td>
+                                        <td>{{ parentTable.plain_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && parentTable.transport_tax>0">
+                                        <td colspan="11" style="text-align: right;">plain GST ({{parentTable.plain_tax}}%)</td>
+                                        <td>{{ parentTable.plain_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+										
+                                      <tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Transport</td>
+                                        <td>{{ parentTable.transport_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && parentTable.transport_tax>0">
+                                        <td colspan="11" style="text-align: right;">Transport GST ({{parentTable.transport_tax}}%)</td>
+                                        <td>{{ parentTable.transport_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && billForm.bill_list.length > 1">
+                                        <td colspan="11" style="text-align: right;">Sub Total</td>
+                                        <td>{{ parentTable.sub_total | currency:"":2 }}</td>
+                                      </tr>
+                                    </tbody>
+                                    <tbody ng-show="parentTable.bill_item_list.length == 0">
+                                      <tr><td colspan="15">No records found</td></tr>
+                                    </tbody>
+                                  </table>
+                                </td>
+                              </tr>
+                            </tbody>
+                            <tbody ng-show="billForm.bill_list.length == 0">
+                              <tr><td>No records found</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </div>
+                    <div class="col-sm-12" ng-if="billForm.bill_list.length > 0" style="text-align: right;">
+                      <b>GRAND TOTAL: {{ billForm.grand_total | currency:"":2 }}</b>
+                    </div>
+                    <div class="col-sm-12" ng-if="billForm.status!=0">
+                      <b>Credit Note:</b> {{ billForm.credit_note }}
+                    </div>
+      </div>
+
+      <div class="row" ng-if="approvePermission && billForm.status==0">
+        <div class="col-sm-6">
+          <label>Credit Note</label>
+          <textarea class="materialize-textarea" ng-model="billForm.credit_note"></textarea>
+        </div>
+        <div class="col-sm-12" align="center"><br><br>
+          <button ng-click="billConfirm('1')" class="btn btn-primary">Verify</button>
+          <button ng-click="billConfirm('2')" class="btn btn-primary">Decline</button><br><br>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</body>
+</html>

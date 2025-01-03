@@ -1,0 +1,304 @@
+<style>
+  
+    
+    html, body {
+    height: 100%;
+    margin: 0;
+  }
+      
+      
+  .bodycontent {
+   min-height: calc(100vh - 80px);
+    margin: 0 auto -50px;
+  }
+  
+  footer {
+    background: #00bcd4;
+    color: white;
+    padding: 0 20px;
+  }
+     
+  </style>
+  <header id="header" class="page-topbar">
+      <!-- start header nav-->
+      <div class="navbar-fixed" id="navbar">
+          <nav class="nav-white">
+              <div class="row px-3 m-0 d-flex align-items-center">               
+                 <div class="col-md-4 col-3">
+                    <a>
+                     <h3><span class="material-icons pr-4" ng-click="changeClass()">menu</span><span class="menu-name">Dashboard</span></h3>
+                    </a>
+                </div>
+                 <!-- <div class="col-md-3">
+                    <div class="input-group">
+                        <input type="text" class="searchbox form-control" placeholder="Search here...">
+                        <div class="input-group-append top-search-icon">
+                          <button class="btn btn-search" type="button">
+                            <i class="material-icons">search</i>
+                          </button>
+                        </div>
+                    </div>
+                 </div> -->
+                 <div class="col-md-8 col-9 d-flex justify-content-end">
+                  <ul class="right-header-icon d-flex">
+                      <li class="d-md-flex d-none align-items-center" style="width:280px;">
+                        <div class="input-group">
+                            <input type="text" class="searchbox form-control" placeholder="Search here...">
+                            <div class="input-group-append top-search-icon">
+                              <button class="btn btn-search" type="button">
+                                <i class="material-icons">search</i>
+                              </button>
+                            </div>
+                        </div>
+                      </li>
+                    <li>										
+                        <div class="header__notification">
+                            <div class="bell-icon small-icon">
+                                <span class="material-icons" style="vertical-align:middle;">notifications</span>
+                            <span class="notification-number notification-yellow bell-number">3</span>
+                            <ul class="notification__list dropdown hide">
+                                <h3 class="notification__list__name">Notifications
+                                <!-- <span class="notification-number large-number">3</span> -->
+                                </h3>
+                                <li class="list__item">
+                                <a href="#" class="list__item--link">
+                                    <span class="material-icons">notifications</span>
+                                    <span class="messages">
+                                    <b>Notification</b> posted 2 comments on your photo.
+                                    </span>
+                                </a>
+                                </li>
+                                <li class="list__item">
+                                <a href="#" class="list__item--link">
+                                    <span class="material-icons">notifications</span>
+                                    <span class="messages">
+                                    <b>Notification</b> posted 2 comments on your photo.
+                                    </span>
+                                </a>
+                                </li>
+                                
+                            </ul>
+                            </div> <!-- bell-icon-->  
+                        </div>
+                            <!--  header__notification -->					
+                    </li>
+                    <li>										
+                        <div class="header__notification">
+                            <div class="bell-icon small-icon">
+                                <span class="material-icons" style="vertical-align:middle;">email</span>
+                                <span class="notification-number bell-number">3</span>                           
+                            </div> <!-- bell-icon-->  
+                        </div>                       					
+                    </li>
+                    <li>										
+                        <div class="header__notification">
+                            <div class="bell-icon small-icon">
+                                <span class="material-icons" style="vertical-align:middle;">event_note</span>
+                                <span class="notification-number notification-green bell-number">3</span>                           
+                            </div> <!-- bell-icon-->  
+                        </div>                       					
+                    </li>
+                    <li><i class="material-icons">settings</i></li>
+                      <li> <img ng-src="{{userProfile}}" alt="" class="rounded-gborder2" width="20px" height="20px" />   </li>
+                      <li><a onclick="logout()" class="waves-effect waves-block waves-light p-0" title="Logout"><i class="material-icons">power_settings_new</i></a></li>
+                  </ul>
+                 </div>
+              </div>
+          </nav>
+          <nav class="cyan d-none">
+              <div class="nav-wrapper">               
+                  <div class="header-search-wrapper">
+                      <!-- <i class="material-icons active">search</i><input type="text" name="Search" class="header-search-input z-depth-2" >-->
+                  </div>
+                  <ul class="right hide-on-med-and-down ">
+                      <li class="">
+                          <div id="notificationContainer">
+                              <div id="notificationsBody" class="notifications page-wrapper scrollbar-macosx">
+                                  <div class="content" style="width:100%">
+                                      <div style="width:85%; position:relative; float:left;height:auto; line-height:160%">Sample Text</div>
+                                      <div style="width:15%; position:relative;  float:left; height:auto; line-height:160%"><i class="material-icons" style="height:35px; line-height:35px">cancel</i></div>
+                                  </div>
+                              </div>
+                              <div id="notificationFooter"><a href="#">See All</a></div>
+                          </div>
+                      </li>
+                      <li><a  onclick="logout()" class="waves-effect waves-block waves-light" title="Logout"><i class="material-icons">power_settings_new</i></a></li>
+                  </ul>
+              </div>
+          </nav>
+      </div>
+      <!-- end header nav-->
+  </header>
+  <!-- END HEADER -->
+  <!-- START MAIN -->
+  <div id="main">
+      <!-- START WRAPPER -->
+      <div class="wrapper">
+          <!-- START LEFT SIDEBAR NAV-->
+          <aside id="left-sidebar-nav">          
+            <div class="">
+               
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y {{class}}" ng-class="class">
+                <li class="d-flex align-items-center justify-content-start">
+                    <h1 class="logo-wrapper d-flex align-items-center">
+                        <a  class="brand-logo darken-1" style="margin-top:-22px"><img src="images/dinamic_erp_logo.svg" alt="Dinamic logo"></a> <span class="logo-text">Dinamic</span>
+                    </h1>
+                </li>    
+                
+                <li class="d-sm-flex d-md-none align-items-center p-3">
+                    <div class="input-group">
+                        <input type="text" class="searchbox form-control" placeholder="Search here...">
+                        <div class="input-group-append top-search-icon">
+                          <button class="btn btn-search" type="button">
+                            <i class="material-icons">search</i>
+                          </button>
+                        </div>
+                    </div>
+                  </li>
+               
+                <ul class="nav navbar-nav mscroll" my-directive>
+                    <!-- <p class="m-menu-p">Main Menu</p> -->
+                    <li><a ui-sref="home.dashboard" ng-if="width > 768" ng-class="{active: isCurrentLocation('/home/dashboard')}" ><span class="material-icons pr-3">space_dashboard</span>Dashboard</a>
+                     <a ui-sref="home.dashboard"  ng-if="width < 769" ng-click="changeClass()" ng-class="{active: isCurrentLocation('/home/dashboard')}" ><span class="material-icons pr-3">space_dashboard</span>Dashboard</a>
+                     </li>
+                    
+                    <li class="" ng-if="project_perm">
+                    <a ui-sref="home.projects" ng-if="width > 768" ng-class="{active: isCurrentLocation('/home/projects')}" ><span class="material-icons pr-3">store</span>Locations</a>
+                    <a ui-sref="home.projects"  ng-if="width < 769" ng-click="changeClass()" ng-class="{active: isCurrentLocation('/home/projects')}" ><span class="material-icons pr-3">store</span>Locations</a>
+                    </li>
+
+                    
+                    <li>
+                      <a class="nav-link collapsed py-1"  data-toggle="collapse" data-target="#submenu1sub1"><span class="material-icons pr-3">view_list</span>Materials</a>
+                      <div class="collapse" id="submenu1sub1" aria-expanded="false">
+                        <ul class="flex-column nav pl-4">
+                            <li>
+                                <a ui-sref="home.materials" ng-if="width > 768" ng-class="{active: isCurrentLocation('/home/materials/dashboard')}">Dashboard</a>
+                                <a ui-sref="home.materials"  ng-if="width < 769" ng-click="changeClass()" ng-class="{active: isCurrentLocation('/home/materials/dashboard')}">Dashboard</a>
+                                </li>
+                                <li ng-if="indent_perm">
+                                <a ui-sref="home.indent({filter: ''})" ng-if="width > 768" class="{{isCurrentPath.indexOf('indent')>-1 ? 'active' : '' }}">Indents</a>
+                                <a ui-sref="home.indent({filter: ''})" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('indent')>-1 ? 'active' : '' }}" >Indents</a>
+                                </li>
+                                <li ng-if="quotation_perm" >
+                                <a ui-sref="home.quotation({filter: ''})" ng-if="width > 768" class="{{isCurrentPath.indexOf('quotation')>-1 ? 'active' : '' }}">Quotations</a>
+                                <a ui-sref="home.quotation({filter: ''})"  ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('quotation')>-1 ? 'active' : '' }}">Quotations</a>
+                                </li>
+                                <li ng-if="order_perm" >
+                                <a ui-sref="home.orders({filter: ''})"  ng-if="width > 768" class="{{isCurrentPath.indexOf('orders')>-1 ? 'active' : '' }}">Purchases</a>
+                                <a ui-sref="home.orders({filter: ''})" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('orders')>-1 ? 'active' : '' }}">Purchases</a>
+                                </li>
+                                <li ng-if="product_perm" >
+                                <a ui-sref="home.products"   ng-if="width > 768" ng-class="{active: isCurrentLocation('/home/materials')}">Materials</a>
+                                <a ui-sref="home.products" ng-if="width < 769" ng-class="{active: isCurrentLocation('/home/materials')}">Materials</a>
+                                </li>
+                                <li ng-if="vendor_perm">
+                                <a ui-sref="home.vendors" ng-if="width > 768" class="{{isCurrentPath.indexOf('vendors')>-1 ? 'active' : '' }}">Vendors</a>
+                                <a ui-sref="home.vendors" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('vendors')>-1 ? 'active' : '' }}" >Vendors</a>
+                                </li>
+                                <li ng-if="inventory_perm">
+                                <a ui-sref="home.inventory" ng-if="width > 768" class="{{isCurrentPath.indexOf('inventory')>-1 ? 'active' : '' }}" >Orders</a>
+                                <a ui-sref="home.inventory" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('inventory')>-1 ? 'active' : '' }}">Orders</a>
+                                </li>
+                                <li ng-if="inventory_use_perm">
+                                <a ui-sref="home.category({filter: 'stock_use'})" ng-if="width > 768" class="{{isCurrentPath.indexOf('stock_use')>-1 ? 'active' : '' }}">Current Stock</a>
+                                 <a ui-sref="home.category({filter: 'stock_use'})" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('stock_use')>-1 ? 'active' : '' }}">Current Stock</a>
+                                </li>                          
+                        </ul>
+                      </div>
+                    </li>               
+                    <li ng-if="userlist_perm">
+                        <a ui-sref="home.userlist({filter: ''})" ng-if="width > 768" class="{{isCurrentPath.indexOf('userlist')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">people</span>Users</a>
+                        <a ui-sref="home.userlist({filter: ''})" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('userlist')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">people</span>Users</a>
+                    </li>
+                    <li ng-if="accounts_perm">
+                        <a ui-sref="home.accounts" ng-if="width > 768" class="{{isCurrentPath.indexOf('accounts')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">payments</span>Payroll</a>
+                        <a ui-sref="home.accounts" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('accounts')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">payments</span>Payroll</a>
+                    </li>
+                    <li ng-if="billing_perm">
+                        <a ui-sref="home.bill_list({filter: ''})" ng-if="width > 768" class="{{isCurrentPath.indexOf('bill_list')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">receipt</span>Accounts</a>
+                        <a ui-sref="home.bill_list({filter: ''})" ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('bill_list')>-1 ? 'active' : '' }}"><span class="material-icons pr-3">receipt</span>Accounts</a>
+                        </li>
+                 
+             
+
+                  <li>
+                      <a class="nav-link collapsed py-1"  data-toggle="collapse" data-target="#submenu1sub2"> <span class="material-icons pr-3">settings</span>Settings</a>
+                      <div class="collapse" id="submenu1sub2" aria-expanded="false">
+                        <ul class="flex-column nav pl-4">
+                            <li ng-if="userlist_perm">
+                                <a ui-sref="home.user_settings" ng-if="width > 768" class="{{isCurrentPath.indexOf('usersettings')>-1 ? 'active' : '' }}">User Settings</a>
+                                <a ui-sref="home.user_settings"  ng-if="width < 769" ng-click="changeClass()" class="{{isCurrentPath.indexOf('usersettings')>-1 ? 'active' : '' }}">User Settings</a>
+                                </li>
+                                <li  ng-if="product_perm" >
+                                <a ui-sref="home.product_settings" ng-if="width > 768" class="{{isCurrentPath.indexOf('product_settings')>-1 ? 'active' : '' }}">Product Settings</a>
+                                <a ui-sref="home.product_settings" ng-if="width < 769" ng-click="changeClass()"  class="{{isCurrentPath.indexOf('product_settings')>-1 ? 'active' : '' }}">Product Settings</a>
+                                </li>
+                                <li ng-if="quotation_perm" >
+                                <a ui-sref="home.mail_settings" ng-if="width > 768"  class="{{isCurrentPath.indexOf('mail_settings')>-1 ? 'active' : '' }}">Mail Settings</a>
+                                <a ui-sref="home.mail_settings"  ng-if="width < 769" ng-click="changeClass()"  class="{{isCurrentPath.indexOf('mail_settings')>-1 ? 'active' : '' }}">Mail Settings</a>
+                                </li>                      
+                        </ul>
+                      </div>
+                    </li>
+                </ul>
+
+                <li class="user-details">
+                    <div class="row" style="cursor:pointer;" ng-click="onProfile()">
+                        <!-- <div class="col col s4 m4 l4">    
+                            <div class="circle">
+                                <div class="image-wrapper">
+                                    <img ng-src="{{userProfile}}" alt="" />     
+                                </div>
+                              </div>
+                        </div> -->
+                        <div class="col-sm-3 col-3 pl-0">                            
+                            <img ng-src="{{userProfile}}" alt="" class="rounded-gborder" width="50px" height="50px" />                            
+                        </div>
+                        <!-- <div class="col col s4 m4 l4">
+                            <img ng-src="{{userProfile}}" alt="" class="circle responsive-img valign profile-image" width="50px" height="50px">
+                        </div> -->
+                        <div class="col-sm-9 col-9 px-0 d-flex justify-items-center" style="flex-direction:column;line-height: 1;">
+                            <p class="user-roal ellipse mb-2"><b>{{common_name}} </b></p>
+                            <p class="user-roal mb-2">{{common_designation}}</p>
+                            <p class="user-roal mb-0">{{common_department}}</p>
+
+                        </div>
+                    </div>    
+                          
+                </li>
+
+                
+                <li class="footer">
+                    <div class="row m-0">                
+                                       
+                        <div class="col-sm-12 px-0 col-12 d-flex justify-items-center" style="flex-direction:column;line-height: 1.5;">
+                            <p class="footer-roal ellipse mb-1"><b>DiNAMIC ERP </b></p>
+                            <p class="footer-roal-copy mb-0">© 2021 All Rights Reserved.<br> White Mastery Systems Pvt. Ltd.</p>                           
+                        </div>
+                    </div>    
+                          
+                </li>
+
+            </ul>
+            <!-- <a class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"><i ng-click="changeClass()" class="material-icons">menu</i></a> -->
+            </div>
+        </aside>
+          <!-- END LEFT SIDEBAR NAV-->
+          <!-- START CONTENT -->
+          <div ui-view></div>
+          <!-- END CONTENT -->
+      </div>
+      <!-- END WRAPPER -->
+  </div>
+  <!-- END MAIN -->
+  <!-- <footer class="footer">
+      <div class="">
+          <div class="container" style="padding-top: 20px"> <span class="leftspace">&copy;  <a class="grey-text text-lighten-4" href="#" target="_blank">Copyright South India Shelters Pvt.Ltd. </a> All rights reserved.</span> <span class="right rightspace"> Design and Developed by <a class="grey-text text-lighten-4" href="#">S.I.S</a></span> </div>
+      </div>
+  </footer> -->
+  <!-- START FOOTER -->
+  
+  
+  
+  

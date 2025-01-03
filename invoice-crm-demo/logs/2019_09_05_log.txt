@@ -1,0 +1,15 @@
+IP: 122.15.146.120 TIME: 2019-09-05 10:25:54 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2019-09-05 10:25:55 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:26:50 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36Action :Logout
+IP: 122.15.146.120 TIME: 2019-09-05 10:48:56 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:49:03 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2019-09-05 10:49:04 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:50:15 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:50:16 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:50:36 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:51:01 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:51:01 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-09-05 10:51:40 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-09-05 13:03:18 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-09-05 13:03:19 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-09-05 13:04:09 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Action :Order Page

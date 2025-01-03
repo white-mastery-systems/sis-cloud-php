@@ -1,0 +1,13 @@
+IP: 42.111.128.215 TIME: 2017-01-05 16:25:05 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action : Admin Login
+IP: 42.111.128.215 TIME: 2017-01-05 16:25:08 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Order Page
+IP: 42.111.128.215 TIME: 2017-01-05 16:25:31 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Purchase Duplicate Page
+IP: 42.111.128.215 TIME: 2017-01-05 16:26:25 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action : PO-NO952Inserted
+IP: 42.111.128.215 TIME: 2017-01-05 16:26:25 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Order Page
+IP: 42.111.128.215 TIME: 2017-01-05 16:26:58 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Purchase Duplicate Page
+IP: 42.111.128.215 TIME: 2017-01-05 16:27:24 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action : PO-NO953Inserted
+IP: 42.111.128.215 TIME: 2017-01-05 16:27:25 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Order Page
+IP: 42.111.128.215 TIME: 2017-01-05 16:27:35 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action : Purchase order_952 has been downloaded as pdf
+IP: 42.111.128.215 TIME: 2017-01-05 16:27:41 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action : Purchase order_953 has been downloaded as pdf
+IP: 42.111.128.215 TIME: 2017-01-05 16:35:28 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0Action :Logout
+IP: 27.62.199.240 TIME: 2017-01-05 17:36:35 User:  USERAGENT: Mozilla/5.0 (Windows Phone 8.1; ARM; Trident/8.0; Touch; rv:11.0; WebBrowser/8.1; IEMobile/11.0; Microsoft; Lumia 640 XL LTE Dual SIM) like Gecko UCBrowser/4.2.1.541 MobileAction :Order Page
+IP: 27.62.199.240 TIME: 2017-01-05 17:36:38 User:  USERAGENT: Mozilla/5.0 (Windows Phone 8.1; ARM; Trident/8.0; Touch; rv:11.0; WebBrowser/8.1; IEMobile/11.0; Microsoft; Lumia 640 XL LTE Dual SIM) like Gecko UCBrowser/4.2.1.541 MobileAction :Order Page

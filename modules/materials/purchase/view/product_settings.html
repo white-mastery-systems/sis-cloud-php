@@ -1,0 +1,435 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class="grey" style="background-color: rgba(0,0,0,0.0)!important;">
+    <div class="container-title p-3">
+        <div class="row m-0">
+
+            <div class="col-md-6 px-0">
+                <h5 id="prod" class="breadcrumbs-title">Product Settings</h5>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center justify-content-end">
+                <a ui-sref="home.userlist({filter: ''})" class="btn btn-primary btn-pad">
+                    <i class="material-icons">refresh</i><span class="pl-2">Refresh</span>
+                </a>
+                <a ng-click='multiple_delete()' ng-show="showDelBtn" class="btn btn-primary ml-3 btn-pad"
+                    title="Delete">
+                    <i class="material-icons">delete</i><span class="pl-2">Delete</span>
+                </a>
+            </div>
+
+            <!-- <div class="col s12 m12 l12">
+                <h5 id="ord-head" class="breadcrumbs-title">Product Settings</h5>
+
+                
+                <span id="ord-headright" class="left navigations padl130">  
+                <ul id="menu" class="mfb-component--tr" >
+                <li class="mfb-component__wrap">
+                <a ui-sref="home.userlist({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
+                </li></ul>
+                </span>
+                
+                <span id="ord-headright" class="right navigations" style="margin-right: 60px">  
+                <ul id="menu" class="mfb-component--tr" >
+                <li class="mfb-component__wrap">
+                <a ng-click='multiple_delete()' ng-show="showDelBtn" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+                </li></ul>
+                </span>
+                </div> -->
+
+        </div>
+    </div>
+</div>
+
+<div id="preloader"></div>
+
+
+
+<div class="mainpart pt-0 user-div">
+
+    <div class="row m-0 d-flex flex-column" style="flex-wrap: inherit;">
+
+        <ul class="nav nav-tabs" data-ng-init="tableData('category','1')" style="padding:0 32px;">
+            <li class="nav-item" ng-click="tableData('category','1')">
+                <a data-target="#category" data-toggle="tab" class="nav-link active">Category</a>
+            </li>
+            <li class="nav-item" ng-click="tableData('protype','1')">
+                <a data-target="#protype" data-toggle="tab" class="nav-link">Type</a>
+            </li>
+        </ul>
+
+         <div class="tab-content p-0">
+            <div ng-if="category == true" id="category" class="tab-pane fade in active show">
+
+                <div class="col-md-12 d-flex align-items-center justify-content-end" style="padding:0 32px;">
+                    <a ng-if="addPermission=='1'" ng-click="addCategoryModal()" class="btn btn-primary btn-pad" title="Add">
+                        <i class="material-icons">add</i><span class="pl-2">New Category</span>
+                    </a>
+                </div>
+                <div ng-show="alert" class="alert">
+                    <strong>{{alert_content}}</strong>
+                </div>
+
+                <div class="row m-0 px-3">
+                    <div class="col-md-3 col-xs-6 pr20 mb-3">
+                        <p>Rows per page:</p>
+                        <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()">
+                            <option>10</option>
+                            <option>25</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-xs-6 pr20" style="display: none;">Type:
+                        <select ng-init="tabletype='1'" ng-model="tabletype" ng-change="tableData('category','1')">
+                            <option value="1">Active</option>
+                            <option value="0">Cancel</option>
+                        </select>
+                    </div>                   
+
+                    <div class="col-md-3 col-xs-6 pull-right padt13 pr20">
+                        <label style="position: relative;margin-top:20px;">
+                            <i class="material-icons ihide s-icon">search</i>
+                            <input class="" id="searchitems" type="text" ng-model="search" ng-change="filter()"
+                                placeholder="Search" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row m-0" style="padding:0 32px">
+                    <div class="col-md-12 px-0" style="background-color: #fff;border-radius:20px;">
+                        <div class="table-responsive">
+                            <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0"
+                                class="table avail-div m-b-60 dataTable no-footer" role="grid"
+                                aria-describedby="itemsTable_info" style="width: 100%;">
+                                <thead>
+                                    <th width="10%" class="hidden-xs hidden-sm">No.</th>
+                                    <th width="25%" class="hidden-xs hidden-sm">Category&nbsp;<a ng-click="sort_by('item');"><i
+                                                class="material-icons tiny1">sort</i></a></th>
+                                    <th width="25%" class="hidden-xs hidden-sm">Short Name&nbsp;<a
+                                            ng-click="sort_by('item');"><i class="material-icons tiny1">sort</i></a>
+                                    </th>
+                                    <th width="20%" class="hidden-xs hidden-sm">Type&nbsp;<a ng-click="sort_by('item');"><i
+                                                class="material-icons tiny1">sort</i></a></th>
+                                    <th width="20%" ng-if="deletePermission=='1' || editPermission=='1'">Action</th>
+                                </thead>
+                                <tbody ng-show="filteredItems > 0">
+                                    <tr
+                                        ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                                        <td class="hidden-xs hidden-sm">{{ ((currentPage-1)*entryLimit)+$index+1 }}
+                                        </td>
+                                        <td class="hidden-xs hidden-sm">{{ x.category }}</td>
+                                        <td class="hidden-xs hidden-sm">{{ x.short }}</td>
+                                        <td class="hidden-xs hidden-sm">{{ x.type }}</td>
+                                        <td ng-if="deletePermission=='1' || editPermission=='1'">
+                                            <button type="button" class="btn btn-edit" ng-if="editPermission=='1'" ng-click=onEditCategory(x._id.$oid) title="Edit">
+                                                <i class="material-icons pr-1">edit</i> Edit
+                                            </button>
+                                            <button type="button" class="btn btn-delete" style="display: inline-flex;" ng-if="deletePermission=='1'" ng-click=onDeleteCategory(x._id.$oid) title="Delete">
+                                                <i class="material-icons pr-1">delete</i>   Delete
+                                            </button>
+                                            <!-- <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEditCategory(x._id.$oid) title="Edit"> edit</i>
+                                            <i ng-if="deletePermission=='1'" class="material-icons micon" ng-click=onDeleteCategory(x._id.$oid) title="Delete">delete</i> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody ng-show="filteredItems == 0">
+                                    <tr>
+                                        <td colspan="7">No records found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pad20 m-0 px-3" ng-show="filteredItems > 0">
+                    <div class="col-md-5 showitem"><br>
+                        Page {{currentPage}}/{{filteredItems}}
+                    </div>
+                    <div class="col-md-7 d-flex justify-content-end">
+                        <div class="p-r">
+                            <ul uib-pagination boundary-links="true" total-items="filtered.length"
+                                items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages"
+                                max-size="5" class="pagination-sm" previous-text="&lsaquo; Previous"
+                                next-text="Next &rsaquo;" first-text="&laquo; First" last-text="Last &raquo;"></ul>
+                        </div>
+                    </div>
+                </div>             
+
+            </div>
+
+            <div ng-if="protype == true" id="protype" class="tab-pane fade in active">
+                <div class="col-md-12 d-flex align-items-center justify-content-end" style="padding:0 32px;">
+                    <a ng-if="addPermission=='1'" ng-click="addtypeModal()" class="btn btn-primary btn-pad" title="Add">
+                        <i class="material-icons">add</i><span class="pl-2">New type</span>
+                    </a>
+                </div>
+                <div ng-show="alert" class="alert">
+                    <strong>{{alert_content}}</strong>
+                </div>
+                <div class="row m-0 px-3">
+                    <div class="col-md-3 col-xs-6 pr20 mb-3">
+                        <p>Rows per page:</p>
+                        <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()">
+                            <option>10</option>
+                            <option>25</option>
+                            <option>50</option>
+                            <option>100</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-xs-6 pr20" style="display:none">Type:
+                        <select ng-init="tabletype='1'" ng-model="tabletype"
+                            ng-change="tableData('designation',tabletype)">
+                            <option value="1">Active</option>
+                            <option value="0">Cancel</option>
+                        </select>
+                    </div>                   
+
+                    <div class="col-md-3 col-xs-6 pull-right padt13 pr20">
+                        <label style="position: relative;margin-top:20px;">
+                            <i class="material-icons ihide s-icon">search</i>
+                            <input class="" id="searchitems" type="text" ng-model="search" ng-change="filter()"
+                                placeholder="Search" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row m-0" style="padding:0 32px">
+                    <div class="col-md-12 px-0" style="background-color: #fff;border-radius:20px;">
+                        <div class="table-responsive">
+                            <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0"
+                                class="table avail-div m-b-60 dataTable no-footer" role="grid"
+                                aria-describedby="itemsTable_info" style="width: 100%;">
+                                <thead>
+                                    <th width="10%" class="hidden-xs hidden-sm">No.</th>
+
+                                    <th width="45%" class="hidden-xs hidden-sm">Product Type&nbsp;<a
+                                            ng-click="sort_by('department');"><i
+                                                class="material-icons tiny1">sort</i></a></th>
+
+
+                                    <th width="45%" ng-if="deletePermission=='1' || editPermission=='1'">Action</th>
+                                </thead>
+                                <tbody ng-show="filteredItems > 0">
+                                    <tr
+                                        ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                                        <td class="hidden-xs hidden-sm">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                                        <td class="hidden-xs hidden-sm">{{ x.type }}</td>
+
+
+                                        <td ng-if="deletePermission=='1' || editPermission=='1'">
+                                            <button type="button" class="btn btn-edit" ng-if="editPermission=='1'" ng-click=onEditType(x._id.$oid) title="Edit">
+                                                <i class="material-icons pr-1">edit</i> Edit
+                                            </button>
+                                            <button type="button" class="btn btn-delete" style="display: inline-flex;" ng-if="deletePermission=='1'" ng-click=onDeleteType(x._id.$oid) title="Delete">
+                                                <i class="material-icons pr-1">delete</i>   Delete
+                                            </button>
+                                            <!-- <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEditType(x._id.$oid) title="Edit"> edit</i>
+                                            <i ng-if="deletePermission=='1'" class="material-icons micon" ng-click=onDeleteType(x._id.$oid) title="Delete">delete</i> -->
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody ng-show="filteredItems == 0">
+                                    <tr>
+                                        <td colspan="7">No records found</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pad20 m-0 px-3" ng-show="filteredItems > 0">
+                    <div class="col-md-5 showitem"><br>
+                        Page {{currentPage}}/{{filteredItems}}
+                    </div>
+                    <div class="col-md-7 d-flex justify-content-end">
+                        <div class="p-r">
+                            <ul uib-pagination boundary-links="true" total-items="filtered.length"
+                                items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages"
+                                max-size="5" class="pagination-sm" previous-text="&lsaquo; Previous"
+                                next-text="Next &rsaquo;" first-text="&laquo; First" last-text="Last &raquo;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--/container-->
+
+
+
+<!-- Add Department -->
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <form name="addCategoryForm" ng-submit="onAddcategorySubmit()">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Type</label>
+                            <select ng-model="addCategoryForm.type" required
+                                ng-options="list.type as list.type for list in list | unique:'type'">
+                                <option value="">SELECT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 padr20">
+                            <label>Category</label>
+                            <input type="text" ng-model="addCategoryForm.category" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Category Short Name</label>
+                            <input type="text" ng-model="addCategoryForm.short" required /><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Add" class="btn btn-primary" style="padding:8px 20px!important" />
+                    <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editCategoryModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <form name="editCategoryForm" ng-submit="onEditCategorySubmit()">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Type</label>
+                            <select ng-model="editCategoryForm.type" required
+                                ng-options="list.type as list.type for list in list | unique:'type'">
+                                <option value="">SELECT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 padr20">
+                            <label>Category</label>
+                            <input type="text" ng-model="editCategoryForm.category" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label>Category Short Name</label>
+                            <input type="text" ng-model="editCategoryForm.short" required /><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Update" class="btn btn-primary" style="padding:8px 20px!important" />
+                    <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- confirm modal -->
+
+<div class="modal fade" id="categoryConfirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>{{ alert_msg }}</p>
+                <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" style="padding:8px 20px!important" ng-click="this[confirmFn](modal_id)">Yes</button>
+                <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="typeConfirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>{{ alert_msg }}</p>
+                <input type="hidden" ng-model="modal_id1" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" style="padding:8px 20px!important" ng-click="this[confirmFn](modal_id1)">Yes</button>
+                <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Designation -->
+
+<div class="modal fade" id="addTypeModal1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <form name="addTypeForm" ng-submit="onAddTypeSubmit()">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Type Name</label>
+                            <input type="text" ng-model="addTypeForm.type" required />
+                        </div>
+                    </div>
+                </div>    
+                    <div class="modal-footer">
+                        <input type="submit" value="Add" class="btn btn-primary" style="padding:8px 20px!important" />
+                        <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">Cancel</button>
+                    </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="editTypeModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <form name="editTypeForm" ng-submit="onEditTypeSubmit()">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Type Name</label>
+                            <input type="text" ng-model="editTypeForm.type" required />
+                        </div>
+                    </div>
+                </div>    
+                <div class="modal-footer">
+                    <input type="submit" value="Update" class="btn btn-primary" style="padding:8px 20px!important" />
+                    <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="addTypeModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <form name="addTypeForm" ng-submit="onAddTypeSubmit()">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <label>Type Name</label>
+                            <input type="text" ng-model="addTypeForm.type" required />
+                        </div>
+                    </div>
+                </div>    
+                    <div class="modal-footer">
+                        <input type="submit" value="Add" class="btn btn-primary" style="padding:8px 20px!important" />
+                        <button type="button" class="btn btn-delete" style="padding:8px 20px!important" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>

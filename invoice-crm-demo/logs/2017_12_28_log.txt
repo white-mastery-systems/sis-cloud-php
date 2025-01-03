@@ -1,0 +1,10 @@
+IP: 122.15.146.120 TIME: 2017-12-28 14:03:45 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2017-12-28 14:03:46 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2017-12-28 14:04:15 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2017-12-28 14:04:20 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action :Logout
+IP: 122.15.146.120 TIME: 2017-12-28 20:27:59 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2017-12-28 20:28:00 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2017-12-28 20:28:38 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36Action :PONO478 view
+IP: 42.111.164.29 TIME: 2017-12-28 22:43:19 User: Rian Ozal USERAGENT: Mozilla/5.0 (Linux; Android 7.0; SM-G935F Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36Action : Admin Login
+IP: 42.111.164.29 TIME: 2017-12-28 22:43:19 User: Rian Ozal USERAGENT: Mozilla/5.0 (Linux; Android 7.0; SM-G935F Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36Action :Order Page
+IP: 42.111.164.29 TIME: 2017-12-28 22:46:00 User: Rian Ozal USERAGENT: Mozilla/5.0 (Linux; Android 7.0; SM-G935F Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.111 Mobile Safari/537.36Action :PONO478 view

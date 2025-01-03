@@ -1,0 +1,500 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">QUOTATION FORM</h5>
+ <span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span>
+            </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+<form name="myForm">
+    
+<div class="row table-responsive">
+  <div class="col-sm-12">
+  <table class="table table-bordered">
+    <tbody>
+      <tr>
+        <td class="text-left" width="50%"><b>Name</b></td>
+        <td class="text-left">{{ indentForm.emp_id }} - {{ indentForm.name }}</td>
+      </tr>
+      <tr>
+        <td class="text-left"><b>Designation</b></td>
+        <td class="text-left">{{ indentForm.designation }}</td>
+      </tr>
+      <tr>
+        <td class="text-left"><b>Indent No & Date</b></td>
+        <td class="text-left">{{ indentForm.prf_number }} - {{ indentForm.prf_date }}</td>
+      </tr>
+      <tr>
+        <td class="text-left"><b>Quotation No & Date</b></td>
+        <td class="text-left">{{ indentForm.quot_number }} - {{ indentForm.quot_date }}</td>
+      </tr>
+      <tr>
+        <td class="text-left"><b>Site</b></td>
+        <td class="text-left"><b>{{ indentForm.site }}</b></td>
+      </tr>
+      <tr>
+        <td class="text-left"><b>Purpose</b></td>
+        <td class="text-left">{{ indentForm.purpose }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br><h4 align="center"><u>INDENT PRODUCT LIST</u></h4>
+  <!--Standard or Work-->
+  <table ng-if="indentForm.type=='Standard' || indentForm.type=='Work'" class="table table-bordered" width="100%" >
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class='text-left'>Product Name</th>
+            <th>Quantity</th>
+            <th>STOCK</th>
+            <th>ITEM REQUIRED DATE</th>
+            <th>Approx Price &#8377;</th>
+            <th class='text-right'>Total &#8377;&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="tableForm in indent_items track by $index">
+            <td>{{$index+1}}</td>
+            <td class='text-left' ng-bind-html='tableForm.item'></td>
+            <td>{{tableForm.quantity}} {{tableForm.unit}}</td>
+            <td>{{tableForm.available_stock }} {{tableForm.unit}}</td>
+            <td>{{tableForm.required_date}}</td>
+            <td>{{tableForm.price | currency:"":2 }}</td>
+            <td class='text-right'>{{tableForm.amount | currency:"":2 }}&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan='5'></td>
+            <td><b>Grand Total</b></td>
+            <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+        </tr>
+    </tbody>
+  </table>
+        
+  <!--Steel-->
+  <table ng-if="indentForm.type=='Steel'" class="table table-bordered" width="100%" >
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class='text-left'>Product Name</th>
+            <th>Details</th>
+            <th>Quantity</th>
+            <th>STOCK</th>
+            <th>ITEM REQUIRED DATE</th>
+            <th>Approx Price &#8377;</th>
+            <th>Make</th>
+            <th class='text-right'>Total &#8377;&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="tableForm in indent_items track by $index">
+            <td>{{$index+1}}</td>
+            <td class='text-left' ng-bind-html='tableForm.item'></td>
+            <td>{{tableForm.details}}</td>
+            <td>{{tableForm.quantity}} {{tableForm.unit}}</td>
+            <td>{{tableForm.available_stock }} {{tableForm.unit}}</td>
+            <td>{{tableForm.required_date}}</td>
+            <td>{{tableForm.price | currency:"":2 }}</td>
+            <td>{{tableForm.make}}</td>
+            <td class='text-right'>{{tableForm.amount | currency:"":2 }}&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan='7'></td>
+            <td><b>Grand Total</b></td>
+            <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+        </tr>
+    </tbody>
+  </table>
+        
+  <!--UPVC-->
+  <table ng-if="indentForm.type=='UPVC'" class="table table-bordered" width="100%" >
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class='text-left'>Product Name</th>
+            <th>Quantity</th>
+            <th>STOCK</th>
+            <th>ITEM REQUIRED DATE</th>
+            <th>Approx Price &#8377;</th>
+            <th class='text-right'>Total &#8377;&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="tableForm in indent_items track by $index">
+            <td>{{$index+1}}</td>
+            <td class='text-left'><span ng-bind-html='tableForm.item'></span> - ({{tableForm.upvc_type}}) W-{{tableForm.width}}; H-{{tableForm.height}}</td>
+            <td>{{tableForm.quantity}} {{tableForm.unit}}</td>
+            <td>{{tableForm.available_stock }} {{tableForm.unit}}</td>
+            <td>{{tableForm.required_date}}</td>
+            <td>{{tableForm.price | currency:"":2 }}</td>
+            <td class='text-right'>{{tableForm.amount | currency:"":2 }}&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan='5'></td>
+            <td><b>Grand Total</b></td>
+            <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+        </tr>
+    </tbody>
+  </table>
+        
+  <!--Door-->
+  <table ng-if="indentForm.type=='Door'" class="table table-bordered" width="100%" >
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class='text-left'>Product Name</th>
+            <th>Size</th>
+            <th>Quantity</th>
+            <th>CFT</th>
+            <th>STOCK</th>
+            <th>ITEM REQUIRED DATE</th>
+            <th>Approx Price &#8377;</th>
+            <th class='text-right'>Total &#8377;&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="tableForm in indent_items track by $index">
+            <td>{{$index+1}}</td>
+            <td class='text-left' ng-bind-html='tableForm.item'></td>
+            <td>{{tableForm.size}}</td>
+            <td>{{tableForm.quantity}} Nos</td>
+            <td>{{tableForm.cft}}</td>
+            <td>{{tableForm.available_stock }} Nos</td>
+            <td>{{tableForm.required_date}}</td>
+            <td>{{tableForm.price | currency:"":2 }}</td>
+            <td class='text-right'>{{tableForm.amount | currency:"":2 }}&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan='7'></td>
+            <td><b>Grand Total</b></td>
+            <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+        </tr>
+    </tbody>
+  </table>
+    
+  <br><h4 align="center"><u>QUOTATION PRODUCT LIST</u></h4>
+  <table>
+      <tr ng-repeat="parentTable in names track by $index">
+        <td><br>
+          <table width='100%' style="font-size:16px;">
+            <tr>
+                <td width='50%' class='text-left'>
+                    <input type="checkbox" ng-model="parentTable.singlecheck" id="{{ $index }}" />
+                    <label class="" for="{{ $index }}"></label>
+                    <b>Vendor Name:</b> {{parentTable.vendor_name }}
+                </td>
+                <td class='text-left'><b>Reason:</b> {{parentTable.reason }}</td>
+            </tr>
+          </table>
+          <!-- standard or work -->
+          <table ng-if="indentForm.type=='Standard' || indentForm.type=='Work'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>PRODUCT NAME</th>
+                <th>Quantity</th>
+                <th>UNIT</th>
+                <th>PRICE &#8377;</th>
+                <th>AMOUNT &#8377;</th>
+                <th>GST %</th>
+                <th>GST AMOUNT &#8377;</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL &#8377;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="quotForm in parentTable.table_items track by $index">
+                <td>{{ $index+1 }}</td>
+                <td ng-bind-html='quotForm.item'></td>
+                <td><input type="text"  ng-model="quotForm.quantity" ng-keyup="rowcalc(quotForm, $parent.$index, $index)" onkeypress='IsNumeric(event)' ng-readonly="!quotForm.item" required /></td>
+                <td>{{ quotForm.unit }}</td>
+                <td>{{ quotForm.price }}</td>
+                <td>{{ quotForm.amount }}</td>
+                <td>{{ quotForm.gst }}</td>
+                <td>{{ quotForm.gst_amount }}</td>
+                <td>{{ quotForm.required_date }}</td>
+                <td>{{ quotForm.available_stock }} {{ quotForm.unit }}</td>
+                <td>{{ quotForm.total }}</td>
+              </tr>
+              <tr>
+                <td colspan="9"></td>
+                <td><b>GRAND TOTAL</b></td>
+                <td><b>{{ parentTable.grand_total }}</b></td>
+              </tr>
+            </tbody>
+          </table>
+            
+          <!-- UPVC -->
+          <table ng-if="indentForm.type=='UPVC'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>PRODUCT NAME</th>
+                <th>Quantity</th>
+                <th>UNIT</th>
+                <th>PRICE &#8377;</th>
+                <th>AMOUNT &#8377;</th>
+                <th>GST %</th>
+                <th>GST AMOUNT &#8377;</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL &#8377;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="quotForm in parentTable.table_items track by $index">
+                <td>{{ $index+1 }}</td>
+                <td><span ng-bind-html='quotForm.item'></span> - ({{quotForm.upvc_type}}) W-{{quotForm.width}}; H-{{quotForm.height}}</td>
+                <td><input type="text"  ng-model="quotForm.quantity" ng-keyup="rowcalc(quotForm, $parent.$index, $index)" onkeypress='IsNumeric(event)' ng-readonly="!quotForm.item" required /></td>
+                <td>{{ quotForm.unit }}</td>
+                <td>{{ quotForm.price }}</td>
+                <td>{{ quotForm.amount }}</td>
+                <td>{{ quotForm.gst }}</td>
+                <td>{{ quotForm.gst_amount }}</td>
+                <td>{{ quotForm.required_date }}</td>
+                <td>{{ quotForm.available_stock }} {{ quotForm.unit }}</td>
+                <td>{{ quotForm.total }}</td>
+              </tr>
+              <tr>
+                <td colspan="9"></td>
+                <td><b>GRAND TOTAL</b></td>
+                <td><b>{{ parentTable.grand_total }}</b></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- steel -->
+          <table ng-if="indentForm.type=='Steel'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>PRODUCT NAME</th>
+                <th>DETAILS</th>
+                <th>Quantity</th>
+                <th>UNIT</th>
+                <th>PRICE &#8377;</th>
+                <th>AMOUNT &#8377;</th>
+                <th>GST %</th>
+                <th>GST AMOUNT &#8377;</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>MAKE</th>
+                <th>TOTAL &#8377;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="quotForm in parentTable.table_items track by $index">
+                <td>{{ $index+1 }}</td>
+                <td ng-bind-html='quotForm.item'></td>
+                <td>{{ quotForm.details }}</td>
+                <td><input type="text"  ng-model="quotForm.quantity" ng-keyup="rowcalc(quotForm, $parent.$index, $index)" onkeypress='IsNumeric(event)' ng-readonly="!quotForm.item" required /></td>
+                <td>{{ quotForm.unit }}</td>
+                <td>{{ quotForm.price }}</td>
+                <td>{{ quotForm.amount }}</td>
+                <td>{{ quotForm.gst }}</td>
+                <td>{{ quotForm.gst_amount }}</td>
+                <td>{{ quotForm.required_date }}</td>
+                <td>{{ quotForm.available_stock }}  {{ quotForm.unit }}</td>
+                <td>{{ quotForm.make }}</td>
+                <td>{{ quotForm.total }}</td>
+              </tr>
+              <tr>
+                <td colspan="11"></td>
+                <td><b>GRAND TOTAL</b></td>
+                <td><b>{{ parentTable.grand_total }}</b></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Door -->
+          <table ng-if="indentForm.type=='Door'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>PRODUCT NAME</th>
+                <th>SIZE</th>
+                <th>Quantity</th>
+                <th>CFT</th>
+                <th>PRICE &#8377;</th>
+                <th>AMOUNT &#8377;</th>
+                <th>GST %</th>
+                <th>GST AMOUNT &#8377;</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL &#8377;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="quotForm in parentTable.table_items track by $index">
+                <td>{{ $index+1 }}</td>
+                <td ng-bind-html='quotForm.item'></td>
+                <td>{{ quotForm.size }}</td>
+                <td><input type="text"  ng-model="quotForm.quantity" ng-keyup="doorcalc(quotForm, $parent.$index, $index)" onkeypress='IsNumeric(event)' ng-readonly="!quotForm.item" required /></td>
+                <td>{{ quotForm.cft }}</td>
+                <td>{{ quotForm.price }}</td>
+                <td>{{ quotForm.amount }}</td>
+                <td>{{ quotForm.gst }}</td>
+                <td>{{ quotForm.gst_amount }}</td>
+                <td>{{ quotForm.required_date }}</td>
+                <td>{{ quotForm.available_stock }} Nos</td>
+                <td>{{ quotForm.total }}</td>
+              </tr>
+              <tr>
+                <td colspan="10"></td>
+                <td><b>GRAND TOTAL</b></td>
+                <td><b>{{ parentTable.grand_total }}</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="row table-responsive" ng-if="items.length > 0">
+  <br><h4 align="center"><u>SUGGEST SUPPLIERS FROM SITE</u></h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>NAME</th>
+        <th>REASON</th>
+        <th>CONTACT PERSON</th>
+        <th>MOBILE</th>
+        <th>ADDRESS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="supplierForm in items track by $index">
+        <td>{{$index+1}}</td>
+        <td ng-bind-html='supplierForm.company_name'></td>
+        <td ng-bind-html='supplierForm.reason'></td>
+        <td ng-bind-html='supplierForm.contact_person'></td>
+        <td ng-bind-html='supplierForm.mobile'></td>
+        <td ng-bind-html='supplierForm.comp_address'></td>
+      </tr>
+    </tbody>
+  </table>
+</div><br><br>
+
+<div ng-show="alert">
+    <strong style="color:red;">Failure !!!</strong>
+</div>
+    
+<div class="row" align="center">
+    <button class="btn btn-primary" ng-click="myForm.$valid && mailContent('approved')">Update & Approve</button>
+    <button class="btn btn-primary" ng-click="myForm.$valid && mailContent('declined')">Decline</button>
+    <button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+</div>
+</form>
+    
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Send</h4>
+        </div>
+        <form name="mailForm" ng-submit="onSend()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>From</label>
+                        <input type="text"  ng-model="mailForm.from_mail" required readonly /> <br>
+                        <label>To</label>
+                        <input type="text" id="to_mail"  ng-model="mailForm.to_mail" mail-auto-complete required /><br>
+                        <label>CC</label>
+                        <input type="text"  ng-model="mailForm.cc_mail" mail-auto-complete /><br>
+                        <label>BCC</label>
+                        <input type="text"  ng-model="mailForm.bcc_mail" mail-auto-complete /><br>
+                        <label>Subject</label>
+                        <input type="text"  ng-model="mailForm.subject" required /><br>
+
+                        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                    <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                    <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+                                <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+                                <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+                                <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+                                <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+                                <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+                                <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+                            </div>
+                        </div>
+                        <div id="editor" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+               <button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+                <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- alert modal -->
+<div class="modal fade" id="alertModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>Please select any one supplier before approve the quotation</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- page restriction modal -->
+<div class="modal fade" id="restrictModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>You have no permission to access this page.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="pageRedirect()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

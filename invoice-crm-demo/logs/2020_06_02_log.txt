@@ -1,0 +1,9 @@
+IP: 49.207.131.118 TIME: 2020-06-02 15:36:08 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action : Admin Login
+IP: 49.207.131.118 TIME: 2020-06-02 15:36:08 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Order Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:01:31 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Purchase New Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:01:33 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Invoice New Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:09:59 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Order Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:12:29 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Purchase New Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:12:30 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Invoice New Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:12:57 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Order Page
+IP: 49.207.131.118 TIME: 2020-06-02 16:30:05 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36Action :Logout

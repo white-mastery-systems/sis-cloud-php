@@ -1,0 +1,200 @@
+<style>
+  
+    
+  html, body {
+  height: 100%;
+  margin: 0;
+}
+    
+    
+.bodycontent {
+ min-height: calc(100vh - 70px);
+  margin: 0 auto -50px;
+}
+
+footer {
+  background: #00bcd4;
+  color: white;
+  padding: 0 20px;
+}
+   
+</style>
+<header id="header" class="page-topbar">
+    <!-- start header nav-->
+    <div class="navbar-fixed">
+        <nav class="nav-white">
+            <div class="row m-0 d-flex align-items-center">
+               <div class="col-md-4"><h3><span class="material-icons pr-4">menu</span>Dashboard</h3></div>
+               <div class="col-md-4"></div>
+               <div class="col-md-4">
+                <ul class="">
+                    <li class=""><span class="material-icons">notifications</span></li>
+                    <li> <img ng-src="{{userProfile}}" alt="" class="rounded-gborder" width="20px" height="20px" />   </li>
+                    <li><a  onclick="logout()" class="waves-effect waves-block waves-light" title="Logout"><i class="material-icons">power_settings_new</i></a></li>
+                </ul>
+               </div>
+            </div>
+        </nav>
+        <nav class="cyan d-none">
+            <div class="nav-wrapper">               
+                <div class="header-search-wrapper">
+                    <!-- <i class="material-icons active">search</i><input type="text" name="Search" class="header-search-input z-depth-2" >-->
+                </div>
+                <ul class="right hide-on-med-and-down ">
+                    <li class="">
+                        <div id="notificationContainer">
+                            <div id="notificationsBody" class="notifications page-wrapper scrollbar-macosx">
+                                <div class="content" style="width:100%">
+                                    <div style="width:85%; position:relative; float:left;height:auto; line-height:160%">Sample Text</div>
+                                    <div style="width:15%; position:relative;  float:left; height:auto; line-height:160%"><i class="material-icons" style="height:35px; line-height:35px">cancel</i></div>
+                                </div>
+                            </div>
+                            <div id="notificationFooter"><a href="#">See All</a></div>
+                        </div>
+                    </li>
+                    <li><a  onclick="logout()" class="waves-effect waves-block waves-light" title="Logout"><i class="material-icons">power_settings_new</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!-- end header nav-->
+</header>
+<!-- END HEADER -->
+<!-- START MAIN -->
+<div id="main">
+    <!-- START WRAPPER -->
+    <div class="wrapper">
+        <!-- START LEFT SIDEBAR NAV-->
+        <aside id="left-sidebar-nav">          
+            <div class="">
+               
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y {{class}}" ng-class="class">
+                <li class="d-flex align-items-center justify-content-start">
+                    <h1 class="logo-wrapper d-flex align-items-center">
+                        <a  class="brand-logo darken-1"><img src="images/dinamic-logo.svg" alt="Dinamic logo"></a> <span class="logo-text">Dinamic</span>
+                    </h1>
+                </li>         
+               
+                <ul class="nav navbar-nav mscroll" my-directive>
+                    <p class="m-menu-p">Main Menu</p>
+                    <li class="active"><a ui-sref="home.dashboard" ng-if="width > 768"><span class="material-icons pr-3">home</span>Dashboard</a>
+                     <a ui-sref="home.dashboard"  ng-if="width < 769" ng-click="changeClass()"><span class="material-icons pr-3">home</span>Dashboard</a>
+                     </li>
+                    
+                    <li ng-if="project_perm">
+                    <a ui-sref="home.projects" ng-if="width > 768"><span class="material-icons pr-3">flash_on</span>Projects</a>
+                    <a ui-sref="home.projects"  ng-if="width < 769" ng-click="changeClass()"><span class="material-icons pr-3">flash_on</span>Projects</a>
+                    </li>
+
+                                       
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="material-icons pr-3">flash_on</span>Materials&nbsp;
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu ddscroll1">
+                            <li>
+                            <a ui-sref="home.materials" ng-if="width > 768">Dashboard</a>
+                            <a ui-sref="home.materials"  ng-if="width < 769" ng-click="changeClass()">Dashboard</a>
+                            </li>
+                            <li ng-if="indent_perm">
+                            <a ui-sref="home.indent({filter: ''})" ng-if="width > 768">Indent</a>
+                            <a ui-sref="home.indent({filter: ''})" ng-if="width < 769" ng-click="changeClass()">Indent</a>
+                            </li>
+                            <li ng-if="quotation_perm" >
+                            <a ui-sref="home.quotation({filter: ''})" ng-if="width > 768">Quotation</a>
+                            <a ui-sref="home.quotation({filter: ''})"  ng-if="width < 769" ng-click="changeClass()">Quotation</a>
+                            </li>
+                            <li ng-if="order_perm" >
+                            <a ui-sref="home.orders({filter: ''})"  ng-if="width > 768">Purchase</a>
+                            <a ui-sref="home.orders({filter: ''})" ng-if="width < 769" ng-click="changeClass()">Purchase</a>
+                            </li>
+                            <li ng-if="product_perm" >
+                            <a ui-sref="home.products"   ng-if="width > 768">Products</a>
+                            <a ui-sref="home.products" ng-if="width < 769" ng-click="changeClass()">Products</a>
+                            </li>
+                            <li ng-if="vendor_perm">
+                            <a ui-sref="home.vendors" ng-if="width > 768">Vendors</a>
+                            <a ui-sref="home.vendors" ng-if="width < 769" ng-click="changeClass()">Vendors</a>
+                            </li>
+                            <li ng-if="inventory_perm">
+                            <a ui-sref="home.inventory" ng-if="width > 768">Material Ordered</a>
+                            <a ui-sref="home.inventory" ng-if="width < 769" ng-click="changeClass()">Material Ordered</a>
+                            </li>
+                            <li ng-if="inventory_use_perm">
+                            <a ui-sref="home.category({filter: 'inventory_use'})" ng-if="width > 768">Material Stock</a>
+                             <a ui-sref="home.category({filter: 'inventory_use'})" ng-if="width < 769" ng-click="changeClass()">Material Stock</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li ng-if="userlist_perm">
+                    <a ui-sref="home.userlist({filter: ''})" ng-if="width > 768"><span class="material-icons pr-3">people</span>User Details</a>
+                    <a ui-sref="home.userlist({filter: ''})" ng-if="width < 769" ng-click="changeClass()"><span class="material-icons pr-3">people</span>User Details</a>
+                    </li>
+                    <li ng-if="accounts_perm">
+                    <a ui-sref="home.accounts" ng-if="width > 768"><span class="material-icons pr-3">account_circle</span>Accounts</a>
+                    <a ui-sref="home.accounts" ng-if="width < 769" ng-click="changeClass()"><span class="material-icons pr-3">account_circle</span>Accounts</a>
+                    </li>
+                    <li ng-if="billing_perm">
+                    <a ui-sref="home.bill_list({filter: ''})" ng-if="width > 768"><span class="material-icons pr-3">receipt</span>Billing</a>
+                    <a ui-sref="home.bill_list({filter: ''})" ng-if="width < 769" ng-click="changeClass()"><span class="material-icons pr-3">receipt</span>Billing</a>
+                    </li>
+                </ul>
+
+                <li class="user-details">
+                    <div class="row" style="cursor:pointer;" ng-click="onProfile()">
+                        <!-- <div class="col col s4 m4 l4">    
+                            <div class="circle">
+                                <div class="image-wrapper">
+                                    <img ng-src="{{userProfile}}" alt="" />     
+                                </div>
+                              </div>
+                        </div> -->
+                        <div class="col-sm-3 col-3 pl-0">                            
+                            <img ng-src="{{userProfile}}" alt="" class="rounded-gborder" width="50px" height="50px" />                            
+                        </div>
+                        <!-- <div class="col col s4 m4 l4">
+                            <img ng-src="{{userProfile}}" alt="" class="circle responsive-img valign profile-image" width="50px" height="50px">
+                        </div> -->
+                        <div class="col-sm-9 col-9 px-0 d-flex justify-items-center" style="flex-direction:column;line-height: 1;">
+                            <p class="user-roal ellipse mb-2"><b>{{common_name}} </b></p>
+                            <p class="user-roal mb-2">{{common_designation}}</p>
+                            <p class="user-roal mb-0">{{common_department}}</p>
+
+                        </div>
+                    </div>    
+                          
+                </li>
+
+                
+                <li class="footer">
+                    <div class="row m-0">                
+                                       
+                        <div class="col-sm-12 px-0 col-12 d-flex justify-items-center" style="flex-direction:column;line-height: 1.5;">
+                            <p class="footer-roal ellipse mb-1"><b>Dinamic ERP </b></p>
+                            <p class="footer-roal-copy mb-0">© 2021 copyright. All right reserved.</p>                           
+                        </div>
+                    </div>    
+                          
+                </li>
+
+            </ul>
+            <a class="sidebar-collapse btn-floating btn-medium waves-effect waves-light hide-on-large-only cyan"><i ng-click="changeClass()" class="material-icons">menu</i></a>
+            </div>
+        </aside>
+        <!-- END LEFT SIDEBAR NAV-->
+        <!-- START CONTENT -->
+        <div ui-view></div>
+        <!-- END CONTENT -->
+    </div>
+    <!-- END WRAPPER -->
+</div>
+<!-- END MAIN -->
+<!-- <footer class="footer">
+    <div class="">
+        <div class="container" style="padding-top: 20px"> <span class="leftspace">&copy;  <a class="grey-text text-lighten-4" href="#" target="_blank">Copyright South India Shelters Pvt.Ltd. </a> All rights reserved.</span> <span class="right rightspace"> Design and Developed by <a class="grey-text text-lighten-4" href="#">S.I.S</a></span> </div>
+    </div>
+</footer> -->
+<!-- START FOOTER -->
+
+
+

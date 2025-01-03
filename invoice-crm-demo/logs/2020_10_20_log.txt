@@ -1,0 +1,11 @@
+IP: 106.198.7.138 TIME: 2020-10-20 16:03:11 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Purchase New Page
+IP: 106.198.7.138 TIME: 2020-10-20 16:03:44 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action : Admin Login
+IP: 106.198.7.138 TIME: 2020-10-20 16:03:44 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Order Page
+IP: 106.198.7.138 TIME: 2020-10-20 16:05:28 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Logout
+IP: 106.198.7.138 TIME: 2020-10-20 21:15:20 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Purchase New Page
+IP: 106.198.7.138 TIME: 2020-10-20 21:15:42 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action : Admin Login
+IP: 106.198.7.138 TIME: 2020-10-20 21:15:43 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Order Page
+IP: 106.198.7.138 TIME: 2020-10-20 21:16:02 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Purchase New Page
+IP: 106.198.7.138 TIME: 2020-10-20 21:16:05 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Invoice New Page
+IP: 106.198.7.138 TIME: 2020-10-20 21:17:20 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Order Page
+IP: 106.198.7.138 TIME: 2020-10-20 21:26:36 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36Action :Logout

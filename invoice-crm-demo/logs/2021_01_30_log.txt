@@ -1,0 +1,22 @@
+IP: 103.92.202.107 TIME: 2021-01-30 11:49:52 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action : Admin Login
+IP: 103.92.202.107 TIME: 2021-01-30 11:49:53 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 103.92.202.107 TIME: 2021-01-30 11:50:25 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Purchase Edit Page
+IP:  TIME:  User: Kavitha USERAGENT: Action : INVOICE-NOACP/C/2020-21/578Inserted
+IP: 103.92.202.107 TIME: 2021-01-30 11:52:44 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 103.92.202.107 TIME: 2021-01-30 11:53:21 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.107 TIME: 2021-01-30 11:53:22 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.107 TIME: 2021-01-30 11:57:41 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 103.92.202.107 TIME: 2021-01-30 13:20:12 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Logout
+IP: 106.198.84.1 TIME: 2021-01-30 21:27:27 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:30:59 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action : Admin Login
+IP: 106.198.84.1 TIME: 2021-01-30 21:31:00 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:33:13 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Purchase New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:33:14 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Invoice New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:34:45 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:37:32 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Purchase New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:37:32 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Invoice New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:39:56 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:40:55 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Purchase New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:40:56 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Invoice New Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:41:22 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Order Page
+IP: 106.198.84.1 TIME: 2021-01-30 21:42:30 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36Action :Logout

@@ -1,0 +1,504 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+<div class="container-title">
+<div class="row">
+<div class="col s12 m12 l12">
+<h5 id="prod" class="breadcrumbs-title">New Purchase</h5>
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span>   
+</div>
+</div> 
+</div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+
+<!--<form name="purchase" autocomplete="off">-->
+<form name="purchase">  
+<div class="row">
+<div class="col-sm-3 padr20">
+<input type="checkbox" id="quot_status" ng-model="purchaseForm.quot_status" ng-change="purchaseForm.quot_number=''" />
+<label for="quot_status">Quotation No</label>
+<input id="quot_number" ng-disabled="!purchaseForm.quot_status" type="text" placeholder="Quotation Number" ng-model="purchaseForm.quot_number" ng-required="purchaseForm.quot_status" quot-auto-complete />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>Type</label>
+<select ng-disabled="purchaseForm.quot_status" ng-model="purchaseForm.type" ng-init="purchaseForm.type='Standard'" ng-options="list.type as list.type for list in category_list | unique:'type'" ng-change="typeChange()" required></select>
+</div>
+<div class="col-sm-3 padr20">
+<label>Category</label>
+<select ng-disabled="purchaseForm.quot_status || !purchaseForm.type" ng-model="purchaseForm.category" ng-options="list.category as list.category for list in category_list | unique:'category' | filter:{type: purchaseForm.type}" ng-change="typeChange()" required>
+<option value="">SELECT</option>
+</select>
+</div>
+<div class="col-sm-3 padr20">
+<!--
+<label>Sub Category</label>
+<select ng-disabled="purchaseForm.quot_status || !purchaseForm.category" ng-model="purchaseForm.sub_category" ng-options="list.sub_category as list.sub_category for list in category_list | filter:{type: purchaseForm.type, category: purchaseForm.category}" ng-change="typeChange()" required>
+<option value="">SELECT</option>
+</select>
+-->
+</div>
+<div class="col-sm-3 padr20">
+<label>Date</label>
+<input type="text"  ng-model="purchaseForm.po_date" readonly required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>Order Type</label>
+<select  ng-model="purchaseForm.order_type" ng-init="purchaseForm.order_type='purchase order'" ng-options="list.name as list.name for list in order_type" ng-change="orderChange(purchaseForm.order_type)" required></select>
+</div>
+<div class="col-sm-3 padr20">
+<label>Project</label>
+<select  ng-options="list.project_name as list.project_name for list in projects | unique:'project_name'" ng-model="purchaseForm.sis_project_name" ng-disabled="purchaseForm.quot_status" ng-change="changeProjectName(purchaseForm.sis_project_name)" required> 
+<option value="">SELECT</option>
+</select>
+</div>
+<div class="col-sm-3 padr20">
+<label>Block</label>
+<select  ng-disabled="purchaseForm.quot_status || !purchaseForm.sis_project_name" ng-options="list.block_name as list.block_name for list in projects | filter:{project_name: purchaseForm.sis_project_name}" ng-model="purchaseForm.sis_project_block" ng-change="changeBlockName(purchaseForm.sis_project_block)" required> 
+<option value="">SELECT</option>
+</select>
+</div>
+<div class="col-sm-3 padr20">
+<label>{{ purchaseForm.order_type_short }} Number</label>
+<input type="text"  ng-model="purchaseForm.invoice_no" readonly required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>To</label>
+<input type="text"  placeholder="Company Name" ng-model="purchaseForm.company" vendor-auto-complete required /><br>
+<label>Contact Person</label>
+<input type="text"  placeholder="Contact Person" ng-model="purchaseForm.contact_person" required />
+</div>
+
+<div class="col-sm-3 padr20">
+<label>Company Address</label>
+<textarea  rows="4" class="materialize-textarea" placeholder="Address" ng-model="purchaseForm.comp_address" required></textarea>
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>Ref</label>
+<input type="text"  placeholder="Ref No" ng-model="purchaseForm.reference_no" />
+</div>
+
+<div class="col-sm-3 padr20">
+<label>Dated On</label>
+<input type="text"  placeholder="Ref Date" ng-model="purchaseForm.reference_date" refdatepicker />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>Sub: {{ purchaseForm.order_type_short }} for</label>
+<input type="text"  placeholder="Subject" ng-model="purchaseForm.po_subject" required />
+</div>
+
+<div class="col-sm-9 padr20">
+<p>We are pleased to place the <b>{{ purchaseForm.order_type }}</b> as per the details mentioned below for our project <b>{{ purchaseForm.sis_project_name }} <span ng-if="purchaseForm.sis_project_block && purchaseForm.sis_project_block!='none'">Block {{ purchaseForm.sis_project_block }}</span></b> the address and the contact person are mentioned below.</p>
+</div>
+</div>
+
+<div class="row table-responsive">
+<!-- standard or work -->
+<table ng-if="purchaseForm.type=='Standard' || purchaseForm.type=='Work'" class="table table-bordered">
+<thead>
+<tr>
+<th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll" />
+<label  for="checkedAll"></label></th>
+<th>HSN CODE</th>
+<th>PRODUCT NAME</th>
+<th>DESCRIPTION</th>
+<th>QUANTITY</th>
+<th>UNIT</th>
+<th>PRICE</th>
+<th>AMOUNT</th>
+<th>GST</th>
+<th>GST AMOUNT</th>
+<th>TOTAL</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="tableForm in names track by $index">
+<td><input type="checkbox" ng-model="tableForm.singlecheck" id="{{$index}}"/>
+<label  for="{{$index}}"></label></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.code" required code-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.item" required product-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.desc"  /></td>
+<td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td><input type="text" ng-model="tableForm.unit" required /></td>
+<td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.amount}}</td>
+<td><input type="text" ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.gst_amount}}</td>
+<td>{{tableForm.total}}</td>
+</tr>
+<tr ng-if="purchaseForm.type=='Work'"><td colspan="9" class="text-right"><b>Ton</b></td><td>{{purchaseForm.work_ton}}</td></tr>
+<tr><td colspan="10" class="text-right"><b>Sub Total</b></td><td>{{purchaseForm.sub_total}}</td></tr>
+<tr>
+<td colspan="10" class="text-right"><b>Loading and Unloading Transport</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_amount" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr>
+<td colspan="10" class="text-right"><b>Transport Tax</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_tax" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr><td colspan="10" class="text-right"><b>Grand Total</b></td><td>{{purchaseForm.grand_total}}</td></tr>
+</tbody>
+</table>
+
+<!-- steel -->
+<table ng-if="purchaseForm.type=='Steel'" class="table table-bordered">
+<thead>
+<tr>
+<th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll1"/>
+<label  for="checkedAll1"></label></th>
+<th>HSN CODE</th>
+<th>PRODUCT NAME</th>
+<th>DESCRIPTION</th>
+<th>DETAILS</th>
+<th>QUANTITY</th>
+<th>UNIT</th>
+<th>PRICE</th>
+<th>AMOUNT</th>
+<th>GST</th>
+<th>GST AMOUNT</th>
+<th>MAKE</th>
+<th>TOTAL</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="tableForm in names track by $index">
+<td><input type="checkbox" ng-model="tableForm.singlecheck" id="{{$index}}1"/>
+<label  for="{{$index}}1"></label></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.code" required code-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.item" required product-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.desc" /></td>
+<td><input type="text" ng-model="tableForm.details" required /></td>
+<td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td><input type="text" ng-model="tableForm.unit" required /></td>
+<td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.amount}}</td>
+<td><input type="text"  ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.gst_amount}}</td>
+<td><input type="text"  ng-model="tableForm.make" required /></td>
+<td>{{tableForm.total}}</td>
+</tr>
+<tr><td colspan="12" class="text-right"><b>Sub Total</b></td><td>{{purchaseForm.sub_total}}</td></tr>
+<tr>
+<td colspan="12" class="text-right"><b>Loading and Unloading Transport</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_amount" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr>
+<td colspan="12" class="text-right"><b>Transport Tax</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_tax" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr><td colspan="12" class="text-right"><b>Grand Total</b></td><td>{{purchaseForm.grand_total}}</td></tr>
+</tbody>
+</table>
+
+<!-- UPVC -->
+<table ng-if="purchaseForm.type=='UPVC'" class="table table-bordered">
+<thead>
+<tr>
+<th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll2"/>
+<label  for="checkedAll2"></label></th>
+<th>HSN CODE</th>
+<th>PRODUCT NAME</th>
+<th>DESCRIPTION</th>
+<th>WIDTH</th>
+<th>HEIGHT</th>
+<th>TYPE</th>
+<th>QUANTITY</th>
+<th>UNIT</th>
+<th>PRICE</th>
+<th>AMOUNT</th>
+<th>GST</th>
+<th>GST AMOUNT</th>
+<th>TOTAL</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="tableForm in names track by $index">
+<td><input type="checkbox" ng-model="tableForm.singlecheck" id="{{$index}}2"/>
+<label for="{{$index}}2"></label></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.code" required code-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.item" required product-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.desc" /></td>
+<td><input type="text" ng-model="tableForm.width" required /></td>
+<td><input type="text" ng-model="tableForm.height" required /></td>
+<td><input type="text" ng-model="tableForm.upvc_type" required /></td>
+<td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td><input type="text" ng-model="tableForm.unit" required /></td>
+<td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.amount}}</td>
+<td><input type="text" ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.gst_amount}}</td>
+<td>{{tableForm.total}}</td>
+</tr>
+<tr><td colspan="13" class="text-right"><b>Sub Total</b></td><td>{{purchaseForm.sub_total}}</td></tr>
+<tr>
+<td colspan="13" class="text-right"><b>Loading and Unloading Transport</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_amount" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr>
+<td colspan="13" class="text-right"><b>Transport Tax</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_tax" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr><td colspan="13" class="text-right"><b>Grand Total</b></td><td>{{purchaseForm.grand_total}}</td></tr>
+</tbody>
+</table>
+
+<!-- door -->
+<table ng-if="purchaseForm.type=='Door'" class="table table-bordered">
+<thead>
+<tr>
+<th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll3" />
+<label class="" for="checkedAll3"></label></th>
+<th>HSN CODE</th>
+<th>PRODUCT NAME</th>
+<th>DESCRIPTION</th>
+<th>SIZE</th>
+<th>QUANTITY</th>
+<th>CFT</th>
+<th>PRICE</th>
+<th>AMOUNT</th>
+<th>GST</th>
+<th>GST AMOUNT</th>
+<th>TOTAL</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="tableForm in names track by $index">
+<td><input type="checkbox" ng-model="tableForm.singlecheck" id="{{$index}}3"/>
+<label class="" for="{{$index}}3"></label></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.code" required code-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.item" required product-auto-complete /></td>
+<td><input type="text" ng-disabled="!purchaseForm.category" ng-model="tableForm.desc" /></td>
+<td><input type="text" ng-model="tableForm.size" ng-keyup="doorcalc(tableForm, $index)" onkeypress='sizeValidation(event)' required /></td>
+<td><input type="text" ng-model="tableForm.quantity" ng-keyup="doorcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td><input type="text" ng-model="tableForm.cft" readonly required /></td>
+<td><input type="text" ng-model="tableForm.price" ng-keyup="doorcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.amount}}</td>
+<td><input type="text"  ng-model="tableForm.gst" ng-keyup="doorcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+<td>{{tableForm.gst_amount}}</td>
+<td>{{tableForm.total}}</td>
+</tr>
+<tr><td colspan="11" class="text-right"><b>Sub Total</b></td><td>{{purchaseForm.sub_total}}</td></tr>
+<tr>
+<td colspan="11" class="text-right"><b>Loading and Unloading Transport</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_amount" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>	      
+
+<tr>
+<td colspan="11" class="text-right"><b>Transport Tax</b></td>
+<td><input type="text" ng-model="purchaseForm.trans_tax" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' /></td>
+</tr>
+<tr>
+<td colspan="11" class="text-right"><b>Total CFT</b></td>
+<td><input type="readonly" ng-model="purchaseForm.sum_cft" onkeypress='IsNumeric(event)' />
+</td>
+</tr>	
+<tr>
+<td colspan="11" class="text-right"><b>Plaining Charges</b></td>
+<td><input type="text" ng-model="purchaseForm.plain_amount" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' />
+
+</td>
+</tr>	
+<tr>
+<td colspan="11" class="text-right"><b>Plaining Tax</b></td>
+<td><input type="text" ng-model="purchaseForm.plain_tax" ng-keyup="calculateSum()" onkeypress='IsNumeric(event)' />
+
+</td>
+</tr>	
+<tr><td colspan="11" class="text-right"><b>Grand Total</b></td><td>{{purchaseForm.grand_total}}</td></tr>
+</tbody>
+</table>
+
+<div ng-if="!purchaseForm.quot_status">
+<input type="button" class="btn btn-primary" ng-click="addNew()" value="+">&nbsp; &nbsp;
+<input ng-hide="!names.length" type="button" class="btn btn-danger" ng-click="remove()" value="-">
+</div>
+</div>
+
+<div class="row">
+<h4>Terms and Condition:</h4>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Our GSTIN</label>
+<input type="text"  placeholder="Our GSTIN" ng-model="purchaseForm.our_gst" readonly required />
+</div>
+<div class="col-sm-4 padr20">
+<label>Party GSTIN</label>
+<input type="text"  placeholder="Party GSTIN" ng-model="purchaseForm.party_gst" required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Payment</label>
+<input type="text"  placeholder="Payment" ng-model="purchaseForm.payment" payment-auto-complete required />
+</div>
+<div class="col-sm-4 padr20">
+<label>Delivery</label>
+<input type="text"  placeholder="Place" ng-model="purchaseForm.delivery_place" required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Loading & Transport</label>
+<input type="text"  placeholder="VAT" ng-model="purchaseForm.vat" vat-auto-complete required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Please Supply by</label>
+<input type="text"  placeholder="Delivery Date" ng-model="purchaseForm.delivery_date" required datepicker />
+</div>
+<div class="col-sm-4 padr20">
+<label>at our</label>
+<input type="text"  placeholder="Place" ng-model="purchaseForm.supply_place" readonly required />
+</div>
+<br><label class="col-sm-2">Site</label>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Site Contact Person</label>
+<input type="text"  ng-readonly="!purchaseForm.sis_project_name" placeholder="Site Person" ng-model="purchaseForm.site_contact_person" ng-keyup="purchaseForm.mobile=''" ng-blur="onPersonValidate(purchaseForm.mobile)" person-auto-complete required />
+</div>
+<div class="col-sm-4 padr20">
+<label>Mobile</label>
+<input type="text"  placeholder="Mobile No" ng-model="purchaseForm.mobile" onkeypress='IsNumeric(event)' readonly required />
+</div>
+</div>
+
+<div class="row">
+<div class="col-sm-4 padr20">
+<label>Site Address</label>
+<input type="text"  placeholder="Project Name" ng-model="purchaseForm.sis_project_name" readonly required />
+</div>
+<div class="col-sm-4 padr20"><br>
+<textarea class="materialize-textarea" placeholder="Address" ng-model="purchaseForm.site_address" readonly required ></textarea>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-12">
+<label>Note</label>
+<input type="text"  placeholder="Note" ng-model="purchaseForm.note" />
+</div>
+</div><br><br>
+
+<div ng-show="alert">
+<strong style="color:red;">Failure !!!</strong>
+</div>
+
+<div class="row" align="center">
+<button ng-if="mailPermission==1" class="btn btn-primary" ng-click="purchase.$valid && mailContent()">Save & Send Mail</button>
+<button class="btn btn-primary" ng-click="purchase.$valid && onSubmit()">Save</button>
+<button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+</div>
+</form>
+
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title">Send</h4>
+</div>
+<form name="mailForm" ng-submit="onSend()">
+<div class="modal-body">
+<div class="row">
+<div class="col-sm-12">
+<label>From</label>
+<input type="text"  ng-model="mailForm.from_mail" required readonly /> <br>
+
+<label>To</label>
+<md-chips ng-model="to_mail" md-require-match="true">
+<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id" >
+<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+</md-chips>	<br>
+
+<label>CC</label>		
+<md-chips ng-model="cc_mail" md-require-match="true">
+<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+</md-chips><br>	
+
+<label>BCC</label>			
+<md-chips ng-model="bcc_mail" md-require-match="true">
+<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+</md-chips>	<br>
+
+<label>Subject</label>
+<input type="text"  ng-model="mailForm.subject" required /><br>
+
+<div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+<div class="btn-group">
+    <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+    <ul class="dropdown-menu"></ul>
+</div>
+<div class="btn-group">
+    <a class="btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+    <ul class="dropdown-menu">
+      <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+      <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+      <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+    </ul>
+</div>
+<div class="btn-group">
+    <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+    <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+    <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+</div>
+<div class="btn-group">
+    <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+    <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+    <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+    <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+</div>
+<div class="btn-group">
+    <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+    <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+</div>
+</div>
+<div id="editor" ></div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+<button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+

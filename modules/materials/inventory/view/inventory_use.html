@@ -1,0 +1,362 @@
+<script src="./js/session.js"></script>
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">MATERIAL STOCK</h5>
+                <div id="prod" class='left leftspace navigations'> <a class="btn btn-floating btn-large waves-effect waves-light pink " ng-click="onBack()" ><i class="material-icons">keyboard_backspace</i></a></div>
+             </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+    
+    <div ng-show="alert" class="alert">
+        <strong>{{alert_content}}</strong>
+    </div>
+     <div class="row" style="padding: 20px 20px 0 20px;">
+        <div class="col-md-2 col-xs-6 pr20">Project:
+            <select  ng-options="list.project_short as list.project_name for list in site | filter : { project_name: '!' + 'Common' }" ng-model="project_short" ng-change="tableData(project_short)" required> 
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">PageSize:
+            <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()" >
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20 padt13 pull-right">
+           <label>
+                <i class="material-icons ihide">search</i>
+                <input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" />
+           </label>
+        </div>
+    </div>
+ 
+    <div class="row" data-ng-init="tableData(project_short)">
+        <div class="col-md-12">
+           <div class="row">
+             <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60 table-responsive dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                <thead>
+                    <th width="5%" class="hidden-xs hidden-sm">#</th>
+                    <th width="15%">PROJECT NAME&nbsp;<a ng-click="sort_by('project_name');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">BLOCK NAME&nbsp;<a ng-click="sort_by('block_name');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="15%">PRODUCT NAME</th>
+                    <th width="10%" class="hidden-xs hidden-sm">RECEIVED&nbsp;<a ng-click="sort_by('stock');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">USAGE&nbsp;<a ng-click="sort_by('usage');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">BREAKAGE&nbsp;<a ng-click="sort_by('breakage');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">TRANSFER&nbsp;<a ng-click="sort_by('transfer');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="5%">BALANCE&nbsp;<a ng-click="sort_by('available');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="5%">UNIT</th>
+                    <th width="10%">ACTION</th>
+                </thead>
+                <tbody ng-show="filteredItems > 0">
+                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                    <td width="5%" class="hidden-xs hidden-sm">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                    <td width="15%">{{ x.project_name }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.block_name }}</td>
+                    <td width="15%" ng-bind-html='x.item'></td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.stock }} </td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.usage }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.breakage }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.transfer }}</td>
+                    <td width="5%">{{ x.available }}</td>
+                    <td> {{ x.unit }}</td>
+                    <td width="10%">
+                        <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x) >edit</i>
+                        <i class="material-icons micon" ng-click=onView(x) title="Detailed Information" >info</i>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody ng-show="filteredItems == 0">
+                    <tr><td colspan="10">No records found</td></tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Modal -->
+<div class="modal fade" id="stockModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p class="modal-title title1" >{{ stockForm.site }}</p>
+            <p class="modal-title title2" ng-bind-html='stockForm.item'></p>
+        </div>
+        <form name="stockForm" ng-submit="onStockUpdate()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                       <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>HSN Code</th>
+                                    <th>Product Name</th>
+                                    <th ng-if="stockForm.size">Size</th>
+                                    <th>Available Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ stockForm.code }}</td>
+                                    <td ng-bind-html='stockForm.item'></td>
+                                    <td ng-if="stockForm.size">{{ stockForm.size }}</td>
+                                    <td>{{ stockForm.available }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input type="hidden" ng-model="stockForm.inventory_id" required />
+                        <input type="hidden" ng-model="stockForm.project_id" required />
+                        <div class="row">
+                            <div class="col-sm-2"><label>Status</label></div>
+                            <div class="col-sm-2">
+                                <input class="with-gap" ng-model="stockForm.status" type="radio" id="test1" name="status" ng-value="'use'" ng-click="tableReset()" />
+                                <label for="test1" style="font-size: 13px">Site Use</label>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="with-gap" ng-model="stockForm.status" type="radio" name="status" id="test2" ng-value="'break'" ng-click="tableReset()" />
+                                <label for="test2" style="font-size: 13px">Breakage/Wastage</label>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="with-gap" ng-model="stockForm.status" type="radio" id="test3" name="status" ng-value="'transfer'" ng-click="tableReset()" />
+                                 <label for="test3" style="font-size: 13px">Transfer</label>
+                            </div>
+							  <div class="col-sm-2">
+                                <input class="with-gap" ng-model="stockForm.status" type="radio" id="test4" name="status" ng-value="'balance'" ng-click="tableReset()" />
+                                 <label for="test4" style="font-size: 13px">Excess Return</label>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="stockForm.status=='use'"><br>
+                          <div class="col-sm-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th><input type="checkbox" ng-model="$parent.useCheckedAll" ng-change="useSelectAll()" id="checkedAll" />
+                                     <label class="" for="checkedAll"></label></th>
+                                    <th>Area</th>
+                                    <th>Contractor</th>
+                                    <th>Usage Qty</th>
+                                  </tr>
+                                </thead>
+                                <tr ng-repeat="stockForm in use_array track by $index">
+                                    <td><input type="checkbox" ng-model="stockForm.singlecheck" id="{{$index}}"/>
+                                    <label class="" for="{{$index}}"></label></td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.use_flat_no" useflat-auto-complete required />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.contractor" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.used_qty" onkeypress='IsNumeric(event)' ng-keyup='calculateSum()' required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-left">
+                                        <input type="button" class="btn btn-primary" ng-click="addUseNew()" value="+">&nbsp; &nbsp;
+                                        <input type="button" class="btn btn-danger" ng-click="useRemove()" value="-">
+                                    </td>
+                                    <td><label class="pull-right">Total Usage Quantity</label></td>
+                                    <td ng-bind-html='stockForm.total_use_qty'></td>
+                                </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="row" ng-if="stockForm.status=='break'"><br>
+                          <div class="col-sm-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th><input type="checkbox" ng-model="$parent.breakCheckedAll" ng-change="breakSelectAll()" id="SelectAll" />
+                                     <label class="" for="SelectAll"></label></th>
+                                    <th>Area</th>
+                                    <th>Reason</th>
+                                    <th>Breakage Qty</th>
+                                  </tr>
+                                </thead>
+                                <tr ng-repeat="stockForm in break_array track by $index">
+                                    <td><input type="checkbox" ng-model="stockForm.singlecheck" id="singlecheck2"/>
+                                    <label for="singlecheck2"></label></td>
+                                    <td>
+                                        <input type="text"  ng-model="stockForm.break_flat_no" breakflat-auto-complete required />
+                                    </td>
+                                    <td>
+                                        <input type="text"  ng-model="stockForm.break_reason" required />
+                                    </td>
+                                    <td>
+                                        <input type="text"  ng-model="stockForm.break_qty" onkeypress='IsNumeric(event)' ng-keyup='calculateSum()' required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-left">
+                                        <input type="button" class="btn btn-primary" ng-click="addBreakNew()" value="+">&nbsp; &nbsp;
+                                        <input type="button" class="btn btn-danger" ng-click="breakRemove()" value="-">
+                                    </td>
+                                    <td><label class="pull-right">Total Breakage Quantity</label></td>
+                                    <td ng-bind-html='stockForm.total_break_qty'></td>
+                                </tr>
+                            </table>
+                          </div>
+                        </div>
+                        <div ng-if="stockForm.status=='transfer'"><br>
+                            <div class="row">
+                                <div class="col-sm-6 padr20">
+                                    <label>Project</label>
+                                    <select  ng-options="list.project_name as list.project_name for list in projects | filter : { project_name: '!' + 'Common' } | unique:'project_name'" ng-model="stockForm.project_name" required> 
+                                        <option value="">SELECT</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 padr20">
+                                    <label>Block</label>
+                                    <select  ng-disabled="!stockForm.project_name" ng-options="list.block_name as list.block_name for list in projects | filter:{project_name: stockForm.project_name}" ng-model="stockForm.block_name" required> 
+                                        <option value="">SELECT</option>
+                                    </select>
+                                </div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-sm-6 padr20">
+                                    <label>Total Transfer Quantity</label>
+                                    <input type="text"  ng-model="stockForm.total_transfer_qty" required />
+                                </div>
+                            </div>
+                        </div>
+						
+						 <div class="row" ng-if="stockForm.status=='balance'"><br>
+                          <div class="col-sm-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th><input type="checkbox" ng-model="$parent.balanceCheckedAll" ng-change="balanceSelectAll()" id="checkedAll" />
+                                     <label class="" for="checkedAll"></label></th>
+                                    <th>Area</th>
+                                    <th>Contractor</th>
+                                    <th>Balance Qty</th>
+                                  </tr>
+                                </thead>
+                                <tr ng-repeat="stockForm in balance_array track by $index">
+                                    <td><input type="checkbox" ng-model="stockForm.singlecheck" id="{{$index}}"/>
+                                    <label class="" for="{{$index}}"></label></td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.balance_flat_no" balanceflat-auto-complete required />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.balance_contractor" required />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="stockForm.balance_qty" onkeypress='IsNumeric(event)' ng-keyup='calculateSum()' required />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-left">
+                                        <input type="button" class="btn btn-primary" ng-click="addBalanceNew()" value="+">&nbsp; &nbsp;
+                                        <input type="button" class="btn btn-danger" ng-click="balanceRemove()" value="-">
+                                    </td>
+                                    <td><label class="pull-right">Total Balance Quantity</label></td>
+                                    <td ng-bind-html='stockForm.total_balance_qty'></td>
+                                </tr>
+                            </table>
+                          </div>
+                        </div>
+						
+						
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div ng-show="modalAlert" align="center">
+                    <strong style="color:red;">{{modal_alert_content}}<br><br></strong>
+                </div>
+                <button type="submit" id="send" class="btn btn-primary bt"> Update &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+                <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Detailed Modal -->
+<div class="modal fade" id="detailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p class="modal-title title1" >{{ stockForm.site }}</p>
+            <p class="modal-title title2" ng-bind-html='stockForm.item'></p>
+        </div>
+        <form>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                       <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <th>#</th>
+                                <th>PO NUMBER</th>
+                                <th>DATE TIME&nbsp;<a ng-click="modalSort_by('date_time');"><i class="material-icons tiny1">sort</i></a></th>
+                                <th>STATUS&nbsp;<a ng-click="modalSort_by('status');"><i class="material-icons tiny1">sort</i></a></th>
+                                <th>QUANTITY</th>
+                                <th>BALANCE</th>
+                                <th>USAGE DETAILS</th>
+                                <th>DONE BY</th>
+								<th ng-if="emp_id='1089'">Edit</th>
+                            </thead>
+                            <tbody ng-show="tableList.length > 0">
+                            <tr ng-repeat="x in tableList | orderBy : modalPredicate :modalReverse | startFrom:(currentModalPage-1)*10 | limitTo:10">
+                                <td>{{ ((currentModalPage-1)*10)+$index+1 }}</td>
+                                <td ng-bind-html='x.po_list'></td>
+                                <td>{{ x.date_time }}</td>
+                                <td ng-if="x.status=='Usage' || x.status=='New Stock'" style="color:limegreen;">{{ x.status }}</td>
+                                <td ng-if="x.status=='Breakage' || x.status=='Returned'" style="color:red;">{{ x.status }}</td>
+                                <td ng-if="x.status=='Transfer in' || x.status=='Transfer out'" style="color:steelblue;">{{ x.status }}</td>
+								<td ng-if="x.status=='Excess Return' || x.status=='Excess Return'" style="color:chocolate;">{{ x.status }}</td>
+                                <td>{{ x.quantity }}</td>
+                                <td>{{ x.balance }}</td>
+                                <td ng-bind-html='x.flat_list'></td>
+                               <td>{{ x.done_by }}</td>
+								<td  ng-if="emp_id='1089'"><span ng-if="typeUse == ((currentModalPage-1)*10)+$index+1"><input type="text" ng-model="stockForm.balance_qty1" required /></span> <span ng-if="typeUse != ((currentModalPage-1)*10)+$index+1"><i class="material-icons micon" ng-click=onUseEdit(x,$index,currentModalPage) >edit</i></span><span ng-if="typeUse == ((currentModalPage-1)*10)+$index+1"><i class="material-icons micon" ng-click=onUseupdate(x,x.id.$oid,$index,currentModalPage) >done</i></span></td>
+                            </tr>
+                            </tbody>
+                            <tbody ng-show="tableList.length == 0">
+                                <tr><td colspan="8">No records found</td></tr>
+                            </tbody>
+                        </table>
+                      </div>
+                    </div>
+                </div>
+                <div class="row" ng-show="tableList.length > 0">
+                    <div class="col-md-12">
+                        <div class="pull-right">
+                            <ul uib-pagination boundary-links="true" total-items="tableList.length" items-per-page="10" ng-model="currentModalPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>

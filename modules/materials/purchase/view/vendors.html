@@ -1,0 +1,231 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">  
+                <h5 id="prod" class="breadcrumbs-title">Vendors</h5>
+                
+ <span id="ord-headright" class="right navigations" style="margin-right: 60px">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-if="deletePermission=='1'"  ng-click='deleteall()' ng-show="showDelBtn" class="mfb-component__button--main" title="Delete"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+</li></ul>
+</span>              
+               
+ <span id="ord-headright" class="right navigations">  
+<ul id="menu" class="mfb-component--tr">
+<li class="mfb-component__wrap">
+<a  ng-if="addPermission=='1'" ng-click="addModal()" class="mfb-component__button--main"  title="Add Vendor"><i class="mfb-component__main-icon--resting material-icons">person_add</i></a>
+</li></ul>
+</span>  
+          </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart" data-ng-init="tableData('usage')">
+    
+    <div ng-show="alert" class="alert">
+        <strong>{{alert_content}}</strong>
+    </div>
+   
+    <div class="row" style="padding: 0px 30px 0px 50px;">
+        <div class="col-md-2 col-xs-6 pr20">Type:
+            <select ng-init="tabletype='usage'" ng-model="tabletype" ng-change="tableData(tabletype)">
+                <option value="usage">In Usage</option>
+                <option value="cancel">Deleted</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">PageSize:
+            <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()" >
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pull-right pr20 padt13">
+            <label><i class="material-icons ihide">search</i>
+            <input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" /> </label>
+        </div>   
+    </div>
+ 
+    <div class="row">
+        <div class="col-md-12">
+        <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table ven-hide avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                <thead>
+                    <th width="5%" ><!--<input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" />-->#</th>
+                    <th width="15%">VENDOR NAME</th>
+                    <th width="30%" class="hidden-xs hidden-sm">ADDRESS</th>
+                    <th width="10%" class="hidden-xs hidden-sm">NAME</th>    
+                    <th width="10%" class="hidden-xs hidden-sm">MOBILE</th>
+                    <th width="10%" class="hidden-lg hidden-md">NAME & <br> MOBILE</th>
+                    <th width="10%" class="hidden-xs hidden-sm">GST NO</th>
+                    <th width="10%" ng-if="deletePermission=='1' || editPermission=='1'">ACTION</th>
+                </thead>
+                <tbody ng-show="filteredItems > 0">
+                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                    <td width="5%" ng-if="deletePermission=='1'"><input type="checkbox" ng-model="x.singlecheck" ng-change="deleteShow()" id="{{ x._id.$oid }}"/>
+                    <label  for="{{ x._id.$oid }}"></label></td>
+                    <td width="5%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                    <td width="15%">{{ x.company_name }}</td>
+                    <td width="30%" class="hidden-xs hidden-sm" ng-bind-html='x.address'></td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.contact_person }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.mobile }}</td>
+                    <td width="10%" class="hidden-lg hidden-md">{{ x.contact_person }} <br> {{ x.mobile }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.party_gst }}</td>
+                    <td width="10%" ng-if="deletePermission=='1' || editPermission=='1'">
+                        <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x._id.$oid) title="Edit" >edit</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='usage'" class="material-icons micon" ng-click=onRemove(x._id.$oid) title="Remove" >delete</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='cancel'" class="material-icons micon" ng-click=onDelete(x._id.$oid) title="Delete" >delete</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='cancel'" class="material-icons micon" ng-click=onReopen(x._id.$oid) title="Reopen" >refresh</i>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody ng-show="filteredItems == 0">
+                    <tr><td colspan="7">No records found</td></tr>
+                </tbody>
+            </table>
+             </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Vendor Modal -->
+<div class="modal fade" id="addModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Add</h4>
+        </div>
+        <form name="addVendorForm" ng-submit="onAddSubmit()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Vendor Name</label>
+                        <input type="text" ng-model="addVendorForm.company_name" required /> <br>
+                        <label>Name</label>
+                        <input type="text" ng-model="addVendorForm.contact_person" required /> <br>
+                        <label>Address</label>
+                        <textarea class="materialize-textarea" rows="2" ng-model="addVendorForm.address" required></textarea> <br>
+                        <label>Mobile</label>
+                        <input type="text" ng-model="addVendorForm.mobile" />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Phone</label>
+                        <input type="text" ng-model="addVendorForm.phone" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Fax</label>
+                        <input type="text" ng-model="addVendorForm.fax" />
+                    </div>
+                    <div class="col-sm-12">
+                        <label>Email</label>
+                        <input type="text" ng-model="addVendorForm.email" /><br>
+                        <label>GST No</label>
+                        <input type="text" ng-model="addVendorForm.party_gst" required /><br>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tax Type</label>
+                        <select ng-init="addProductForm.taxtype ='GST'"  ng-model="addVendorForm.taxtype">
+                            <option value="GST">GST</option>
+                            <option value="IGST">IGST</option>      
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" 
+                value="{{isSubmitting ? '' : 'Add'}}" 
+                class="btn btn-primary" 
+                ng-disabled="isSubmitting" />
+
+                <span class="spinner-border spinner-border-sm" 
+                ng-if="isSubmitting" 
+                role="status" 
+                aria-hidden="true"></span>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Vendor Modal -->
+<div class="modal fade" id="editModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Edit</h4>
+        </div>
+        <form name="editVendorForm" ng-submit="onEditSubmit()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Vendor Name</label>
+                        <input type="text"  ng-model="editVendorForm.company_name" required /> <br>
+                        <label>Name</label>
+                        <input type="text"  ng-model="editVendorForm.contact_person" required /><br>
+                        <label>Address</label>
+                        <textarea class="materialize-textarea" rows="2" ng-model="editVendorForm.address" required></textarea><br>
+                        <label>Mobile</label>
+                        <input type="text"  ng-model="editVendorForm.mobile" />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Phone</label>
+                        <input type="text" ng-model="editVendorForm.phone" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Fax</label>
+                        <input type="text" ng-model="editVendorForm.fax" />
+                    </div>
+                    <div class="col-sm-12">
+                        <label>Email</label>
+                        <input type="text"  ng-model="editVendorForm.email" /><br>
+                        <label>GST No</label>
+                        <input type="text"  ng-model="editVendorForm.party_gst" required /><br>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Tax Type</label>
+                        <select ng-init="editVendorForm.taxtype ='GST'"  ng-model="editVendorForm.taxtype">
+                            <option value="GST">GST</option>
+                            <option value="IGST">IGST</option>      
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Update" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>{{ alert_msg }}</p>
+              <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,405 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+  <div class="container-title">
+    <div class="row">
+      <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">New Bill</h5>
+        <span id="ord-headright" class="left navigations padl130">  
+          <ul id="menu" class="mfb-component--tr" >
+            <li class="mfb-component__wrap">
+              <a ng-click="onBack()" class="mfb-component__button--main">
+                <i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i>
+              </a>
+            </li>
+          </ul>
+        </span>   
+      </div>
+    </div> 
+  </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+
+<form autocomplete="off">
+    
+<div class="row">
+    <div class="col-sm-3 padr20">
+        <label>Project</label>
+        <select ng-options="list.project_short as list.project_name for list in project_list | unique:'project_name'" ng-model="billForm.project_short" ng-change="onProjectChange()" required> 
+            <option value="">Select</option>
+        </select>
+    </div>
+    <div class="col-sm-2 padr20">
+        <label>Bill No</label>
+        <input ng-disabled="!billForm.project_short" type="text" ng-model="billForm.vendor_bill_no" required />
+    </div>
+    <div class="col-sm-2 padr20">
+        <label>Bill Date</label>
+        <input ng-disabled="!billForm.project_short" type="text" ng-model="billForm.vendor_bill_date" refdatepicker required />
+    </div>
+    <div class="col-sm-3 padr20">
+        <label>Vendor</label>
+        <input ng-disabled="!billForm.project_short" type="text" ng-model="billForm.vendor_name" bill-supplier-auto-complete required />
+    </div>
+    <div class="col-sm-2">
+      <div class="pull-right">
+        <button class="btn btn-primary" ng-click="billCheckout()">CHECKOUT</button>
+      </div>
+    </div>
+</div>
+
+<div class="row" ng-if="bill_list.length > 0">
+  <b>Billed PO Numbers: </b><li ng-repeat="x in bill_list track by $index">{{x.po_number}}</li>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <h3 align="center">PURCHASE ORDER LIST</h3>
+    </div>
+</div>
+
+<div class="row">
+  <div class="col-md-2 col-xs-6">
+    <label>
+      <i class="material-icons ihide">search</i>
+      <input id="searchitems" type="text" ng-model="search" placeholder="search" />
+    </label>
+  </div>
+</div>
+    
+<div class="row table-responsive">
+   <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>BILL STATUS&nbsp;<a ng-click="sort_by('bill_status');"><i class="material-icons tiny1">sort</i></a></th>
+        <th>PO NUMBER</th>
+        <th>PO DATE&nbsp;<a ng-click="sort_by('po_date');"><i class="material-icons tiny1">sort</i></a></th>
+      </tr>
+    </thead>
+    <tbody ng-show="po_list.length > 0">
+      <tr ng-repeat="x in po_list | filter:search | orderBy : predicate :reverse">
+        <td ng-if="x.bill_status==0" style="color: orange;">Partially Checked</td>
+        <td ng-if="x.bill_status==1" style="color: red;">Unchecked</td>
+        <td ng-if="x.bill_status==2" style="color: green;">Checked</td>
+        <td ng-click='onPoDetails(x)' ><a>{{ x.po_number }}</a></td>
+        <td>{{ x.po_date }}</td>
+      </tr>
+    </tbody>
+    <tbody ng-show="po_list.length == 0">
+      <tr><td colspan="10">No records found</td></tr>
+    </tbody>
+  </table>
+</div><br>
+
+<div class="row table-responsive" ng-show="item_list.length > 0">
+  <b>PO NUMBER: {{ po_number }}</b>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>
+          <input type="checkbox" ng-model="checkedAll" ng-change="selectAll()" id="checkedAll" />
+          <label  for="checkedAll"></label>
+        </th>
+        <th>HSN CODE</th>
+        <th>PRODUCT NAME</th>
+        <th ng-if="po_type=='Steel'">DETAILS</th>
+        <th ng-if="po_type=='Door'">SIZE</th>
+        <th>PO QTY</th>
+        <th>RECEIVED QTY</th>
+        <th>BILLED QTY</th>
+        <th width="10%">UNBILLED QTY</th>
+        <th>UNIT</th>
+        <th ng-if="po_type=='Door'">CFT</th>
+        <th>Price &#8377;</th>
+        <th>Amount &#8377;</th>
+        <th>GST %</th>
+        <th>SGST &#8377;</th>
+        <th>CGST &#8377;</th>
+        <th ng-if="po_type=='Steel'">MAKE</th>
+        <th class='text-right'>Total &#8377;&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="x in item_list track by $index">
+        <td>
+          <input type="checkbox" ng-model="x.singlecheck" id="{{$index}}"/>
+          <label for="{{$index}}"></label>
+        </td>
+        <td>{{ x.code }}</td>
+        <td>{{ x.item }}</td>
+        <td ng-if="po_type=='Steel'">{{ x.details }}</td>
+        <td ng-if="po_type=='Door'">{{ x.size }}</td>
+        <td>{{ x.po_qty }}</td>
+        <td>{{ x.received_qty }}</td>
+        <td>{{ x.billed_qty }}</td>
+        <td ng-if="po_type!='Door'">
+          <input type="text" ng-model="x.unbilled_qty" ng-keyup="rowcalc(x, $index)" onkeypress='IsNumeric(event)' required />
+        </td>
+        <td ng-if="po_type=='Door'">
+          <input type="text" ng-model="x.unbilled_qty" ng-keyup="doorcalc(x, $index)" onkeypress='IsNumeric(event)' required />
+        </td>
+        <td>{{ x.unit }}</td>
+        <td ng-if="po_type=='Door'">{{ x.cft }}</td>
+        <td>{{ x.price | currency:"":2 }}</td>
+        <td>{{ x.amount | currency:"":2 }}</td>
+        <td>{{ x.sgst + x.cgst }}</td>
+        <td>{{ x.sgst_amount | currency:"":2 }}</td>
+        <td>{{ x.cgst_amount | currency:"":2 }}</td>
+        <td ng-if="po_type=='Steel'">{{ x.make }}</td>
+        <td>{{ x.total | currency:"":2 }}</td>
+      </tr>
+    </tbody>
+    <tbody ng-show="item_list.length == 0">
+      <tr><td colspan="10">No records found</td></tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Cutting, Loading and Unloading</div>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" ng-model="unloading_cost" onkeypress='IsNumeric(event)' required ng-keyup="onloadingTaxCalc()" />
+    </div>
+  </div>
+
+    <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Tax for Cutting, Loading and Unloading (%)</div>
+    </div>
+    <div class="col-sm-3">
+        <div class="col-sm-6 padr20">
+          <input type="text" ng-model="loading_tax" ng-keyup="onloadingTaxCalc()" onkeypress='IsNumeric(event)' required />
+        </div>
+        <div class="col-sm-6">
+          <input type="text" ng-model="loading_tax_amt" readonly />
+        </div>
+    </div>
+  </div>	
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Transport</div>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" ng-model="transport_cost" ng-keyup="onTaxCalc()" onkeypress='IsNumeric(event)' required />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Transport GST (%)</div>
+    </div>
+	  
+    <div class="col-sm-3">
+        <div class="col-sm-6 padr20">
+          <input type="text" ng-model="transport_tax" ng-keyup="onTaxCalc()" onkeypress='IsNumeric(event)' required />
+        </div>
+        <div class="col-sm-6">
+          <input type="text" ng-model="transport_tax_amt" readonly />
+        </div>
+    </div>
+  </div>
+	
+  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Plaining Charges</div>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" ng-model="plain_cost" onkeypress='IsNumeric(event)' required />
+    </div>
+  </div>
+	  <div class="row">
+    <div class="col-sm-6"></div>
+    <div class="col-sm-3 padr20">
+      <div class="pull-right">Plaining GST (%)</div>
+    </div>
+    <div class="col-sm-3">
+       <input type="text" ng-model="plain_tax"  onkeypress='IsNumeric(event)' required />
+		   <input type="hidden" ng-model="plain_tax_amt"/>
+    </div>
+  </div>
+	
+</div><br>
+
+<div ng-if="item_list.length > 0" class="row" align="center">
+    <button class="btn btn-primary" ng-click="addItemToBill()">Add to Bill</button>
+</div>
+
+<div ng-show="alert">
+    <strong style="color:red;">Failure !!!</strong>
+</div>
+</form>
+    
+</div>
+
+<!-- Bill Modal -->
+<div class="modal fade" id="billModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p class="modal-title title1">Billing</p>
+        </div>
+        <form name="detailForm">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                          <table width="100%">
+                            <tbody ng-show="bill_list.length > 0">
+                              <tr ng-repeat="parentTable in bill_list track by $index" ng-init="poIndex = $index">
+                                <td>
+                                  <div class="row" align="left">
+                                    <span class="badge badge-secondary" ng-click="removePO(poIndex)">X</span> <b>{{poIndex+1}}) PO Number:</b> {{ parentTable.po_number }}
+                                  </div>
+
+                                  <table class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>
+                                          <input type="checkbox" ng-model="parentTable.modalCheckAll" ng-change="modalSelectAll(poIndex)" id="modalCheckAll{{poIndex}}" />
+                                          <label for="modalCheckAll{{poIndex}}"></label>
+                                        </th>
+                                        <th>HSN CODE</th>
+                                        <th>PRODUCT NAME</th>
+                                        <th ng-if="parentTable.po_type=='Steel'">DETAILS</th>
+                                        <th ng-if="parentTable.po_type=='Door'">SIZE</th>
+                                        <th>QTY</th>
+                                        <th ng-if="parentTable.po_type=='Door'">CFT</th>
+                                        <th>Price &#8377;</th>
+                                        <th>Amount &#8377;</th>
+                                        <th>GST %</th>
+                                        <th>SGST &#8377;</th>
+                                        <th>CGST &#8377;</th>
+                                        <th ng-if="parentTable.po_type=='Steel'">Make</th>
+                                        <th class='text-right'>Total &#8377;&nbsp;</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody ng-show="parentTable.bill_item_list.length > 0">
+                                      <tr ng-repeat="x in parentTable.bill_item_list track by $index" ng-init="itemIndex = $index">
+                                        <td>
+                                          <input type="checkbox" ng-model="x.modalSingleCheck" id="{{poIndex}}{{itemIndex}}"/>
+                                          <label  for="{{poIndex}}{{itemIndex}}"></label>
+                                        </td>
+                                        <td>{{ x.code }}</td>
+                                        <td>{{ x.item }}</td>
+                                        <td ng-if="parentTable.po_type=='Steel'">{{ x.details }}</td>
+                                        <td ng-if="parentTable.po_type=='Door'">{{ x.size }}</td>
+                                        <td>{{ x.unbilled_qty }} {{ x.unit }}</td>
+                                        <td ng-if="parentTable.po_type=='Door'">{{ x.cft }}</td>
+                                        <td>{{ x.price | currency:"":2 }}</td>
+                                        <td>{{ x.amount | currency:"":2 }}</td>
+                                        <td>{{ x.sgst + x.cgst }}</td>
+                                        <td>{{ x.sgst_amount | currency:"":2 }}</td>
+                                        <td>{{ x.cgst_amount | currency:"":2 }}</td>
+                                        <td ng-if="parentTable.po_type=='Steel'">{{ x.make }}</td>
+                                        <td>{{ x.total | currency:"":2 }}</td>
+                                      </tr>
+
+                                      <!-- Standard -->
+                                      <tr ng-if="parentTable.po_type=='Standard'">
+                                        <td colspan="1" rowspan="1">
+                                          <button type="button" class="btn btn-danger" ng-click="removeModalRow(poIndex)">-</button>
+                                        </td>
+                                        <td colspan="8" style="text-align: right;">Cutting,Loading and Unloading</td>
+                                        <td>{{ parentTable.unloading_cost | currency:"":2 }}</td>
+                                      </tr>
+										    <tr ng-if="parentTable.po_type=='Standard' && parentTable.loading_tax>0">
+                                        <td colspan="9" style="text-align: right;">Tax for Cutting,Loading and Unloading  ({{parentTable.loading_tax}}%)</td>
+                                        <td>{{ parentTable.loading_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard'">
+                                        <td colspan="9" style="text-align: right;">Transport</td>
+                                        <td>{{ parentTable.transport_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard' && parentTable.transport_tax>0">
+                                        <td colspan="9" style="text-align: right;">Transport GST ({{parentTable.transport_tax}}%)</td>
+                                        <td>{{ parentTable.transport_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type=='Standard' && bill_list.length > 1">
+                                        <td colspan="9" style="text-align: right;">Sub Total</td>
+                                        <td>{{ parentTable.sub_total | currency:"":2 }}</td>
+                                      </tr>
+
+                                      <!-- Door or Steel -->
+                                      <tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="1" rowspan="1">
+                                          <button type="button" class="btn btn-danger" ng-click="removeModalRow(poIndex)">-</button>
+                                        </td>
+                                        <td colspan="10" style="text-align: right;">Cutting,Loading and Unloading</td>
+                                        <td>{{ parentTable.unloading_cost | currency:"":2 }}</td>
+                                      </tr>
+										 <tr ng-if="parentTable.po_type!='Standard' && parentTable.loading_tax>0">
+                                        <td colspan="11" style="text-align: right;">Tax for Cutting,Loading and Unloading ({{parentTable.loading_tax}}%)</td>
+                                        <td>{{ parentTable.loading_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Transport</td>
+                                        <td>{{ parentTable.transport_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && parentTable.transport_tax>0">
+                                        <td colspan="11" style="text-align: right;">Transport GST ({{parentTable.transport_tax}}%)</td>
+                                        <td>{{ parentTable.transport_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+											<tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Plaining CFT</td>
+                                        <td>{{ parentTable.sum_cft | currency:"":2 }}</td>
+                                      </tr>
+										<tr ng-if="parentTable.po_type!='Standard'">
+                                        <td colspan="11" style="text-align: right;">Plaining Charges</td>
+                                        <td>{{ parentTable.plain_cost | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && parentTable.plain_tax>0">
+                                        <td colspan="11" style="text-align: right;">Plaining GST ({{parentTable.plain_tax}}%)</td>
+                                        <td>{{ parentTable.plain_tax_amt | currency:"":2 }}</td>
+                                      </tr>
+                                      <tr ng-if="parentTable.po_type!='Standard' && bill_list.length > 1">
+                                        <td colspan="11" style="text-align: right;">Sub Total</td>
+                                        <td>{{ parentTable.sub_total | currency:"":2 }}</td>
+                                      </tr>
+                                    </tbody>
+                                    <tbody ng-show="parentTable.bill_item_list.length == 0">
+                                      <tr><td colspan="15">No records found</td></tr>
+                                    </tbody>
+                                  </table>
+                                </td>
+                              </tr>
+                            </tbody>
+                            <tbody ng-show="bill_list.length == 0">
+                              <tr><td>No records found</td></tr>
+                            </tbody>
+                          </table>
+                        </div>
+                    </div>
+                    <div class="col-sm-12" ng-if="bill_list.length > 0" style="text-align: right;">
+                      <b>GRAND TOTAL: {{ grand_total | currency:"":2 }}</b>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="generateBill()">Generate Bill</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- alert modal -->
+<div class="modal fade" id="alertModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>Kindly verify the previous bill of {{billForm.vendor_name}}, before generate the new bill.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,218 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">SIS PROJECTS</h5>
+               
+ <span id="ord-headright" class="right navigations">  
+<ul id="menu" class="mfb-component--tr">
+<li class="mfb-component__wrap">
+<a  ng-if="addPermission=='1'" ng-click="addModal()" class="mfb-component__button--main" title="Add"><i class="mfb-component__main-icon--resting material-icons">add</i></a>
+</li></ul>
+</span>
+</div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart" data-ng-init="tableData()">
+    
+    <div ng-show="alert" class="alert">
+        <strong>{{alert_content}}</strong>
+    </div>
+    
+    <div class="row" style="padding: 0px 30px 0px 50px;">
+        <div class="col-md-2 col-xs-6 pr20">PageSize:
+            <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()">
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+         
+        <div class="col-md-2 col-xs-6 pull-right padt13 pr20">
+            <label>
+                <i class="material-icons ihide">search</i>
+                <input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" />
+            </label>
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive">
+              <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60 table-responsive dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                <thead>
+                    <th class="hidden-xs hidden-sm">#</th>
+                    <th class="hidden-xs hidden-sm">PROJECT NAME&nbsp;<a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th class="hidden-xs hidden-sm">BLOCK NAME&nbsp;<a ng-click="sort_by('item');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th class="hidden-xs hidden-sm">PLACE&nbsp;<a ng-click="sort_by('code');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th class="hidden-lg hidden-md">PROJECT NAME & <br> BLOCK NAME <a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th>CONTACT PERSON&nbsp;<a ng-click="sort_by('quantity');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th class="hidden-xs hidden-sm">MOBILE NO&nbsp;<a ng-click="sort_by('stock');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th ng-if="deletePermission=='1' || editPermission=='1'">ACTION</th>
+                </thead>
+                <tbody ng-show="filteredItems > 0">
+                    <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                        <td class="hidden-xs hidden-sm">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.project_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.block_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.place }}</td>
+                        <td class="hidden-lg hidden-md">{{ x.project_name }} <br> {{ x.block_name }}</td>
+                        <td>{{ x.contact_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.mobile_no }}</td>
+                        <td ng-if="deletePermission=='1' || editPermission=='1'">
+                            <i ng-if="editPermission=='1'" class="material-icons micon"  ng-click=onEdit(x._id.$oid) title="Edit" > edit</i>
+                            <i ng-if="deletePermission=='1'" class="material-icons micon"  ng-click=onDelete(x._id.$oid) title="Delete" >delete</i>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody ng-show="filteredItems == 0">
+                    <tr><td colspan="7">No records found</td></tr>
+                </tbody>
+              </table>
+            </div>
+        </div>
+    </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+           The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="modal fade" id="addModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Add</h4>
+        </div>
+        <form name="addProjectForm" ng-submit="onAddSubmit()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12 padr20">
+                        <label>Project Name</label>
+                        <input type="text"  ng-model="addProjectForm.project_name" required />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Project Short</label>
+                        <input type="text"  ng-model="addProjectForm.project_short" required />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Block Name</label>
+                        <input type="text"  ng-model="addProjectForm.block_name" />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Place</label>
+                        <input type="text"  ng-model="addProjectForm.place" required />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>City</label>
+                        <input type="text"  ng-model="addProjectForm.city" required />
+                    </div>
+                    <div class="col-sm-12 padr20">
+                        <label>Address</label>
+                       <textarea id="comment" class="materialize-textarea"  rows="2" ng-model="addProjectForm.address" required >
+                       </textarea> <br>
+                        <label>Contact Person</label>
+                        <input type="text"  ng-model="addProjectForm.contact_name" user-auto-complete required /> <br>
+                        <label>Payment</label>
+                        <input type="text"  ng-model="addProjectForm.payment" /><br>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Add" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Project Modal -->
+<div class="modal fade" id="editModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Edit</h4>
+        </div>
+        <form name="editProjectForm" ng-submit="onEditSubmit()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Project Name</label>
+                        <input type="text"  ng-model="editProjectForm.project_name" required />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Project Short</label>
+                        <input type="text"  ng-model="editProjectForm.project_short" required />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Block Name</label>
+                        <input type="text"  ng-model="editProjectForm.block_name" />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Place</label>
+                        <input type="text"  ng-model="editProjectForm.place" required />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>City</label>
+                        <input type="text"  ng-model="editProjectForm.city" required />
+                    </div>
+                    <div class="col-sm-12">
+                        <label>Address</label>
+                        <textarea id="comment" class="materialize-textarea"  rows="2" ng-model="editProjectForm.address" required>
+                       </textarea> <br>
+                        <label>Contact Person</label>
+                        <input type="text" ng-model="editProjectForm.contact_name" user-auto-complete required /><br>
+                        <label>Payment</label>
+                        <input type="text"  ng-model="editProjectForm.payment" /><br>
+                        <label>HSN SAC Code</label>
+                        <input type="text"  ng-model="editProjectForm.hsn_sac_code" required />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>GST No</label>
+                        <input type="text"  ng-model="editProjectForm.gst_in" required />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>PAN No</label>
+                        <input type="text"  ng-model="editProjectForm.pan_no" required />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Update" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>{{ alert_msg }}</p>
+              <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>

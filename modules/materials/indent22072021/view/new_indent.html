@@ -1,0 +1,359 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">INDENT FORM</h5>
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span>
+            </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+ 
+<form autocomplete="off" name="myForm">
+ 
+<div class="row">
+    <div class="col-sm-3 padr20">
+        <label>Type</label>
+        <select ng-model="indentForm.type" ng-options="list.type as list.type for list in category_list | filter : { type: '!' + 'Work' } | unique:'type'" ng-change="typeChange(indentForm.type)" required></select>
+    </div>
+    <div class="col-sm-6 padr20"></div>
+    <div class="col-sm-3 padr20 padt20">
+        <input type="text"  ng-model="indentForm.prf_date" readonly required />
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-sm-3 padr20">
+        <label>Project</label>
+        <select ng-options="list.project_name as list.project_name for list in projects | filter : { project_name: '!' + 'Common' } | unique:'project_name'" ng-model="indentForm.sis_project_name" ng-change="changeProjectName(indentForm.sis_project_name)" required> 
+            <option value="">SELECT</option>
+        </select>
+    </div>
+    <div class="col-sm-3 padr20">
+        <label>Block</label>
+        <select  ng-disabled="!indentForm.sis_project_name" ng-options="list.block_name as list.block_name for list in projects | filter:{project_name: indentForm.sis_project_name}" ng-model="indentForm.sis_project_block" ng-change="changeBlockName()" required> 
+            <option value="">SELECT</option>
+        </select>
+    </div>
+    <div class="col-sm-3 padr20"></div>
+    <div class="col-sm-3 padr20">
+        <label>PRF Number</label>
+        <input type="text"  ng-model="indentForm.prf_number" readonly required />
+    </div>
+</div>
+ 
+<div class="row">
+    <div class="col-sm-6 padr20">
+        <div class="form-group">
+            <label>Purpose</label>
+            <textarea class="materialize-textarea" rows="2" ng-model="indentForm.purpose" required ></textarea>
+        </div>
+    </div>
+</div>
+    
+<div class="row table-responsive">
+  <!-- standard or work -->
+  <table ng-if="indentForm.type=='Standard' || indentForm.type=='Work'" class="table table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll" />
+        <label class="" for="checkedAll"></label></th>
+        <th>PRODUCT NAME</th>
+        <th>QUANTITY</th>
+        <th>UNIT</th>
+        <th>APPROX PRICE</th>
+        <th>ITEM REQUIRED DATE</th>
+        <th>STOCK</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="tableForm in names track by $index">
+        <td>
+            <input type="checkbox" ng-model="tableForm.singlecheck" id="ind-{{$index }}"/>
+            <label class="" for="ind-{{$index }}"></label>
+            <input type="hidden" ng-model="tableForm.code" />
+            <input type="hidden" ng-model="tableForm.stock_details" />
+        </td>
+        <td><input type="text"  ng-model="tableForm.item" required ng-disabled="!indentForm.sis_project_block" quotproduct-auto-complete /></td>
+        <td><input type="text"  ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.unit" required /></td>
+        <td><input type="text"  ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.required_date" required datepicker /></td>
+        <td>{{tableForm.available_stock}}</td>
+        <td>{{tableForm.total}}</td>
+      </tr>
+      <tr>
+        <td colspan="7" class="text-right"><b>GRAND TOTAL</b></td>
+        <td>{{indentForm.grand_total}}</td>
+      </tr>
+    </tbody>
+  </table>
+    
+  <!-- UPVC -->
+  <table ng-if="indentForm.type=='UPVC'" class="table table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll1"/>
+         <label class="" for="checkedAll1"></label></th>
+        <th>PRODUCT NAME</th>
+        <th>WIDTH</th>
+        <th>HEIGHT</th>
+        <th>TYPE</th>
+        <th>QUANTITY</th>
+        <th>UNIT</th>
+        <th>APPROX PRICE</th>
+        <th>ITEM REQUIRED DATE</th>
+        <th>STOCK</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="tableForm in names track by $index">
+        <td>
+            <input type="checkbox" ng-model="tableForm.singlecheck" id="ind-{{$index }}"/>
+            <label class="" for="ind-{{$index }}"></label>
+            <input type="hidden" ng-model="tableForm.code" />
+            <input type="hidden" ng-model="tableForm.stock_details" />
+        </td>
+        <td><input type="text"  ng-model="tableForm.item" required ng-disabled="!indentForm.sis_project_block" quotproduct-auto-complete /></td>
+        <td><input type="text"  ng-model="tableForm.width" required /></td>
+        <td><input type="text"  ng-model="tableForm.height" required /></td>
+        <td><input type="text"  ng-model="tableForm.upvc_type" required /></td>
+        <td><input type="text"  ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.unit" required /></td>
+        <td><input type="text"  ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.required_date" required datepicker /></td>
+        <td>{{tableForm.available_stock}}</td>
+        <td>{{tableForm.total}}</td>
+      </tr>
+      <tr>
+        <td colspan="10" class="text-right"><b>GRAND TOTAL</b></td>
+        <td>{{indentForm.grand_total}}</td>
+      </tr>
+    </tbody>
+  </table>
+    
+  <!-- steel -->
+  <table ng-if="indentForm.type=='Steel'" class="table table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll2" />
+        <label class="" for="checkedAll2"></label></th>
+        <th>PRODUCT NAME</th>
+        <th>DETAILS</th>
+        <th>QUANTITY</th>
+        <th>UNIT</th>
+        <th>APPROX PRICE</th>
+        <th>ITEM REQUIRED DATE</th>
+        <th>STOCK</th>
+        <th>MAKE</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="tableForm in names track by $index">
+        <td>
+            <input type="checkbox" ng-model="tableForm.singlecheck" id="ind-{{$index }}"/>
+            <label class="" for="ind-{{$index }}"></label>
+            <input type="hidden" ng-model="tableForm.code" />
+            <input type="hidden" ng-model="tableForm.stock_details" />
+        </td>
+        <td><input type="text"  ng-model="tableForm.item" required ng-disabled="!indentForm.sis_project_block" quotproduct-auto-complete /></td>
+        <td><input type="text"  ng-model="tableForm.details" required /></td>
+        <td><input type="text"  ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.unit" required /></td>
+        <td><input type="text"  ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.required_date" required datepicker /></td>
+        <td>{{tableForm.available_stock}}</td>
+        <td><input type="text"  ng-model="tableForm.make" required /></td>
+        <td>{{tableForm.total}}</td>
+      </tr>
+      <tr>
+        <td colspan="9" class="text-right"><b>GRAND TOTAL</b></td>
+        <td>{{indentForm.grand_total}}</td>
+      </tr>
+    </tbody>
+  </table>
+    
+  <!-- Door -->
+  <table ng-if="indentForm.type=='Door'" class="table table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" ng-model="$parent.checkedAll" ng-change="selectAll()" id="checkedAll3" />
+         <label class="" for="checkedAll3"></label></th>
+        <th>PRODUCT NAME</th>
+        <th>SIZE</th>
+        <th>QUANTITY</th>
+        <th>CFT</th>
+        <th>APPROX PRICE</th>
+        <th>ITEM REQUIRED DATE</th>
+        <th>STOCK</th>
+        <th>TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="tableForm in names track by $index">
+        <td>
+            <input type="checkbox" ng-model="tableForm.singlecheck" id="ind-{{$index }}"/>
+             <label class="" for="ind-{{$index }}"></label>
+            <input type="hidden" ng-model="tableForm.code" />
+            <input type="hidden" ng-model="tableForm.stock_details" />
+        </td>
+        <td><input type="text"  ng-model="tableForm.item" required ng-disabled="!indentForm.sis_project_block" quotproduct-auto-complete /></td>
+        <td><input type="text"  ng-model="tableForm.size" ng-keyup="doorcalc(tableForm, $index)" onkeypress='sizeValidation(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.quantity" ng-keyup="doorcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.cft" readonly /></td>
+        <td><input type="text"  ng-model="tableForm.price" ng-keyup="doorcalc(tableForm, $index)" onkeypress='IsNumeric(event)' required /></td>
+        <td><input type="text"  ng-model="tableForm.required_date" required datepicker /></td>
+        <td>{{tableForm.available_stock}}</td>
+        <td>{{tableForm.total}}</td>
+      </tr>
+      <tr>
+        <td colspan="8" class="text-right"><b>GRAND TOTAL</b></td>
+        <td>{{indentForm.grand_total}}</td>
+      </tr>
+    </tbody>
+  </table>
+    
+  <div>
+    <input type="button" class="btn btn-primary" ng-click="addNew()" value="+">&nbsp; &nbsp;
+    <input ng-hide="!names.length" type="button" class="btn btn-danger" ng-click="remove()" value="-">
+  </div>
+</div>
+
+<div class="row table-responsive">
+  <p align="center"><b>SUGGESTED SUPPLIERS</b></p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" ng-model="$parent.checkedSupplierAll" ng-change="selectSupplierAll()" id="checkedAll4"/>
+        <label class="" for="checkedAll4"></label></th>
+        <th>NAME</th>
+        <th>REASON</th>
+        <th>CONTACT PERSON</th>
+        <th>MOBILE</th>
+        <th>ADDRESS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="supplierForm in items track by $index">
+        <td align="center"><input type="checkbox" ng-model="supplierForm.singleSupplierCheck" id="ven-{{$index }}"/>
+         <label for="ven-{{$index }}"></label></td>
+        <td><input type="text" ng-model="supplierForm.company_name" supplier-auto-complete /></td>
+        <td><input type="text" ng-model="supplierForm.reason" /></td>
+        <td><input type="text" ng-model="supplierForm.contact_person" /></td>
+        <td><input type="text" ng-model="supplierForm.mobile" onkeypress='IsNumeric(event)' /></td>
+        <td><textarea class="materialize-textarea"  rows="1" ng-model="supplierForm.comp_address" ></textarea></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div>
+    <input type="button" class="btn btn-primary" ng-click="addSupplierNew()" value="+">&nbsp; &nbsp;
+    <input ng-hide="!names.length" type="button" class="btn btn-danger" ng-click="removeSupplier()" value="-">
+  </div>
+</div><br><br>
+
+<div ng-show="alert">
+    <strong style="color:red;">Failure !!!</strong>
+</div>
+    
+<div class="row" align="center">
+    <button ng-if="mailPermission==1" class="btn btn-primary" ng-click="myForm.$valid && mailContent()">Save & Send Mail</button>
+    <button class="btn btn-primary" ng-click="myForm.$valid && onSubmit()">Save</button>
+    <button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+</div>
+</form>
+    
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Send</h4>
+        </div>
+        <form name="mailForm" ng-submit="onSend()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>From</label>
+                        <input type="text" ng-model="mailForm.from_mail" required readonly /><br>
+                        <label>To</label>
+                       
+                       <md-chips ng-model="to_mail" md-require-match="true">
+						<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id" >
+						<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+						<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+						</md-chips>	<br>
+
+						<label>CC</label>		
+						<md-chips ng-model="cc_mail" md-require-match="true">
+						<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+						<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+						<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+						</md-chips><br>	
+
+						<label>BCC</label>			
+						<md-chips ng-model="bcc_mail" md-require-match="true">
+						<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+						<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+						<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+						</md-chips>	<br>
+                        <label>Subject</label>
+                        <input type="text"  ng-model="mailForm.subject" readonly /><br>
+
+                        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                    <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                    <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+                                <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+                                <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+                                <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+                                <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+                                <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+                                <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+                            </div>
+                        </div>
+                        <div id="editor" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+                <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>

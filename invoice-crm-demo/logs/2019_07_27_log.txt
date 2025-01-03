@@ -1,0 +1,9 @@
+IP: 122.15.146.120 TIME: 2019-07-27 12:38:40 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2019-07-27 12:38:40 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:40:02 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:40:02 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:40:27 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:41:38 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:41:39 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:42:08 User: Sruthi USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-27 12:52:34 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36Action :Logout

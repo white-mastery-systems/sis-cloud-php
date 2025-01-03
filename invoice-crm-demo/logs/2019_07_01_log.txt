@@ -1,0 +1,20 @@
+IP: 122.15.146.120 TIME: 2019-07-01 10:31:24 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-01 10:31:30 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2019-07-01 10:31:31 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-01 10:46:26 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2019-07-01 10:46:27 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2019-07-01 10:48:55 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 218.185.254.124 TIME: 2019-07-01 16:49:31 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Logout
+IP: 218.185.254.124 TIME: 2019-07-01 17:50:17 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action : Admin Login
+IP: 218.185.254.124 TIME: 2019-07-01 17:50:18 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 218.185.254.124 TIME: 2019-07-01 17:50:27 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Purchase Edit Page
+IP:  TIME:  User: Kavitha USERAGENT: Action : INVOICE-NOACP/B/CP/2019-20/439Inserted
+IP: 218.185.254.124 TIME: 2019-07-01 17:54:39 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2019-07-01 18:03:38 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Logout
+IP: 218.185.254.124 TIME: 2019-07-01 18:32:42 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Logout
+IP: 218.185.254.124 TIME: 2019-07-01 18:33:49 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action : Admin Login
+IP: 218.185.254.124 TIME: 2019-07-01 18:33:50 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 218.185.254.124 TIME: 2019-07-01 18:33:55 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Purchase Edit Page
+IP:  TIME:  User: Kavitha USERAGENT: Action : INVOICE-NOACP/B/CP/2019-20/440Inserted
+IP: 218.185.254.124 TIME: 2019-07-01 18:35:00 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Order Page
+IP: 218.185.254.124 TIME: 2019-07-01 18:40:48 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36Action :Logout

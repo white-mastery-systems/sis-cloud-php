@@ -1,0 +1,253 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">INDENT FORM</h5>
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span> 
+            </div>
+        </div> 
+    </div>
+</div>
+
+<html>
+<head>
+    <style>
+        .container-fluid{
+            margin-top: 2.5%;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader"></div>
+    <div class="mainpart">
+    <div class='container-fluid'>
+        <div  class='text-right pad20'>
+		<button type="button" class="btn btn-pre" ng-click="onprebtn()" ng-disabled="IsPreDisabled"> < </button>
+		<button type="button" class="btn btn-next" ng-click="onnxtbtn()"  ng-disabled="IsDisabled"> > </button>
+		</div>
+			
+        <table class="table table-bordered" width="100%" >
+            <tbody>
+                <tr>
+                    <td class='text-left' width="50%"><b>Name</b></td>
+                    <td class='text-left'>{{indentForm.emp_id}} - {{indentForm.name}}</td>
+                </tr>
+                <tr>
+                    <td class='text-left'><b>Designation</b></td>
+                    <td class='text-left'>{{indentForm.designation}}</td>
+                </tr>
+                <tr>
+                    <td class='text-left'><b>Indent No</b></td>
+                    <td class='text-left'>{{indentForm.prf_number}}</td>
+                </tr>
+                <tr>
+                    <td class='text-left'><b>Indent Date</b></td>
+                    <td class='text-left'>{{indentForm.prf_date}}</td>
+                </tr>
+                <tr>
+                    <td class='text-left'><b>Site</b></td>
+                    <td class='text-left'><b>{{indentForm.sis_project_name}}<span ng-if="indentForm.sis_project_block != 'none'"> - {{indentForm.sis_project_block}} Block</span></b></td>
+                </tr>
+                <tr>
+                    <td class='text-left'><b>Purpose</b></td>
+                    <td class='text-left' ng-bind-html='indentForm.purpose'></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <br><h4 align="center"><u>INDENT PRODUCT LIST</u></h4>
+        <!--Standard or Work-->
+        <div class="table-responsive">
+        <table ng-if="indentForm.type=='Standard' || indentForm.type=='Work'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Stock</th>
+                    <th>Item Required Date</th>
+                    <th>Approx Price &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="indentForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left' ng-bind-html='indentForm.item'></td>
+                    <td>{{indentForm.quantity}} {{indentForm.unit}}</td>
+                    <td>{{indentForm.available_stock }} {{indentForm.unit}}</td>
+                    <td>{{indentForm.required_date}}</td>
+                    <td>{{indentForm.price | currency:"":2 }}</td>
+                    <td class='text-right'>{{indentForm.amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='5'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+        </table></div>
+        
+        <!--Steel-->
+         <div class="table-responsive">
+        <table ng-if="indentForm.type=='Steel'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Details</th>
+                    <th>Quantity</th>
+                    <th>Stock</th>
+                    <th>Item Required Date</th>
+                    <th>Approx Price &#8377;</th>
+                    <th>Make</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="indentForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left' ng-bind-html='indentForm.item'></td>
+                    <td>{{indentForm.details}}</td>
+                    <td>{{indentForm.quantity}} {{indentForm.unit}}</td>
+                    <td>{{indentForm.available_stock }} {{indentForm.unit}}</td>
+                    <td>{{indentForm.required_date}}</td>
+                    <td>{{indentForm.price | currency:"":2 }}</td>
+                    <td>{{indentForm.make}}</td>
+                    <td class='text-right'>{{indentForm.amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='7'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+             </table></div>
+        
+        <!--UPVC-->
+         <div class="table-responsive">
+        <table ng-if="indentForm.type=='UPVC'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Stock</th>
+                    <th>Item Required Date</th>
+                    <th>Approx Price &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="indentForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'><span ng-bind-html='indentForm.item'></span> - ({{indentForm.upvc_type}}) W-{{indentForm.width}}; H-{{indentForm.height}}</td>
+                    <td>{{indentForm.quantity}} {{indentForm.unit}}</td>
+                    <td>{{indentForm.available_stock }} {{indentForm.unit}}</td>
+                    <td>{{indentForm.required_date}}</td>
+                    <td>{{indentForm.price | currency:"":2 }}</td>
+                    <td class='text-right'>{{indentForm.amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='5'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+             </table></div>
+        
+        <!--Door-->
+         <div class="table-responsive">
+        <table ng-if="indentForm.type=='Door'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Size</th>
+                    <th>Quantity</th>
+                    <th>CFT</th>
+                    <th>Stock</th>
+                    <th>Item Required Date</th>
+                    <th>Approx Price &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="indentForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left' ng-bind-html='indentForm.item'></td>
+                    <td>{{indentForm.size}}</td>
+                    <td>{{indentForm.quantity}} Nos</td>
+                    <td>{{indentForm.cft}}</td>
+                    <td>{{indentForm.available_stock }} Nos</td>
+                    <td>{{indentForm.required_date}}</td>
+                    <td>{{indentForm.price | currency:"":2 }}</td>
+                    <td class='text-right'>{{indentForm.amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='7'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{indentForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+             </table></div>
+        
+        <div ng-if="purchase_list.length > 0">
+        <br><h4 align="center"><u>PURCHASE PRODUCT LIST</u></h4>
+        <table class="table table-bordered" width='100%'>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="tableForm in purchase_list track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left' ng-bind-html='tableForm.item'></td>
+                    <td>{{tableForm.quantity}} {{tableForm.unit}}</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        
+        <div ng-if="items.length > 0">
+        <br><h4 align="center"><u>SUPPLIER DETAILS</u></h4>
+        <div class="table-responsive">
+        <table class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>Name</th>
+                    <th>Reason</th>
+                    <th>Contact Person</th>
+                    <th>Mobile</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="supplierForm in items track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'>{{supplierForm.company_name}}</td>
+                    <td>{{supplierForm.reason}}</td>
+                    <td>{{supplierForm.contact_person}}</td>
+                    <td>{{supplierForm.mobile }}</td>
+                    <td ng-bind-html='supplierForm.comp_address'></td>
+                </tr>
+            </tbody>
+            </table></div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

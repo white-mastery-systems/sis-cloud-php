@@ -1,0 +1,7 @@
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:11 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action : Admin Login
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:11 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Order Page
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:23 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Order Page
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:30 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Purchase New Page
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:32 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Invoice New Page
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:36 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Order Page
+IP: 115.97.90.198 TIME: 2022-01-11 10:41:56 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36Action :Logout

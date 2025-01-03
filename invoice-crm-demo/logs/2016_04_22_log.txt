@@ -1,0 +1,21 @@
+IP: 122.15.146.120 TIME: 2016-04-22 12:00:28 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2016-04-22 12:00:29 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 12:28:22 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :PONO1206 view
+IP: 122.15.146.120 TIME: 2016-04-22 12:28:29 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 12:28:31 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2016-04-22 12:28:31 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 12:28:42 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.120 TIME: 2016-04-22 12:35:27 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : PO-NO79Inserted
+IP: 122.15.146.120 TIME: 2016-04-22 12:35:27 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 12:35:32 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : Purchase order_79 has been downloaded as pdf
+IP: 122.15.146.120 TIME: 2016-04-22 15:39:43 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:39:45 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2016-04-22 15:39:45 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:39:54 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Purchase Duplicate Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:00 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : PO-NO80Inserted
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:00 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:06 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Purchase Edit Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:12 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : PO-NO80Inserted
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:12 User: Anisa USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2016-04-22 15:41:16 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action : Purchase order_80 has been downloaded as pdf
+IP: 122.15.146.120 TIME: 2016-04-22 17:29:56 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36Action :Logout

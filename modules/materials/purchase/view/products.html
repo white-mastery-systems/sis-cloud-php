@@ -1,0 +1,353 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+<div class="container-title">
+<div class="row">
+<div class="col s12 m12 l12"> 
+<h5 id="prod" class="breadcrumbs-title">Products</h5>
+
+<span id="ord-headright" class="right navigations" style="margin-right: 60px">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-if="deletePermission=='1'"  ng-click='deleteall()' ng-show="showDelBtn" class="mfb-component__button--main" title="Delete"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+</li></ul>
+</span>              
+
+
+<span id="ord-headright" class="right rightspace navigations">  
+
+<ul ng-if="addPermission=='1'" id="menu" class="mfb-component--tr mfb-zoomin" data-mfb-toggle="hover">
+<li class="mfb-component__wrap">
+<a ui-sref="home.orders({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">add</i><i class="mfb-component__main-icon--active material-icons">close</i></a>
+
+<ul class="mfb-component__list">
+<li class="mbtn"><a  data-mfb-label="Purchase Export" title="Add Category" class="mfb-component__button--child" ng-if="addPermission=='1'" ng-click="addcategoryModal()" ><i c class="mfb-component__child-icon ion-social-twitter material-icons">folder</i></a></li>
+<li class="mbtn"><a  data-mfb-label="Purchase Export" title="Add Products" class="mfb-component__button--child" ng-if="addPermission=='1'" ng-click="addModal()" ><i c class="mfb-component__child-icon ion-social-twitter material-icons">add_shopping_cart</i></a></li>
+
+<li class="mbtn"><a  data-mfb-label="Purchase Export" title="Product Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i></a></li>
+</ul></li>
+</ul>
+</span>				
+
+<!--
+<span id="ord-headright" class="right navigations">  
+<ul id="menu" class="mfb-component--tr">
+<li class="mfb-component__wrap">
+<a  ng-if="addPermission=='1'" ng-click="addModal()" class="mfb-component__button--main" title="Add Vendor"><i class="mfb-component__main-icon--resting material-icons">add_shopping_cart</i></a>
+</li></ul>
+</span> 
+-->
+</div>
+</div> 
+</div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart" data-ng-init="tableData('usage')">
+
+<div ng-show="alert" class="alert">
+<strong>{{alert_content}}</strong>
+</div>
+
+<div class="row pleft20">
+<div class="col-md-2 col-xs-6 pr20">Type:
+<select ng-init="tabletype='usage'" ng-model="tabletype" ng-change="tableData(tabletype)">
+<option value="usage">In Usage</option>
+<option value="cancel">Deleted</option>
+</select>
+</div>
+<div class="col-md-2 col-xs-6 pr20">PageSize:
+<select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()" >
+<option>10</option>
+<option>25</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+<div class="col-md-2 col-xs-6 pull-right padt13 pr20">
+<label><i class="material-icons ihide padt10">search</i>
+<input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" /> </label>
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-12">
+<div class="">
+<table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60   dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+<thead>
+<th width="5%">#</th>
+<th width="10%">CATEGORY</th>
+<th width="10%" class="hidden-xs hidden-sm">PRODUCT CODE</th>
+<th width="20%">PRODUCT NAME</th>
+<th width="10%" class="hidden-xs hidden-sm">UNIT</th>
+<th width="10%" class="hidden-xs hidden-sm">PRICE</th>
+<th width="10%" class="hidden-xs hidden-sm">GST</th>
+<th width="5%" ng-if="deletePermission=='1' || editPermission=='1'">ACTION</th>
+</thead>
+<tbody ng-show="filteredItems > 0">
+<tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+<td width="5%" ng-if="deletePermission=='1'"><input type="checkbox" ng-model="x.singlecheck" ng-change="deleteShow()" id="{{ x._id.$oid }}"/>
+<label class="" for="{{ x._id.$oid }}"></label></td>
+<td width="5%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+<td width="10%">{{ x.category }}</td>
+<td width="10%" class="hidden-xs hidden-sm">{{ x.product_code }}</td>
+<td width="20%" ng-bind-html='x.product_name'></td>
+<td width="10%" class="hidden-xs hidden-sm">{{ x.unit }}</td>
+<td width="10%" class="hidden-xs hidden-sm">{{ x.price }}</td>
+<td width="10%" class="hidden-xs hidden-sm">{{ x.gst }}</td>
+<td width="5%" ng-if="deletePermission=='1' || editPermission=='1'">
+<i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x._id.$oid) title="Edit" >edit</i>
+<i ng-if="deletePermission=='1' && tabletype=='usage'" class="material-icons micon" ng-click=onRemove(x._id.$oid) title="Remove" >delete</i>
+<i ng-if="deletePermission=='1' && tabletype=='cancel'" class="material-icons micon" ng-click=onDelete(x._id.$oid) title="Delete" >delete</i>
+<i ng-if="deletePermission=='1' && tabletype=='cancel'" class="material-icons micon" ng-click=onReopen(x._id.$oid) title="Reopen" >refresh</i>
+</td>
+</tr>
+</tbody>
+<tbody ng-show="filteredItems == 0">
+<tr><td colspan="7">No records found</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="row pad20" ng-show="filteredItems > 0">
+<div class="col-md-6 showitem"><br>
+The selected page no: {{currentPage}}/{{filteredItems}} Entries
+</div>
+<div class="col-md-6">
+<div class="p-r">
+<ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Add Category Modal -->
+
+<div class="modal fade" id="addcategoryModal" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title">Add</h4>
+</div>
+<form name="addCategoryForm" ng-submit="onAddcategorySubmit()">
+<div class="modal-body">
+<div class="row">
+<div class="col-sm-12">
+<label>Type</label>
+<select ng-model="addCategoryForm.type" ng-options="list.type as list.type for list in category_list | unique:'type'" ng-change="typeChange(addCategoryForm.type, addCategoryForm.category)" required></select>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-6 padr20">
+<label>Category</label>
+<input type="text"  ng-model="addCategoryForm.category" required />
+</div>
+<div class="col-sm-6">
+<label>Category Short Name</label>
+<input type="text"  ng-model="addCategoryForm.short" required /><br>
+</div>
+</div>
+
+</div>
+<div class="modal-footer">
+<input type="submit" value="Add" class="btn btn-primary" />
+<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addModal" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title">Add</h4>
+</div>
+<form name="addProductForm" ng-submit="onAddSubmit()">
+<div class="modal-body">
+<div class="row">
+<div class="col-sm-12">
+<label>Type</label>
+<select ng-model="addProductForm.type" ng-options="list.type as list.type for list in category_list | unique:'type'" ng-change="typeChange(addProductForm.type, addProductForm.category)" required></select>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-6 padr20">
+<label>Category</label>
+<select ng-model="addProductForm.category" ng-options="list.category as list.category for list in category_list | unique:'category' | filter:{type: addProductForm.type }" ng-change="getproductcode(addProductForm.type, addProductForm.category)" required>
+<option value="">SELECT</option>
+</select>
+</div>
+<div class="col-sm-6">
+<label>HSN Code</label>
+<input type="text" ng-disabled="!addProductForm.category" ng-model="addProductForm.code" addcode-auto-complete required /><br>
+<!--
+<label>Sub Category</label>
+<select ng-disabled="!addProductForm.category" ng-model="addProductForm.sub_category" ng-options="list.sub_category as list.sub_category for list in category_list | filter:{type: addProductForm.type, category: addProductForm.category}" ng-change="typeChange(addProductForm.type, addProductForm.category, addProductForm.sub_category)" required>
+<option value="">SELECT</option>
+</select>
+-->
+</div>
+</div>
+<div class="row">
+<div class="col-sm-3 padr20">
+<label>Item Code</label>
+<input type="text" ng-disabled="!addProductForm.category" rows="2" ng-model="addProductForm.product_code" required><br>
+</div>  
+<div class="col-sm-9">
+<label>Item Name</label>
+<input type="text" ng-disabled="!addProductForm.category" rows="2" ng-model="addProductForm.product_name" addproduct-auto-complete required> <br>
+</div>
+
+
+<div class="col-sm-12">
+<div ng-if="addProductForm.type=='UPVC'">
+<div class="col-sm-6 padr20">
+    <label>Width</label> 
+    <input type="text" ng-model="addProductForm.width" required />
+</div>
+<div class="col-sm-6">
+    <label>Height</label>
+    <input type="text" ng-model="addProductForm.height" required />
+</div><br>
+<label>UPVC Type</label>
+<input type="text" ng-model="addProductForm.upvc_type" required /><br>
+</div>
+<div ng-if="addProductForm.type=='Steel'">
+<div class="col-sm-6 padr20">
+    <label>Details</label>
+    <input type="text"ng-model="addProductForm.details" required />
+</div>
+<div class="col-sm-6">
+    <label>Make</label>
+    <input type="text" ng-model="addProductForm.make" required />
+</div><br>
+</div>
+<div ng-if="addProductForm.type=='Door'">
+<div class="col-sm-6 padr20">
+    <label>Size</label>
+    <input type="text" ng-model="addProductForm.size" onkeypress='sizeValidation(event)' ng-keyup="doorcalcAdd(addProductForm.size)" required />
+</div>
+<div class="col-sm-6">
+    <label>CFT</label>
+    <input type="text" ng-model="addProductForm.cft" readonly required />
+</div><br>
+</div>
+<div ng-if="addProductForm.type!='Door'">
+<label>Unit</label>
+<input type="text" ng-model="addProductForm.unit" required /><br>
+</div>
+</div>
+<div class="col-sm-6 padr20">
+<label>Price</label>
+<input type="text"  ng-model="addProductForm.price" onkeypress='IsNumeric(event)' required />
+</div>
+<div class="col-sm-6">
+<label>GST</label>
+<input type="text"  ng-model="addProductForm.gst" onkeypress='IsNumeric(event)' required />
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<input type="submit" value="Add" class="btn btn-primary" />
+<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editModal" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<p class="modal-title title2" ng-bind-html='editProductForm.product_name'></p>
+</div>
+<form name="editProductForm" ng-submit="onEditSubmit()">
+<div class="modal-body">
+<div class="row">
+<div class="col-sm-12">
+    <div>
+<label>HSN Code</label>
+<input type="text"  ng-model="editProductForm.code" required />
+    </div>
+<div ng-if="designation=='Purchase Manager' || designation=='Web Designer'">
+    <label>Product Name</label> 
+    <input type="text" ng-model="editProductForm.product_name" required />
+</div>
+<div ng-if="editProductForm.type=='UPVC'">
+<div class="col-sm-6 padr20">
+    <label>Width</label> 
+    <input type="text" ng-model="editProductForm.width" required />
+</div>
+<div class="col-sm-6">
+    <label>Height</label>
+    <input type="text" ng-model="editProductForm.height" required />
+</div><br>
+<label>UPVC Type</label>
+<input type="text" ng-model="editProductForm.upvc_type" required /><br>
+</div>
+<div ng-if="editProductForm.type=='Steel'">
+<div class="col-sm-6 padr20">
+    <label>Details</label>
+    <input type="text"ng-model="editProductForm.details" required />
+</div>
+<div class="col-sm-6">
+    <label>Make</label>
+    <input type="text" ng-model="editProductForm.make" required />
+</div><br>
+</div>
+<div ng-if="editProductForm.type=='Door'">
+<div class="col-sm-6 padr20">
+    <label>Size</label>
+    <input type="text" ng-model="editProductForm.size" onkeypress='sizeValidation(event)' ng-keyup="doorcalcEdit(editProductForm.size)" required />
+</div>
+<div class="col-sm-6">
+    <label>CFT</label>
+    <input type="text" ng-model="editProductForm.cft" readonly required />
+</div><br>
+</div>
+<div ng-if="editProductForm.type!='Door'">
+<label>Unit</label>
+<input type="text" ng-model="editProductForm.unit" required /><br>
+</div>
+</div>
+<div class="col-sm-6 padr20">
+<label>Price</label>
+<input type="text"  ng-model="editProductForm.price" onkeypress='IsNumeric(event)' required />
+</div>
+<div class="col-sm-6">
+<label>GST</label>
+<input type="text"  ng-model="editProductForm.gst" onkeypress='IsNumeric(event)' required />
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<input type="submit" value="Update" class="btn btn-primary" />
+<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+<div class="modal-dialog">
+<!-- Modal content-->
+<div class="modal-content">
+<div class="modal-body">
+<p>{{ alert_msg }}</p>
+<input type="hidden" ng-model="modal_id" />
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+<button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,31 @@
+IP: 122.15.146.120 TIME: 2018-09-15 09:29:55 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2018-09-15 09:29:55 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:30:03 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:30:04 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:30:29 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:36:46 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:36:48 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:39:42 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:40:07 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:40:07 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:42:35 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:49:14 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase Edit Page
+IP:  TIME:  User: Preethi USERAGENT: Action : INVOICE-NOCTN/2018-19/199Inserted
+IP: 122.15.146.120 TIME: 2018-09-15 09:51:32 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:51:44 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase Edit Page
+IP: 122.15.146.120 TIME: 2018-09-15 09:53:48 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:02:37 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2018-09-15 10:02:38 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:02:50 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:02:54 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:03:14 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:04:05 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:04:06 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:05:10 User: Anupriya USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36Action :Order Page
+IP:  TIME:  User:  USERAGENT: Action : INVOICE-NOCTN/2018-19/198Inserted
+IP: 122.15.146.120 TIME: 2018-09-15 10:21:21 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:51:47 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action : Admin Login
+IP: 122.15.146.120 TIME: 2018-09-15 10:51:48 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:51:53 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Purchase New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:51:54 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Invoice New Page
+IP: 122.15.146.120 TIME: 2018-09-15 10:52:15 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.92 Safari/537.36Action :Order Page

@@ -1,0 +1,7 @@
+IP: 42.110.177.132 TIME: 2020-08-13 17:51:17 User:  USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Order Page
+IP: 42.110.177.132 TIME: 2020-08-13 17:51:43 User: Sruthi USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action : Admin Login
+IP: 42.110.177.132 TIME: 2020-08-13 17:51:44 User: Sruthi USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Order Page
+IP: 42.110.177.132 TIME: 2020-08-13 17:52:08 User: Sruthi USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Purchase New Page
+IP: 42.110.177.132 TIME: 2020-08-13 17:52:11 User: Sruthi USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Invoice New Page
+IP: 42.110.177.132 TIME: 2020-08-13 17:52:56 User: Sruthi USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Order Page
+IP: 42.110.177.132 TIME: 2020-08-13 17:53:24 User:  USERAGENT: Mozilla/5.0 (Linux; Android 9; CPH2015) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Mobile Safari/537.36Action :Logout

@@ -1,0 +1,12 @@
+IP: 106.198.90.105 TIME: 2021-07-09 15:58:59 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action : Admin Login
+IP: 106.198.90.105 TIME: 2021-07-09 15:58:59 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Order Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:02:47 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Purchase New Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:02:52 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Invoice New Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:04:08 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Order Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:04:22 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Purchase New Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:04:22 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Invoice New Page
+IP: 106.198.90.105 TIME: 2021-07-09 16:04:34 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Order Page
+IP: 106.198.90.105 TIME: 2021-07-09 18:59:09 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Logout
+IP: 106.198.90.105 TIME: 2021-07-09 19:00:20 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action : Admin Login
+IP: 106.198.90.105 TIME: 2021-07-09 19:00:20 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Order Page
+IP: 106.198.90.105 TIME: 2021-07-09 20:51:26 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36Action :Logout

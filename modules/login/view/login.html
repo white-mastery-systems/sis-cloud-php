@@ -1,0 +1,85 @@
+
+
+<style>
+body {
+ background: #00bcd4 ! important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+    
+}
+
+</style>
+
+ 
+
+ 
+
+<div id="outer">
+    <div id="blueDiv">
+    <div id="login-page" class="col-md-12 no-padding-div">
+    <div class="card-panel">
+      <form  name="loginForm" autocomplete="off" ng-submit="onSubmit()">
+        <div class="row col-md-12">
+          <div class="input-field col s12 center">
+            <img src="images/loginlogo.png" alt="S.I.S" class="responsive-img valign profile-image-login">
+            <p class="center login-form-text">South India Shelters Pvt.Ltd</p>
+                    </div>
+        </div>
+        <div class="row margin">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">person</i>
+        
+           	 <input type="email"  placeholder="EMAIL" ng-model="loginFormData.email" required><br>
+          </div>
+        </div>
+        <div class="row margin">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">lock</i>
+           <input type="password" placeholder="PASSWORD" ng-model="loginFormData.password" required><br>
+          </div>
+          
+          </div>
+        <div class="row">          
+          <div class="input-field col s12 m12 l12  login-text">
+               <div ng-show="alert" class="alert-danger pad10">
+            <strong>{{alert_content}}</strong>
+        </div>
+              <input type="checkbox" id="remember-me">
+              <label class="Remember" for="remember-me">Remember me</label>
+          </div>
+           <p>&nbsp;</p>
+        </div>
+        
+        <div class="row">
+          <div class="input-field col s12">          
+           <button type="submit" class='inkMe btn waves-effect waves-light col s12' >Login</button>
+          </div>
+        </div>
+        
+         <div class="row">
+          <div class="input-field col s6 m6 l6">
+            <p class="margin medium-small">&nbsp;</p>
+          </div>
+          <div class="input-field col s6 m6 l6">
+              <p class="margin right-align medium-small padt15"><a ui-sref="list">Forgot password ?</a></p>
+          </div>          
+        </div>
+
+      </form>
+    </div>
+  </div>
+    
+  
+    
+    </div>
+</div>
+
+
+
+
+
+
+
+
+

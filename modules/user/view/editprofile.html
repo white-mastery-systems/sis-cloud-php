@@ -1,0 +1,638 @@
+<script src="./js/session.js"></script>
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">User Profile</h5>
+                <span>
+                    <a ng-click="onBack()" class="btn btn-floating btn-large waves-effect editback waves-light pink">
+                        <i class="material-icons">keyboard_backspace</i>
+                    </a></span>
+            
+                <span class="pull-right padr30">
+                    <button ng-click="pwdModal()" class="btn btn-floating btn-large waves-effect waves-light pink del cpwd" title="Change Password">
+                       <i class="material-icons">vpn_key</i>
+                    </button>
+                </span> 
+            </div>
+        </div> 
+    </div>
+</div>
+
+<div class="table-responsive">
+    <div class="table">
+<div class="container" ng-init="tableData()">
+    <div class="row">
+        <!-- Start Sidebar -->
+        <aside class="col l4 m12 s12 sidebar z-depth-1" id="sidebar">
+            <!--  Sidebar row -->
+            <div class="row">
+                <!--  top section  -->
+                <div class="heading">
+                    <div align="center" class="feature-img info wow fadeIn a2" style="background:white">
+                        <div>
+                            <img  class="responsive-img" ng-src="{{users.profileimage}}" style="height:400px; width: 100%"/>
+                            <div class="content1"> 
+                                <span ng-show="editPermission==1"  class="material-icons marl" ng-click="showTheForm = !showTheForm;" title="Edit"> edit</span>
+                                <div class="">
+                                         <span style="font-size: 20px; opacity:1 ! important;">
+                                         <b>{{users.firstname}}</b><span ng-if="users.lastname" style="font-size: 20px; opacity:1 ! important;"> <b>.{{users.lastname}}</b> </span>
+                                    </span>
+                                </div>
+                                <b>Emp Id: {{users.emp_id}}</b><br>
+                                <span style="font-size:18px"><b>{{users.designation}} </b></span><br>
+                                {{users.department}}<br>{{users.site}}
+                            </div>
+                        </div> 
+                    </div>
+                        
+                    <div class="colortext" style="background-color: white;">
+                        <div class="col-md-12 ">
+                            <div class="pull-right" style="padding-right: 50px;cursor: pointer;"></div>
+                        </div>
+                        <form name="editFormData" ng-show="showTheForm" ng-submit="showTheForm=false; update()">
+                           <div class="file-upload mb15">
+                              <div class="file-select">
+                                <div class="file-select-button" id="fileName"><i class="material-icons" style="font-size: 25px">attach_file</i></div>
+                                <div class="file-select-name" id="noFile"></div> 
+                                <input type="file" name="chooseFile" id="chooseFile" file-input="files" accept="image/*" onchange="angular.element(this).scope().setFile(this)">
+                              </div>
+                            </div>
+                            
+                            <input type="text" ng-model="users.firstname" required />
+                            <input type="text"ng-model="users.lastname" />
+                            <select ng-model="users.department" ng-options="item.department as item.department for item in dprt_list | unique:'department'" class="mb15"></select>
+                            <select ng-disabled="!users.department" ng-model="users.designation" ng-options="item.designation as item.designation for item in dprt_list | filter:users.department"></select>
+                            <div style="margin-top:20px;">
+                                <button type="submit" class="btn">Submit</button>
+                                <button class="btn" type="button" ng-click="showTheForm=false">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="clearfix">&nbsp;</div>
+                    
+                <!-- sidebar info -->
+                <!-- MOBILE NUMBER -->
+                <div class="col l12 m12 s12  mobile sidebar-item">
+                    <div class="row">
+                        <div class="col m12 s12 l3 icon"><i class="fa fa-phone c-white"></i></div>
+                        <div class="col m12 s12 l9 info wow fadeIn " data-wow-delay="0.2s">
+                            <div class="section-item-details">
+                                <div class="col-md-12 ">
+                                    <div class="pull-right" style="cursor: pointer;">
+                                        <span ng-show="editPermission==1" class="material-icons mi " ng-click="showTheForm5 = !showTheForm5;" title="Edit">edit</span>
+                                    </div>
+                                </div>
+                                <div class="personal">
+                                    <div class=""><span>Mobile No</span><h4>{{users.officeno}}</h4></div>
+                                    <form name="editFormData" ng-show="showTheForm5" ng-submit="showTheForm5=false; update()">
+                                        <span>Mobile No</span>
+                                        <input type="text" name="officeno" ng-model="users.officeno" required>
+                                        <span>Emergency Contact No</span>
+                                        <input type="text" name="contactno" ng-model="users.emergency_conno">
+                                        <span>Official Email</span>
+                                        <input type="text" name="email" ng-model="users.email">
+                                        <span>Personnel Email</span>
+                                        <input type="text" name="email" ng-model="users.personnel_email">
+                                        <span>Date of birth</span>
+                                        <input type="text" class="datepicker" ng-model="users.dob">
+                                        <span>Blood group</span>
+                                        <select style="color:black !important;" ng-model="users.bloodgroup">
+                                            <option value="">Select Blood Group</option>
+                                            <option value="O-ve">O-ve</option>
+                                            <option value="O+ve">O+ve</option>
+                                            <option value="A-ve">A-ve</option>
+                                            <option value="A1+ve">A1+ve</option>
+                                            <option value="A1-ve">A1-ve</option>
+                                            <option value="A+ve">A+ve</option>
+                                            <option value="AB-ve">AB-ve</option>
+                                            <option value="AB+ve">AB+ve</option>
+                                            <option value="A1B-ve">A1B-ve</option>
+                                            <option value="A1B+ve">A1B+ve</option>
+                                            <option value="B-ve">B-ve</option>
+                                            <option value="B+ve">B+ve</option>
+                                            <option value="B1+ve">B1+ve</option>
+                                            <option value="B1-ve">B1-ve</option>
+                                        </select>
+                                        <span><br><br>Date of joining</span>
+                                        <input type="text" class="datepicker1" ng-model="users.doj">
+                                        <span>Education qualification</span>
+                                        <input type="text" name="qualification" ng-model="users.qualification">
+                                        <span>Address</span>
+                                        <textarea class="materialize-textarea" id="comment" cols="8" ng-model="users.address"></textarea>
+                                        <span>Status</span>
+                                        <select style="color:black !important;" ng-model="users.status">
+                                            <option value="Active">Active</option>
+                                            <option value="Resigned">Resigned</option>
+                                        </select>
+                                        <span ng-if="users.status=='Resigned'">
+                                            <span><br><br>Resigned Date</span>
+                                            <input type="text" ng-model="users.resigned_date" refdatepicker required>
+                                        </span>
+                                        <div style="margin-top: 20px">
+                                            <button class="btn" type="submit">Submit</button>
+                                            <button class="btn" type="button" ng-click="showTheForm5=false">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="work" ng-if="users.emergency_conno!=''">
+                                    <span>Emergency Contact No</span><h4>{{users.emergency_conno}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--  EMAIL -->
+                <div class="col l12 m12 s12 email sidebar-item" ng-if="users.email!='' || users.personnel_email!=''">
+                    <div class="row">
+                        <div class="col m12 s12 l3 icon"><i class="fa fa-envelope c-white"></i></div>
+                        <div class="col m12 s12 l9 info wow fadeIn a3" data-wow-delay="0.3s">
+                            <div class="section-item-details">
+                                <div class="personal" ng-if="users.email!=''">
+                                    <span>Official Email Id</span><h4>{{users.email}}</h4>
+                                </div>
+                                <div class="work" ng-if="users.personnel_email!=''">
+                                    <span>Personal Email Id</span><h4>{{users.personnel_email}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col l12 m12 s12  sidebar-item">
+                    <div class="row">
+                        <div class="col m12 s12 l3 icon"><i class="fa fa-user c-white"></i></div>
+                        <div class="col m12 s12 l9 info wow fadeIn" data-wow-delay="0.1s">
+                            <div class="section-item-details">
+                                <span ng-if="users.dob"><span>Date Of Birth</span><h4>{{users.dob}}</h4></span>
+                                <span ng-if="users.age"><span>Age</span><h4>{{users.age}}</h4></span>
+                                <span ng-if="users.bloodgroup"><span>Blood Group</span><h4>{{users.bloodgroup}}</h4></span>
+                                <span ng-if="users.doj"><span>Date Of Join</span><h4>{{users.doj}}</h4></span>
+                                <span ng-if="users.qualification"><span>Qualification</span><h4>{{users.qualification}}</h4></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ADDRESS  -->
+                <div class="col l12 m12 s12  address sidebar-item ">
+                    <div class="row">
+                        <div class="col l3 m12  s12 icon"><i class="fa fa-home c-white"></i></div>
+                        <div class="col m12 s12 l9" data-wow-delay="0.4s">
+                            <div class="section-item-details">
+                                <div class="address-details">
+                                    <h4 ng-if="users.address!=''">{{users.address}}</h4>
+                                    <span style="opacity: 0.7;">Status</span>
+                                    <h4>{{users.status}}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- end sidebar -->
+        
+        <!-- =========================================
+                   Work experiences
+         ==========================================-->
+        <section class="col s12 m12 l8 mart10 section">
+            <div class="row">
+                <div class="section-wrapper z-depth-1">
+                    <div ng-if="users.doj!=''" class="section-icon col s12 m12 l2"> <i class="fa fa-suitcase opacity1"></i></div>
+                    <div ng-if="users.doj!=''" class="custom-content col s12 m12 l10 wow fadeIn a1">
+                        <div class="row">
+                            <div class="col-md-6"><h2>Work Experience</h2></div>
+                            <div class="col-md-6"><h2 style="font-size: 20px;">{{users.experience2}}</h2></div>
+                        </div>
+                        <div class="row">
+                            <div class="custom-content-wrapper wow fadeIn a2">
+                                <div class="col-md-6">
+                                    <h3>Work experience in our company</h3>  
+                                    <h3>{{users.exp_date}}</h3>
+                                    <span>{{users.exp_duration}}</span>
+                                </div>
+                                <div class="col-md-6" ng-hide="users.experience2 == null">
+                                    <h3> Work Experience in Other company </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    <div class="section-icon col s12 m12 l2"> <i class="fa fa-money opacity1"></i></div>
+                    <div class="custom-content col s12 m12 l10" data-wow-delay="0.1s">
+                        <h2>Salary</h2> 
+                        <div class="custom-content-wrapper wow fadeIn a2" data-wow-delay="0.2s">
+                            <h3 >Monthly Salary</h3>
+                            <span>{{ users.gross | currency:"&#8377; ":2 }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- ========================================
+                        Education 
+                ==========================================-->
+                <div class="section-wrapper z-depth-1">
+                    <div class="section-icon col s12 m12 l2"> <i class="fa fa-building opacity1"></i> </div>
+                    <div class="custom-content col s12 m12 l10 wow fadeIn a1" data-wow-delay="0.1s">
+                        <h2 class="padl80">
+                            Project Details
+                            <div style="background: rgba(5, 177, 199, 0.41);color:white; font-size: 18px; text-align: center" calss="well" ng-show="alert">
+                                <strong>{{alert_content}}</strong>
+                            </div>
+                            <span ng-if="editPermission==1" style="padding-right:50px;cursor: pointer;" class="pull-right material-icons mi opacity2" ng-click="onProjectModal()" title="Edit">edit</span>
+                        </h2><br><br>
+                        <div class="timelinebody">
+                            <ul class="timeline">
+                                <li ng-repeat="x in transferhistory | orderBy:'$index':true" ng-class-odd="'timeline-inverted'">
+                                    <div class="timeline-badge "></div>
+                                    <div class="timeline-panel">
+                                        <div class="timeline-heading custom-content-wrapper">
+                                            <h4 class="timeline-title">{{x.transfer_site}}</h4>
+                                            <p ng-if="x.transfer_dateformat!=''">{{x.transfer_dateformat}}</p> 
+                                            <span ng-if="x.transfer_duration!=''">{{x.transfer_duration}}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- ========================================
+                        Intertests 
+                ==========================================-->
+                <div class="section-wrapper z-depth-1">
+                    <div class="section-icon col s12 m12 l2"><i class="fa fa-file opacity1"></i></div>
+                    <div class="interests col s12 m12 l10 wow fadeIn" data-wow-delay="0.1s">
+                        <h2 class="padl80">
+                            Documents
+                            <span class="pull-right" style="padding-right:50px; cursor:pointer;">
+                                <span ng-if="editPermission==1" class="material-icons mi opacity2" title="Edit" ng-click="onDocModal()">edit</span>
+                                <i ng-if="image_list.length > 0  && editPermission==1" class="material-icons mi opacity2" title="download" ng-click="onDownload()">get_app</i>
+                            </span>
+                        </h2><br>
+                        <div class="row pad25p">
+                            <div class="container">
+                                <div class="col-md-12">
+                                    <h1 class="sc_title sc_title_regular text-center margin_bottom_mini"></h1>
+                                    
+                                    <div class="gallery" ng-repeat="image in image_list track by $index">
+                                    <a ng-click="openLightboxModal($index)">
+                                     <img img ng-src="{{image.url}}" class="portrait" title="{{image.caption}}" width="150" height="100"> </a>
+                                     <div class="desc"> {{image.caption}}</div>
+                                     
+                                      <p ng-if="image_list.length==0 && editPermission==1" class="docstyle" style="text-align: center;background: rgb(7, 177, 200); color: white;padding: 10px; margin-right: 10%"><b>Click on edit button to upload your documents</b></p>
+                                     </div>
+                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+    </div>
+</div>
+<div class="modal fade" id="projectModal" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Site Location</h4>
+            </div>
+            <form name="salaryedit" ng-submit="projectinsert()">
+            <div class="row modal-body">
+                <div class="col-md-6" style="padding-right:  10px;">
+                    <label>Transfered</label>
+                    <select ng-model="project.site" ng-options="item.project_name as item.project_name for item in project_list | filter : { project_name: '!' + 'Common' } | unique:'project_name'" required>
+                        <option value="">Select</option>
+                    </select>
+                </div>
+                <div class="col-md-6" ng-if="project.site && project.site!='Head Office' && project.site!='S.I.S Capetown' && project.site!='S.I.S Luxor'">
+                    <label>Select block name</label>
+                    <select ng-model="project.project_block" ng-options="item.block_name as item.block_name for item in project_list | filter:project.site">
+                        <option value="">All</option>
+                    </select>
+                </div><br>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Insert" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+    
+<div class="modal fade" id="documentModal" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">User Documents</h4>
+            </div>
+            <form name="document" ng-submit="uploadFile()">
+            <div class="modal-body">
+                <label>Document Name</label>
+                <select ng-model="document.docname" ng-options="item.name as item.name for item in doc_list" required>
+                    <option value="">Select your document name</option>
+                </select><br><br>
+                 <div class="file-upload2 mb15">
+                    <div class="file-select">
+                        <div class="file-select-button" id="fileName2"><i class="material-icons" style="font-size: 25px">attach_file</i></div>
+                        <div class="file-select-name" id="noFile2"></div> 
+                        <input type="file" name="chooseFile" id="chooseFile2" file-input="files" accept="image/*" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-info">Upload</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="pwdModal" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Change Password</h4>
+            </div>
+            <form name="pwdForm" ng-submit="changePwd()">
+            <div class="modal-body">
+                <label>Current Password</label>
+                <input type="password" ng-model="pwdForm.curr_pwd" required /><br>
+                <label>New Password</label>
+                <input type="password" ng-model="pwdForm.new_pwd" required pattern=".{8,}" title="Eight or more characters" /><br>
+                <label>Confirm New Password</label>
+                <input type="password" ng-model="pwdForm.cnew_pwd" required pattern=".{8,}" title="Eight or more characters" />
+                <b style="color:red;" ng-show="modalAlert">{{ modalAlertMsg }}</b>
+            </div>
+            <div class="modal-footer">
+                <button ng-disabled="pwdForm.new_pwd!=pwdForm.cnew_pwd" type="submit" class="btn btn-info">Update</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+   
+<style>
+.upload input {
+    cursor: pointer;
+    height: 50px;
+    right: 20px;
+    opacity: 0;
+    position: absolute;
+    top: 80px;
+    width: 200px;
+    z-index: 4;
+}
+        
+.mdl-button--file input {
+    cursor: pointer;
+    height: 40px;
+    right: 20px;
+    opacity: 0;
+    position: absolute;
+    top: 30px;
+    width: 200px;
+    z-index: 4;
+}
+        
+.mdl-textfield--file .mdl-textfield__input {
+    box-sizing: border-box;
+    width: calc(100% - 25px);
+}
+        
+.mdl-textfield--file .mdl-button--file {
+    right: 0;
+}
+        
+.m-i {
+    font-size: 25px;
+    border-radius: 50%;
+    margin-top: 25px;
+    vertical-align: middle;
+}
+   
+    
+ .gallery {
+    margin: 5px !important;
+    border: 1px solid #ccc !important;
+    float: left !important;
+    
+}
+
+.gallery:hover {
+    border: 1px solid #777 !important;
+}
+
+
+
+.desc {
+    padding: 10px !important;
+    text-align: center !important;
+}
+    
+    
+/*  keerthana  */
+.user {
+  display: inline-block;
+  width: 300px;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+.thumbnail {
+  position: relative;
+  width: 200px;
+  height: 117px;
+  overflow: hidden;
+}
+.thumbnail img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+.thumbnail img.portrait {
+  width: 100%;
+  height: auto;
+}
+    
+   .fa {
+  font-size: 22px;
+} 
+  
+    
+    
+</style>
+
+<script>
+    $(document).ready(function () {
+        var today = new Date();
+        $('.datepicker').datepicker({
+            dateFormat: "dd-mm-yy",
+            maxDate: 0,
+            changeYear: true,
+            changeMonth: true,
+            autoclose: true
+        }).val()
+        
+        $(".datepicker1").datepicker({
+            dateFormat: "dd-mm-yy",
+            maxDate: 0,
+            changeYear: true,
+            changeMonth: true,
+            autoclose: true
+        }).val()
+    });
+    
+    /* file Upload for Profile */
+    $('#chooseFile').bind('change', function () {
+        var filename = $("#chooseFile").val();
+        if (/^\s*$/.test(filename)) {
+            $(".file-upload").removeClass('active');
+            $("#noFile").text("No file chosen..."); 
+        }
+        else {
+            $(".file-upload").addClass('active');
+            $("#noFile").text(filename.replace("C:\\fakepath\\", "")); 
+        }
+    });
+    
+    /* file Upload for Document */
+    $('#chooseFile2').bind('change', function () {
+        var filename = $("#chooseFile2").val();
+        if (/^\s*$/.test(filename)) {
+            $(".file-upload2").removeClass('active');
+            $("#noFile2").text("No file chosen..."); 
+        }
+        else {
+            $(".file-upload2").addClass('active');
+            $("#noFile2").text(filename.replace("C:\\fakepath\\", "")); 
+        }
+    });
+</script>
+
+
+
+<style>
+    .editback {margin-left: 30px;}
+    .del{}
+    .cpwd{}
+    .padr30{ padding-right: 30px;}
+  
+.breadcrumbs-title {
+    font-size: 1.8rem ! important;
+    text-transform: uppercase ! important;
+    line-height: 1.804rem ! important;
+    margin: 40px 0px 10px 40px ! important; 
+    color: white ! important;
+}
+
+/* responsive for portrait */    
+ @media only screen and (min-device-width: 320px) and (max-device-width: 480px)   {
+        .breadcrumbs-title {
+            font-size: 1.8rem ! important;
+            text-transform: uppercase ! important;
+            line-height: 1.804rem ! important;
+            margin: 0px ! important;
+            color: white ! important;
+            padding-top: 30px ! important;
+           }
+    
+    .editback
+     {
+            width: 46px ! important;
+            height: 46px ! important;
+            top: 56px ! important;
+            margin-left: 10px;
+     }
+    .editback i
+     {
+        line-height: 46px ! important;
+     }
+     
+     .container-title {
+       height: 130px ! important;
+     }
+    
+     .del
+    {
+       top: 57px ! important;
+       right: 20px ! important; 
+        
+    }
+      .padr30
+     { 
+         padding-right: 0px;
+     }
+    }
+    
+    /* responsive for Landscape */   
+    @media only screen and (min-device-width: 568px) and (max-device-width: 854px)
+    {
+        
+           .breadcrumbs-title {
+          font-size: 1.8rem ! important;
+          text-transform: uppercase ! important;
+          line-height: 1.804rem ! important;
+          margin: 0px ! important;
+          color: white ! important;
+          padding-top: 25px ! important;        
+           }
+        
+        
+        .editback
+     {
+            width: 46px ! important;
+            height: 46px ! important;
+            top: 50px ! important;
+     }
+     .editback i
+     {
+        line-height: 46px ! important;
+     }
+        
+    .container-title {
+       height: 120px ! important;
+     }
+        
+         .del
+    {
+       
+       right: 20px ! important;       
+        margin-top:20px ! important;
+        width: 46px ! important;
+        height: 46px ! important;
+        
+    }
+     
+     .del i
+     {
+         line-height: 46px ! important;
+     }
+        
+     .cpwd{
+         top:33px;
+        }    
+        
+        
+    }
+    
+
+</style>
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+html,body { height: 100%;}
+html {display: table;margin: auto;}body {display: table-cell;vertical-align: middle;}form{position:relative; width:100%; height:auto;}
+.div-center {margin: auto;width: 90%; margin-top: 20px;}.main-width{width:320px;}
+@media all and (max-width:768px),only screen and (-webkit-min-device-pixel-ratio:2) and (max-width:1024px),only screen and (min--moz-device-pixel-ratio:2) and (max-width:1024px),only screen and (-o-min-device-pixel-ratio:2/1) and (max-width:1024px),only screen and (min-device-pixel-ratio:2) and (max-width:1024px),only screen and (min-resolution:192dpi) and (max-width:1024px),only screen and (min-resolution:2dppx) and (max-width:1024px){.profile-image-login{width:100%; height:auto;}/*.main-width{width:280px;}*/
+ .div-center{width:90%;}
+ }

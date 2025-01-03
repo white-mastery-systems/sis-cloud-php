@@ -1,0 +1,16 @@
+IP: 122.15.146.122 TIME: 2018-02-22 10:12:33 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2018-02-22 10:12:34 User: Preethi USERAGENT: Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2018-02-22 10:58:40 User:  USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Login Failed
+IP: 122.15.146.122 TIME: 2018-02-22 10:59:12 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2018-02-22 10:59:13 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2018-02-22 14:37:04 User: Rian Ozal USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action : Admin Login
+IP: 122.15.146.122 TIME: 2018-02-22 14:37:04 User: Rian Ozal USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2018-02-22 14:42:24 User: Rian Ozal USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action :PONO253 view
+IP: 122.15.146.122 TIME: 2018-02-22 14:42:38 User: Rian Ozal USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:44:04 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Vendor Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:44:15 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :products Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:44:17 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Product Active Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:44:17 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Product Active Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:44:44 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Order Page
+IP: 122.15.146.122 TIME: 2018-02-22 16:53:52 User: Menaka USERAGENT: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36Action :Vendor Page
+IP: 122.15.146.122 TIME: 2018-02-22 17:11:45 User:  USERAGENT: Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/47.0 (Chrome)Action :Order Page

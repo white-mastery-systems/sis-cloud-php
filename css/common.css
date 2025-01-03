@@ -1,0 +1,617 @@
+#preloader {
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   height:60px;
+   width:60px;
+   margin:0px auto;
+   -webkit-animation: rotation .6s infinite linear;
+   -moz-animation: rotation .6s infinite linear;
+   -o-animation: rotation .6s infinite linear;
+   animation: rotation .6s infinite linear;
+   border-left:4px solid rgba(0,174,239,.15);
+   border-right:4px solid rgba(0,174,239,.15);
+   border-bottom:4px solid rgba(0,174,239,.15);
+   border-top:4px solid rgba(0,174,239,.8);
+   border-radius:100%;
+   z-index:1000;
+}
+
+.modal-header { color:white; }
+.modal-header > .title1 { font-size:20px; }
+.modal-header > .title2 { font-size:14px; }
+.modal-header > .title3 { font-size:16px; }
+
+@-webkit-keyframes rotation {
+   from {-webkit-transform: rotate(0deg);}
+   to {-webkit-transform: rotate(359deg);}
+}
+@-moz-keyframes rotation {
+   from {-moz-transform: rotate(0deg);}
+   to {-moz-transform: rotate(359deg);}
+}
+@-o-keyframes rotation {
+   from {-o-transform: rotate(0deg);}
+   to {-o-transform: rotate(359deg);}
+}
+@keyframes rotation {
+   from {transform: rotate(0deg);}
+   to {transform: rotate(359deg);}
+}
+
+.c-white
+{
+    color: white ! important;
+        opacity: .8;
+}
+
+.opacity1{
+    opacity: .8;
+}
+th,td { 
+    text-align:center; 
+}
+.fa {
+    font-size:16px;
+    padding: 0px 5px 0px 5px;
+       color: #ff4081;
+}
+.ui-autocomplete.ui-front {
+    z-index: 1051;
+}
+#pageloader {
+    position: fixed;
+    left: 0;
+    z-index: 9;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    background: white url('../images/pageloader2.gif') no-repeat center center;
+}
+
+.loadinggif
+ {
+    background:url('../images/loader1.gif') no-repeat right center;
+    background-size: 25px 25px;
+    
+}
+.container {
+    margin-top: 4.5%;
+}
+#editor {
+    max-height: 500px;
+    height: 120px;
+    overflow: scroll;
+    outline: none;
+    padding-top: 20px;
+}
+.dropdown-menu a {
+    cursor: pointer;
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    z-index: 1;
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+.badge{
+    background-color: #337ab7;
+    color: #fff !important;
+}
+.badge:hover{
+    background-color: #2e6da4;
+}
+
+/* .............. Css Sangeetha ............... */
+
+.padl130
+    {
+        padding-left: 130px;
+    }
+
+.magl10
+{
+    margin-left: 10px ! important;
+}
+
+.ddscroll
+{
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.mb15
+{
+    margin-bottom: 15px;
+}
+.pagination li {
+  font-size: 1.2rem;
+  float: left;
+  padding: 0 5px;
+  line-height: 30px;
+  margin: 0 5px;
+  border-radius: 2px;
+  text-align: center; }
+  .pagination li a {
+    color: #444; }
+.maincat
+{
+    padding-left: 150px;
+}
+
+.mart10
+{
+    margin-top: -10px;
+}
+.bt
+{
+   padding: 0 5px 0 15px ! important;
+}
+
+.pleft20
+{
+    padding-left: 20px;
+}
+.padt13
+{
+    padding-top: 13px;
+}
+
+.padt20
+{
+    padding-top: 20px;
+}
+.table>thead>tr>th
+{
+    text-align: center;
+}
+.micon
+{
+    color: #e91e63;
+    cursor: pointer;
+}
+
+.padr20
+{
+    padding-right: 20px;
+}
+
+.padb50
+{
+    padding-bottom: 50px;
+}
+.padt10
+{
+    padding-top: 10px;
+}
+
+.padl20
+
+{
+    padding-left: 20px;
+}
+#searchitems
+{
+    width: 65%;
+    
+}
+.btn-floating
+{
+    color: white ! important;
+}
+
+.pad20
+{
+    padding: 20px;
+}
+
+
+.mainpart
+{
+    padding: 50px 0px 0px 0px;
+}
+
+.refresh
+{
+    margin-left: 30px;
+    top: -15px;
+}
+
+.mscroll
+{
+   
+}
+.pad10
+{
+    padding: 10px;
+}
+
+
+.per5
+{
+    width: 80%;
+}
+
+.padl80
+{
+  
+}
+
+.docstyle
+{
+   text-align: center;
+    background: rgb(7, 177, 200); 
+    color: white;padding: 10px; 
+    margin-right: 10% 
+}
+
+.content1 {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+    color: #f1f1f1;
+    width: 100%;
+   padding-bottom: 10px;
+}
+
+ .ellipse
+    {
+    white-space: nowrap; 
+    width:90px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    }
+.table>thead>tr>th
+{
+    text-align: left ! important;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td
+{
+    text-align: left;
+}
+.f-s
+{
+    
+}
+
+  form p
+{
+    
+}
+.padt15
+{
+    
+}
+.Remember
+{
+    
+}
+
+.pad25p
+{
+    padding: 0px;
+}
+
+.marl
+{
+    margin-left: 330px;
+}
+
+#main,
+footer {
+    padding-left: 240px;
+}
+
+.slide-in {
+        width: 240px;
+        left: -250px !important;
+    }
+    .slide-out {
+        width: 240px;
+        left: 0px !important;
+    }
+.footer,
+.push {
+  height: 60px;
+}
+
+/* ................. Mobile Responsive for mobile ................. */
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px)  
+{
+  .f-s
+    {
+        font-size: 10px;
+    }
+    
+     .maincat
+    {
+        padding-left: 25px;
+    }
+    
+    form p
+{
+    margin-bottom: 10px ! important;
+} 
+     .padt15
+{
+    padding-top: 15px ! important;
+}
+
+    .Remember
+{
+margin-bottom: 30px;    
+}
+  .pad25p
+    {
+        padding: 0 27% 0 27%;
+    }
+   
+   .marl
+{
+    margin-left: 300px;
+}
+     .padl130
+    {
+        padding-left: 100px;
+    }
+    
+    .padt10
+{
+    padding-top: 0px;
+}
+
+#searchitems
+{
+    width: 100%;
+    
+}
+    
+     .pagination li {
+  font-size: 1.2rem;
+  float: left;
+  padding: 0 4px;
+  line-height: 30px;
+  margin: 0 1px;
+  border-radius: 2px;
+  text-align: center;
+    }
+    
+  .pagination li a {
+    color: #444; }
+    
+    .padl20
+    {
+        padding-left: 0px;
+    }
+    
+    .padt13
+{
+    padding-top: 18px;
+}
+
+   .ihide
+    {
+        display: none ! important;
+    }
+  
+    
+
+   .per5
+{
+    width: 20% ! important;
+} 
+    .padl80
+{
+    padding-left: 80px;
+}
+    .docstyle
+{
+   text-align: center;
+    background: rgb(7, 177, 200); 
+    color: white;padding: 10px; 
+    margin-right: 10%; 
+    margin-left: 10%;
+}
+.footer,
+.push {
+  height: 80px;
+}
+    
+}
+
+@media only screen and (min-device-width: 568px) and (max-device-width: 854px)
+{
+   .mscroll
+{
+   overflow: scroll;
+    height: 150px;
+} 
+     .maincat
+    {
+        padding-left: 80px;
+    }
+     form p
+{
+    margin-bottom: 10px ! important;
+}
+     .padt15
+{
+    padding-top: 15px ! important;
+}
+
+    .Remember
+{
+   margin-bottom: 30px;    
+}
+  
+    .marl
+{
+    margin-left: 540px;
+}
+     .pad25p
+    {
+        padding: 0 10% 0 10%;
+    }
+   
+    .padl130
+    {
+        padding-left: 110px;
+    }
+    
+    .padt10
+{
+    padding-top: 0px;
+}
+
+#searchitems
+{
+    width: 100%;
+    
+}
+     .pagination li {
+  font-size: 1.2rem;
+  float: left;
+  padding: 0 4px;
+  line-height: 30px;
+  margin: 0 1px;
+  border-radius: 2px;
+  text-align: center;
+    }
+    
+  .pagination li a {
+    color: #444; }
+    
+    .padl20
+    {
+        padding-left: 0px;
+    }
+    
+    .padt13
+{
+    padding-top: 18px;
+}
+
+   .ihide
+    {
+        display: none ! important;
+    }
+  
+   .f-s
+    {
+        font-size: 8px;
+    }  
+
+   .per5
+{
+    width: 20% ! important;
+} 
+    .padl80
+{
+    padding-left: 80px;
+}
+    .docstyle
+{
+   text-align: center;
+    background: rgb(7, 177, 200); 
+    color: white;padding: 10px; 
+    margin-right: 10%; 
+    margin-left: 10%;
+}
+    .footer,
+    .push {
+  height: 80px;
+} 
+    
+}
+
+/* For ipad */
+
+@media only screen and (device-width: 1024px) 
+
+{
+
+    .hidecol td:nth-of-type(6),.hidecol th:nth-of-type(6),.hidecol td:nth-of-type(7),.hidecol th:nth-of-type(7)
+    {
+        display:none;
+    }
+    
+      .inven-hide td:nth-of-type(8),.inven-hide th:nth-of-type(8),.inven-hide td:nth-of-type(9),.inven-hide th:nth-of-type(9),.inven-hide td:nth-of-type(10),.inven-hide th:nth-of-type(10)
+    {
+        display:none;
+    }
+    
+    
+   .ven-hide td:nth-of-type(3),.ven-hide th:nth-of-type(3),.ven-hide td:nth-of-type(6),.ven-hide th:nth-of-type(6)
+    {
+        display:none; 
+    }
+    
+    .maincat
+    {
+        padding-left: 20px;
+    }
+    
+    .pagination li {
+  font-size: 1.2rem;
+  float: left;
+  padding: 0 4px;
+  line-height: 30px;
+  margin: 0 1px;
+  border-radius: 2px;
+  text-align: center;
+    }
+    
+     .pagination li a {
+    color: #444; }
+    
+   
+    #main,
+footer {
+    padding-left: 210px  !important ;
+}
+    
+    .slide-out {
+        width: 210px !important;
+        left: 0px !important;
+    }
+    
+     .f-s
+    {
+        font-size: 8px;
+    }
+    
+    
+    
+    
+    
+    
+    
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,203 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">QUOTATIONS</h5>
+               
+ <span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ui-sref="home.quotation({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
+</li></ul>
+</span>
+
+            </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+    
+    <div ng-show="alert" class="alert">
+        <strong>{{alert_content}}</strong>
+    </div>
+    
+    <div class="row" style="padding: 20px 10px 0 30px;">
+        <div class="col-md-2 col-xs-6 pr20">Project:
+            <select  ng-options="list.project_short as list.project_name for list in projects | filter : { project_name: '!' + 'Common' }" ng-model="project_short" ng-change="tableData(tabletype, project_short)" required> 
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">Type:
+            <select ng-model="tabletype" ng-change="tableData(tabletype, project_short)" >
+                <option value="">All</option>
+                <option value="approved">Approved</option>
+				<option value="pending">Pending</option>
+                <option value="declined">Declined</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">PageSize:
+            <select ng-model="entryLimit" ng-change="pageEntries()">
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 padt13 pr20 pull-right">
+            <label>
+                <i class="material-icons ihide">search</i>
+                <input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" />
+            </label>
+        </div>
+    </div>
+ 
+    <div class="row" data-ng-init="tableData(tabletype, project_short)">
+        <div class="col-md-12">
+           <div class="">
+            <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                <thead>
+                    <th width="5%" class="hidden-xs hidden-sm">#</th>
+                    <th width="10%" class="hidden-xs hidden-sm">PRF NUMBER&nbsp;<a ng-click="sort_by('prf_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">QUOTATION NUMBER&nbsp;<a ng-click="sort_by('quot_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">DATE&nbsp;<a ng-click="sort_by('quot_date');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-lg hidden-md">QUOTATION NUMBER &<br> DATE <a ng-click="sort_by('quot_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="20%">SUMMARY&nbsp;<a ng-click="sort_by('summary');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="5%" class="hidden-xs hidden-sm">MAIL STATUS</th>
+                    <th width="15%">QUOTATION STATUS</th>
+                    <th width="10%">PO STATUS</th>
+                    <th width="5%">ACTION</th>
+                </thead>
+                <tbody ng-show="filteredItems > 0">
+                    <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                        <td width="5%" class="hidden-xs hidden-sm">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                        <td width="10%" class="hidden-xs hidden-sm">{{ x.prf_number }}</td>
+                        <td width="10%" class="hidden-xs hidden-sm">{{ x.quot_number }}</td>
+                        <td width="10%" class="hidden-xs hidden-sm">{{ x.quot_date }}</td>
+                        <td width="10%" class="hidden-lg hidden-md">{{ x.quot_number }} <br>{{ x.quot_date }}</td>
+                        <td width="15%" ng-click='onView(x.quot_number)' ><a>{{ x.summary }}</a></td>
+                        <td width="5%" class="hidden-xs hidden-sm">
+                            <i ng-if="x.mail_status==''"><svg fill="#e91e63" height="20" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="19" r="2"/>
+                            <path d="M10 3h4v12h-4z"/>
+                            <path d="M0 0h24v24H0z" fill="none"/>
+                            </svg></i>
+                            <i ng-if="x.mail_status=='send'" style="color:limegreen;" class="material-icons">check</i>
+                            <i ng-if="x.mail_status=='failure'" style="color:red;" class="material-icons"> clear</i>
+                        </td>
+                        <td width="20%" ng-bind-html='x.quot_status'></td>
+                        <td width="10%" ng-bind-html='x.po_status'></td>
+                        <td width="5%">
+<!--                            <i ng-if="editPermission=='1' && x.mail_status!='send' && x.approved_status==''" class="material-icons micon" ng-click=onEdit(x.quot_number) title="Edit" >edit</i>-->
+                            <i ng-if="editPermission=='1' && x.approved_status==''" class="material-icons micon" ng-click=onEdit(x.quot_number) title="Edit" >edit</i>
+                            <i ng-if="deletePermission=='1' && x.mail_status!='send'"  class="material-icons micon" ng-click=onDelete(x.quot_number) title="Delete" >delete</i>
+                            <i ng-if="mailPermission=='1' && x.approved_status==''" class="material-icons micon" ng-click=onMail(x.quot_number) title="Email" >email</i>
+                            <i class="material-icons micon" ng-click=onPdf(x.quot_number) title="PDF" >picture_as_pdf</i>
+                            <i ng-if="addPermission=='1' && x.approved_status=='approved' && x.po_raised!='1'" class="material-icons micon" ng-click="onAddOrder(x.quot_number)" title="Add purchase order" >launch</i>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody ng-show="filteredItems == 0">
+                    <tr><td colspan="9">No records found</td></tr>
+                </tbody>
+            </table></div>
+        </div>
+    </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p class="modal-title title3">Quotation No: {{ mailForm.quot_number }}</p>
+        </div>
+        <form name="mailForm" ng-submit="onSend()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <input type="hidden" ng-model="mailForm.quot_number" />
+                        <input type="hidden" ng-model="mailForm.emp_id" />
+                        <label>From</label>
+                        <input type="text"  ng-model="mailForm.from_mail" required readonly /><br>
+                        <label>To</label>
+                        <input type="text"  ng-model="mailForm.to_mail" mail-auto-complete required /><br>
+                        <label>CC</label>
+                        <input type="text"  ng-model="mailForm.cc_mail" mail-auto-complete /><br>
+                        <label>BCC</label>
+                        <input type="text"  ng-model="mailForm.bcc_mail" mail-auto-complete /><br>
+                        <label>Subject</label>
+                        <input type="text"  ng-model="mailForm.subject" required /><br>
+            
+                        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                  <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                  <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+                                <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+                                <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+                                <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+                                <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+                                <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+                                <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+                            </div>
+                        </div>
+                        <div id="editor" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+                <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>{{ alert_msg }}</p>
+              <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>

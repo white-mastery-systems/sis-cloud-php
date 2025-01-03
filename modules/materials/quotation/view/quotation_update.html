@@ -1,0 +1,407 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">QUOTATION FORM</h5>
+               <span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span> 
+            </div>
+        </div> 
+    </div>
+</div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+
+<form autocomplete="off" name="myForm">
+ 
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="25%">Type</th>
+                    <th width="25%">Category</th>                 
+                    <th width="25%">PRF Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ indentForm.type }}</td>
+                    <td>{{ indentForm.category }}</td>                   
+                    <td>{{ indentForm.prf_number }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-sm-12">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="25%">Project</th>
+                    <th width="25%">Block</th>
+                    <th width="25%">Quotation Number</th>
+                    <th width="25%">Quotation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ indentForm.sis_project_name }}</td>
+                    <td>{{ indentForm.sis_project_block }}</td>
+                    <td>{{ indentForm.quot_number }}</td>
+                    <td>{{ indentForm.quot_date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row table-responsive">
+  <div class="col-sm-12">
+    <table>
+      <tr ng-repeat="suggestTable in quot_list track by $index" ng-init="vendorIndex = $index">
+        <td>
+          <div class="row" align="left">
+              <div class="col-sm-6 padr20">
+                <input type="checkbox" ng-model="suggestTable.tablecheck" id="{{ vendorIndex }}" />
+                <label class="" for="{{ vendorIndex }}"></label>
+                <label>Vendor Name</label>
+                <input type="text"  ng-model="suggestTable.vendor_name" required supplier-auto-complete />
+              </div>
+              <div class="col-sm-6 padr20" style="margin-top:11px;">
+                <label>Reason</label>
+                <input type="text"  ng-model="suggestTable.reason" />
+              </div>
+          </div>
+          <!-- standard or work -->
+          <table ng-if="indentForm.type=='Standard' || indentForm.type=='Work'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>HSN CODE</th>
+                <th>PRODUCT NAME</th>
+                <th>QUANTITY</th>
+                <th>UNIT</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+                <th>GST</th>
+                <th>GST AMOUNT</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="tableForm in suggestTable.table_items track by $index" ng-init="tableIndex = $index">
+                <td>
+                    <input type="hidden" ng-model="tableForm.stock_details" />
+                    <input type="checkbox" ng-model="tableForm.rowCheck" id="row-{{vendorIndex}}{{tableIndex}}"/>
+                    <label for="row-{{vendorIndex}}{{tableIndex}}"></label>
+                </td>
+                <td><input type="text" ng-model="tableForm.code" required quotcode-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text" ng-model="tableForm.item" required quotproduct-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td><input type="text" ng-model="tableForm.unit" required /></td>
+                <td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.amount'></td>
+                <td><input type="text" ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.gst_amount'></td>
+                <td><input type="text" ng-model="tableForm.required_date" datepicker required /></td>
+                <td ng-bind-html='tableForm.available_stock'></td>
+                <td ng-bind-html='tableForm.total'></td>
+              </tr>
+              <tr>
+                <td colspan="10" class="text-left">
+                  <input type="button" class="btn btn-primary" ng-click="addRow(suggestTable.table_items)" value="+">&nbsp; &nbsp;
+                  <input type="button" class="btn btn-danger" ng-click="removeRow(suggestTable.table_items, vendorIndex)" value="-">
+                </td>
+                <td><b>GRAND TOTAL</b></td>
+                <td ng-bind-html='suggestTable.grand_total'></td>
+              </tr>
+            </tbody>
+          </table>
+            
+          <!-- UPVC -->
+          <table ng-if="indentForm.type=='UPVC'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>HSN CODE</th>
+                <th>PRODUCT NAME</th>
+                <th>WIDTH</th>
+                <th>HEIGHT</th>
+                <th>TYPE</th>
+                <th>QUANTITY</th>
+                <th>UNIT</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+                <th>GST</th>
+                <th>GST AMOUNT</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="tableForm in suggestTable.table_items track by $index" ng-init="tableIndex = $index">
+                <td>
+                    <input type="hidden" ng-model="tableForm.stock_details" />
+                    <input type="checkbox" ng-model="tableForm.rowCheck" id="row-{{vendorIndex}}{{tableIndex}}"/>
+                    <label for="row-{{vendorIndex}}{{tableIndex}}"></label>
+                </td>
+                <td><input type="text" ng-model="tableForm.code" required quotcode-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text" ng-model="tableForm.item" required quotproduct-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text"  ng-model="tableForm.width" required /></td>
+                <td><input type="text"  ng-model="tableForm.height" required /></td>
+                <td><input type="text"  ng-model="tableForm.upvc_type" required /></td>
+                <td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td><input type="text" ng-model="tableForm.unit" required /></td>
+                <td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.amount'></td>
+                <td><input type="text" ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.gst_amount'></td>
+                <td><input type="text" ng-model="tableForm.required_date" datepicker required /></td>
+                <td ng-bind-html='tableForm.available_stock'></td>
+                <td ng-bind-html='tableForm.total'></td>
+              </tr>
+              <tr>
+                <td colspan="13" class="text-left">
+                  <input type="button" class="btn btn-primary" ng-click="addRow(suggestTable.table_items)" value="+">&nbsp; &nbsp;
+                  <input type="button" class="btn btn-danger" ng-click="removeRow(suggestTable.table_items, vendorIndex)" value="-">
+                </td>
+                <td><b>GRAND TOTAL</b></td>
+                <td ng-bind-html='suggestTable.grand_total'></td>
+              </tr>
+            </tbody> 
+          </table>
+            
+          <!-- steel -->
+          <table ng-if="indentForm.type=='Steel'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>HSN CODE</th>
+                <th>PRODUCT NAME</th>
+                <th>DETAILS</th>
+                <th>QUANTITY</th>
+                <th>UNIT</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+                <th>GST</th>
+                <th>GST AMOUNT</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>MAKE</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="tableForm in suggestTable.table_items track by $index" ng-init="tableIndex = $index">
+                <td>
+                    <input type="hidden" ng-model="tableForm.stock_details" />
+                    <input type="checkbox" ng-model="tableForm.rowCheck" id="row-{{vendorIndex}}{{tableIndex}}"/>
+                    <label for="row-{{vendorIndex}}{{tableIndex}}"></label>
+                </td>
+                <td><input type="text" ng-model="tableForm.code" required quotcode-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text" ng-model="tableForm.item" required quotproduct-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text"  ng-model="tableForm.details" required /></td>
+                <td><input type="text" ng-model="tableForm.quantity" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td><input type="text" ng-model="tableForm.unit" required /></td>
+                <td><input type="text" ng-model="tableForm.price" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.amount'></td>
+                <td><input type="text" ng-model="tableForm.gst" ng-keyup="rowcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.gst_amount'></td>
+                <td><input type="text" ng-model="tableForm.required_date" datepicker required /></td>
+                <td ng-bind-html='tableForm.available_stock'></td>
+                <td><input type="text"  ng-model="tableForm.make" required /></td>
+                <td ng-bind-html='tableForm.total'></td>
+              </tr>
+              <tr>
+                <td colspan="12" class="text-left">
+                  <input type="button" class="btn btn-primary" ng-click="addRow(suggestTable.table_items)" value="+">&nbsp; &nbsp;
+                  <input type="button" class="btn btn-danger" ng-click="removeRow(suggestTable.table_items, vendorIndex)" value="-">
+                </td>
+                <td><b>GRAND TOTAL</b></td>
+                <td ng-bind-html='suggestTable.grand_total'></td>
+              </tr>
+            </tbody>
+          </table>
+            
+          <!-- Door -->
+          <table ng-if="indentForm.type=='Door'" class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>HSN CODE</th>
+                <th>PRODUCT NAME</th>
+                <th>SIZE</th>
+                <th>QUANTITY</th>
+                <th>CFT</th>
+                <th>PRICE</th>
+                <th>AMOUNT</th>
+                <th>GST</th>
+                <th>GST AMOUNT</th>
+                <th>ITEM REQUIRED DATE</th>
+                <th>STOCK</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="tableForm in suggestTable.table_items track by $index">
+                <td>
+                    <input type="hidden" ng-model="tableForm.stock_details" />
+                    <input type="checkbox" ng-model="tableForm.rowCheck" id="row-{{vendorIndex}}{{tableIndex}}"/>
+                    <label for="row-{{vendorIndex}}{{tableIndex}}"></label>
+                </td>
+                <td><input type="text" ng-model="tableForm.code" required quotcode-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text" ng-model="tableForm.item" required quotproduct-auto-complete vendor-index="{{vendorIndex}}" /></td>
+                <td><input type="text"  ng-model="tableForm.size" ng-keyup="doorcalc(tableForm, vendorIndex, tableIndex)" onkeypress='sizeValidation(event)' required /></td>
+                <td><input type="text"  ng-model="tableForm.quantity" ng-keyup="doorcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.cft'></td>
+                <td><input type="text"  ng-model="tableForm.price" ng-keyup="doorcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.amount'></td>
+                <td><input type="text"  ng-model="tableForm.gst" ng-keyup="doorcalc(tableForm, vendorIndex, tableIndex)" onkeypress='IsNumeric(event)' required /></td>
+                <td ng-bind-html='tableForm.gst_amount'></td>
+                <td ng-bind-html='tableForm.required_date'></td>
+                <td ng-bind-html='tableForm.available_stock'></td>
+                <td ng-bind-html='tableForm.total'></td>
+              </tr>
+              <tr>
+                <td colspan="11" class="text-left">
+                  <input type="button" class="btn btn-primary" ng-click="addRow(suggestTable.table_items)" value="+">&nbsp; &nbsp;
+                  <input type="button" class="btn btn-danger" ng-click="removeRow(suggestTable.table_items, vendorIndex)" value="-">
+                </td>
+                <td><b>GRAND TOTAL</b></td>
+                <td ng-bind-html='suggestTable.grand_total'></td>
+              </tr>
+            </tbody>
+          </table>  
+        </td>
+      </tr><br>
+    </table> 
+  </div>
+  <div align="right">
+    <input type="button" class="btn btn-primary" ng-click="addSuggestion(parentTable.quot_items, vendorIndex)" value="Add Vendor">&nbsp; &nbsp;
+    <input type="button" class="btn btn-danger" ng-click="removeSuggestion(parentTable.quot_items, vendorIndex)" value="Remove Vendor">
+  </div>
+</div><br><br>
+
+<div ng-show="alert">
+    <strong style="color:red;">Failure !!!</strong>
+</div>
+    
+<div class="row" align="center" ng-if="indentForm.approved_status==''">
+    <button ng-if="approvePermission==1" class="btn btn-primary" ng-click="myForm.$valid && selfApprove()">Update & Self Approve</button>
+    <button ng-if="mailPermission==1" class="btn btn-primary" ng-click="myForm.$valid && mailContent()">Update & Send for Approval</button>
+    <button class="btn btn-primary" ng-click="myForm.$valid && onUpdate('update')">Update</button>
+    <button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+</div>
+</form>
+    
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Send</h4>
+        </div>
+        <form name="mailForm" ng-submit="onUpdate('mail')">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>From</label>
+                        <input type="text"  ng-model="mailForm.from_mail" required readonly /><br>
+                        <label>To</label>
+                        <input type="text" id="to_mail"  ng-model="mailForm.to_mail" mail-auto-complete required /><br>
+                        <label>CC</label>
+                        <input type="text"  ng-model="mailForm.cc_mail" mail-auto-complete /><br>
+                        <label>BCC</label>
+                        <input type="text"  ng-model="mailForm.bcc_mail" mail-auto-complete /><br>
+                        <label>Subject</label>
+                        <input type="text"  ng-model="mailForm.subject" required /><br>
+                        <input type="hidden" ng-model="mailForm.content" /><br>
+
+                        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                    <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                    <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+                                <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+                                <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+                                <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+                                <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+                                <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+                                <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+                            </div>
+                        </div>
+                        <div id="editor" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                 <button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader"  style="color: white ! important;"></i> </button>
+                <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- alert modal -->
+<div class="modal fade" id="alertModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>Please suggest only one supplier before approve the quotation</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>Are you sure to approve?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="onApprove()">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>

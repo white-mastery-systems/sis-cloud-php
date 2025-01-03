@@ -1,0 +1,336 @@
+<script src="./js/session.js"></script>
+<script type="text/javascript" src="modules/accounts/controller/accountsimport.js"></script>
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+<div class="container-title">
+<div class="row">
+<div class="col s12 m12 l12">
+<h5 id="ord-head" class="breadcrumbs-title">Salary List</h5>
+ <span id="ord-headright" class="right rightspace navigations">  
+<ul ng-if="editPermission=='1'" id="menu" class="mfb-component--tr mfb-zoomin" data-mfb-toggle="hover">
+<li class="mfb-component__wrap">
+<a class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">add</i><i class="mfb-component__main-icon--active material-icons">close</i></a>
+<ul class="mfb-component__list">
+<li>
+     <form class="mfb-component__button--child" id="upload_csv" name="upload_csv" method="post" enctype="multipart/form-data" title="User Import">
+        <input type="file" id="files" name="employee_file" class="hidden" accept=".csv"/>
+        <label for="files"><i class="mfb-component__child-icon ion-social-twitter material-icons" style="color: white ! important;
+    cursor: pointer;">import_export</i></label>
+    </form>
+    </li>
+   
+<li><a  data-mfb-label="Add Products" title="User Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i> </a></li>
+</ul></li>
+</ul>
+</span>
+     <span class="right navigations1"><button  ng-click='delete_data()' ng-show="showDelBtn" class="btn btn-floating btn-large waves-effect waves-light pink"><i class="material-icons">delete</i></button></span> 
+</div></div>
+</div></div>
+
+
+<div ng-init="tableData()">
+  <div class="mainpart">
+<div class="row" style="padding: 0px 30px 0 30px;">
+    <div class=" col-md-2 col-xs-6 pr20">
+      <div class="">
+        <label>Sort by site:</label><br>  
+        <select ng-change="tableData()" ng-options="item.location as item.location for item in filterdynamic | unique:'location'" ng-model="site">
+            <option value="">All</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-2 col-xs-6 pr20">
+      <div class="">
+	   <label>Department:</label><br>
+        <select ng-change="tableData()" ng-options="item.department as item.department for item in filterdynamic | filter:filterBy | unique:'department'" ng-model="department">
+            <option value="">All</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-md-2 col-xs-6 pr20">
+      <div class="">
+        <label>Bank:</label><br>
+        <select ng-change="tableData()" ng-options="item.mode as item.mode for item in filterdynamic | filter:filterBy| unique:'mode'" ng-model="bank">
+            <option value="">All</option>
+        </select>
+      </div>
+    </div>
+    <div class=" col-md-2 col-xs-6 pr20">
+      <label>PageSize:</label><br>
+      <select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()">
+          <option>10</option>
+          <option>25</option>
+          <option>50</option>
+          <option>100</option>
+      </select>
+    </div>
+   <div class="col-md-2 col-xs-6 pull-right padt13 pr20">
+            <label><i class="material-icons ihide">search</i>
+            <input id="searchitems" type="text" ng-model="search" ng-change="filter()" placeholder="search" /> </label>
+    </div>
+</div>
+   
+<div ng-show="alert"><strong>{{alert_content}}</strong></div>
+<b id="excel_resp"></b>
+<div id="preloader"></div>
+    
+<div class="row">
+    <div class="col-md-12">
+        <div class="">
+            <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60 table-responsive dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+            <thead>
+                <th width="5%">#</th>
+                <th width="10%">Emp id<a ng-click="sort_by('emp_id');"><i class="material-icons tiny1" style="cursor: default;">sort</i></a></th>
+                <th width="20%">Name</th>
+                <th width="20%">SITE</th>
+                <th width="20%" class="hidden-xs hidden-sm">Department</th>
+                <th width="15%" class="hidden-xs hidden-sm">Monthly salary </th>
+                <th width="10%">Action</th>
+            </thead>
+            <tbody ng-show="filteredItems > 0">
+                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                    <td width="5%">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                    <td width="10%">{{x.emp_id}}</td>
+                    <td width="20%">{{x.name}}</td>
+                    <td width="20%">{{x.site}}</td>
+                    <td width="20%" class="hidden-xs hidden-sm">{{x.department}}</td>
+                    <td width="15%" class="hidden-xs hidden-sm">{{ x.gross  | currency:"&#8377; ":2 }}</td>
+                    <td width="10%" style="color:#e91e63; cursor:pointer;">
+                        <span ng-if="editPermission=='1'" class="material-icons" ng-click="onEdit(x.emp_id)">edit &nbsp;</span>
+                        <i class="material-icons m-i" ng-click="salaryhistory(x.emp_id)" aria-hidden="true" title="Salary History">info_outline</i>
+                        <i ng-if="x.pdf_status==1" class="material-icons m-i" ng-click="salaryslip(x.emp_id)">picture_as_pdf</i>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody ng-show="filteredItems == 0">
+                <tr><td colspan="7">No records found</td></tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="row pad20" ng-show="filteredItems > 0">
+    <div class="col-md-6 showitem"><br>
+        The selected page no: {{currentPage}}/{{filteredItems}} Entries
+    </div>
+    <div class="col-md-6">
+        <div class="p-r">
+            <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+        </div>
+    </div>
+</div>
+</div>
+<!-- SALARY EDIT MODAL -->
+<div id="salaryEditModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+  <div class="modal-dialog modal-lg ui-front">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Salary Details</h4>
+      </div>
+      <div class="modal-body">
+        <form name="salaryedit" ng-submit="salaryupdate()">
+          <input type="hidden" ng-model="salaryedit.los" />
+          <input type="hidden" ng-model="salaryedit.dw" />
+          <input type="hidden" ng-model="salaryedit.leaves2" />
+          <input type="hidden" ng-model="salaryedit.amount" />
+          <input type="hidden" ng-model="salaryedit.total_amount" />
+          <input type="hidden" ng-model="salaryedit.gross" />
+          <div class="row">
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label> Monthly salary</label>
+                    <input type="text" onkeypress='IsNumeric(event)' ng-model="salaryedit.gross" id="text" ng-keyup="editcalcSalary()" required>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Basicpay</label>
+                    <input type="number" onkeypress='IsNumeric(event)' ng-model="salaryedit.basicpay" readonly>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Hra</label>
+                    <input type="text" ng-model="salaryedit.hra" readonly>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Conveyance</label>
+                    <input type="text" onkeypress='IsNumeric(event)' ng-model="salaryedit.conveyance" readonly>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Flexible benefits plan</label>
+                    <input type="text" name="pt" ng-model="salaryedit.flexibleplan" readonly>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label> Povident-fund </label>
+                    <input type="text" name="pf" ng-model="salaryedit.pf" ng-keyup="editcalcSalary2()" readonly>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Professional tax. </label>
+                    <input type="text" name="pt" onkeypress='IsNumeric(event)' ng-model="salaryedit.pt" ng-keyup="editcalcSalary2()">
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Advance </label>
+                    <input type="text" onkeypress='IsNumeric(event)' id="numbersOnly2" ng-model="salaryedit.advance" ng-keyup="editcalcSalary2()" required>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label> Income tax </label>
+                    <input type="text" name="pf" onkeypress='IsNumeric(event)' ng-model="salaryedit.it" id="text" ng-keyup="editcalcSalary2()" required>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Others</label>
+                    <input type="text" name="pt" onkeypress='IsNumeric(event)' ng-model="salaryedit.others" id="text" ng-keyup="editcalcSalary2()" required> 
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Total Net result </label>
+                    <input type="text" ng-model="salaryedit.totalearnedamount" id="text" readonly>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Incremennt </label>
+                    <input type="text" onkeypress='IsNumeric(event)' id="quantity" ng-model="salaryedit.inc" id="text" ng-keyup="editsalaryInc()" />&nbsp;<span id="errmsg"></span>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label> No of working days </label>
+                    <input type="text" onkeypress='IsNumeric(event)' name="pf" ng-model="salaryedit.ndw" ng-keyup="editcalcSalary3()" required>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>No of leave taken </label>
+                    <input type="text" name="pt" ng-model="salaryedit.leave" onkeypress='IsNumeric(event)' ng-keyup="editcalcSalary2()" required>
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Salary date credited</label>
+                    <input type="text" class="datepicker" id="datepicker" ng-model="salaryedit.credited">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Mode of payment</label>
+                    <input type="text" placeholder="Bank Name" ng-model="salaryedit.mode" mode-auto-complete required />
+                </div>
+                <div class="col-sm-4 col-md-4 padr20">
+                    <label>Avaliability Leave</label>
+                    <input type="text" ng-model="salaryedit.userleave">
+                </div>
+            </div>
+            <div ng-if='salaryedit.leave > salaryedit.userleave'>
+                <input ng-hide='salarylos == false' type="checkbox" ng-value="'los1'" id="los1" ng-model="salarylos" ng-change="editcalcSalary3()">
+                <label style="font-size:15px;" for="los1">Include loss of pay</label>
+            </div>
+            <input ng-model="salarypf" type="checkbox" id="test1"  ng-value="'los2'" ng-change = "editcalcSalary2(salarypf)" />
+            <label style="font-size:15px;" for="test1">Include pf</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <input type="submit" value="Update" class="btn btn-primary">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+<!-- SALARY HISTORY MODAL -->
+<div id="salaryhistoryModal" class="modal fade" data-backdrop="static" data-keyboard="false" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Salary History</h4>
+        </div>
+        <div class="modal-body">
+            <table class="table">
+                <thead>
+                    <th>#</th>
+                    <th>Salary credted date</th>
+                    <th>Credited salary</th>
+                    <th>Mode of payment</th>
+                    <th>increment</th>
+                </thead>
+                <tbody ng-if="salary_data.length > 0">
+                    <tr ng-repeat="x in salary_data | orderBy:'$index':true | startFrom:(currentModalPage-1)*10 | limitTo:10">
+                        <td>{{ ((currentModalPage-1)*10)+$index+1 }}</td>
+                        <td>{{x.credited}}</td>
+                        <td>{{x.gross | currency:"&#8377;":0}}</td>
+                        <td>{{x.mode}}</td>
+                        <td>{{x.inc}}</td>
+                    </tr> 
+                </tbody>
+                <tbody ng-if="salary_data.length == 0">
+                    <tr><td colspan="5">No records found</td></tr>
+                </tbody>
+            </table>
+            <div class="p-r" ng-if="salary_data.length > 0">
+                <ul uib-pagination boundary-links="true" total-items="salary_data.length"  items-per-page="10" ng-model="currentModalPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn  btn-success  btn-xs" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+  </div>
+</div>
+    
+<!-- slary slip modal -->
+<div class="modal fade" id="salaryslipModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Salary Slip</h4>
+            </div>
+            <form name="salaryForm" ng-submit="generatesalslip()">
+            <div class="modal-body">
+                <label> Choose Your Director name</label>
+                <select  ng-options="list.emp_id as list.name for list in director_list" ng-model="salaryForm.dirname" required> 
+                    <option value="">-- Select director --</option>
+                </select>
+                <input type="hidden" ng-model="salaryForm.emp_id" />
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-default" value="Genrate" />
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            maxDate: '0',
+            stepMonths: 0,
+            changeYear: false,
+            changeMonth: false,
+            autoclose: true
+        }).val()
+     });
+</script>
+<style>
+    .m-i { 
+        padding-right: 10px; 
+    }
+    .right { 
+        text-align: right; 
+    }
+    input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    .ui-autocomplete.ui-front 
+    {
+        z-index: 1051 !important;
+    }
+    .ui-datepicker {
+        width: 17em;
+        padding: .2em .2em 0;
+        display: none;
+        z-index: 2000 !important;
+    }
+</style>

@@ -1,0 +1,276 @@
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">PERMISSION LIST</h5>
+                <div id="prod" class='left leftspace navigations'> <a class="btn btn-floating btn-large waves-effect waves-light pink " ng-click="onBack()" ><i class="material-icons">keyboard_backspace</i></a></div>   
+            </div>
+        </div> 
+    </div>
+</div>
+  
+<div class="row">
+<h3 align="center"><u>{{username}} - {{userdprt}} Department</u></h3>
+<form name="myForm" ng-submit="onSubmit()">
+    <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+        <tbody>
+        <tr>
+            <td><b class="text-center">PROJECT LIST</b></td>
+        </tr>
+        <tr>
+            <td colspan="10">
+                <div class="col-md-12">
+                    <input type="checkbox" ng-model="myForm.checkedAll" id="myForm.checkedAll" ng-change="selectAll()" />
+                    <label for="myForm.checkedAll">All</label>
+                </div>
+                <div class="col-md-3 col-xs-6" ng-repeat="x in project_list | filter : { project_name: '!' + 'Common' }">
+                    <input type="checkbox" ng-model="x.singlecheck" id="{{x.project_name}}" />
+                    <label for="{{x.project_name}}">{{x.project_name}}</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+               <div class="col-md-2">
+                <input type="checkbox" ng-value="'a'" id="myForm.project" ng-model="myForm.project" />
+                <label for="myForm.project">project</label></div>
+            
+               <div class="col-md-2 col-xs-6"  ng-if="myForm.project">
+                <input type="checkbox" ng-value="'a'" id="myForm.project_add" ng-model="myForm.project_add" />
+                <label for="myForm.project_add">Add</label></div>
+          
+                <div class="col-md-2 col-xs-6" ng-if="myForm.project">
+                <input type="checkbox" ng-value="'a'" id="myForm.project_edit" ng-model="myForm.project_edit" />
+                <label for="myForm.project_edit">Edit</label></div>
+           
+           
+               <div class="col-md-2 col-xs-6" ng-if="myForm.project">
+                <input type="checkbox" ng-value="'a'" id="myForm.project_delete" ng-model="myForm.project_delete" />
+                <label for="myForm.project_delete">Delete</label></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="checkbox" id="myForm.materials" ng-model="myForm.materials" />
+                <label for="myForm.materials"><b>MATERIALS</b></label>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+               <div class="col-md-2">
+                <input type="checkbox" id="myForm.indent" ng-model="myForm.indent" />
+                   <label for="myForm.indent">Indent</label></div>
+                   
+            <div class="col-md-2 col-xs-6" ng-if="myForm.indent">
+            <input type="checkbox" id="myForm.indent_add" ng-model="myForm.indent_add" />
+                <label for="myForm.indent_add">Add</label></div>
+            
+              <div class="col-md-2 col-xs-6" ng-if="myForm.indent">
+                <input type="checkbox" id="myForm.indent_edit" ng-model="myForm.indent_edit" />
+                  <label for="myForm.indent_edit">Edit</label></div>
+           
+             <div class="col-md-2 col-xs-6" ng-if="myForm.indent">
+                <input type="checkbox" id="myForm.indent_delete" ng-model="myForm.indent_delete" />
+                 <label for="myForm.indent_delete">Delete</label></div>
+                 
+              <div class="col-md-2 col-xs-6" ng-if="myForm.indent">
+                <input type="checkbox" id="myForm.indent_mail" ng-model="myForm.indent_mail" />
+                  <label for="myForm.indent_mail">Mail</label></div>
+                  
+              <div class="col-md-2 col-xs-6" ng-if="myForm.indent">
+                <input type="checkbox" id="myForm.indent_quot" ng-model="myForm.indent_quot" />
+                  <label for="myForm.indent_quot">Quotation</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+           <td>
+            <div class="col-md-2">
+                <input type="checkbox" id="myForm.quotation" ng-model="myForm.quotation" />
+                <label for="myForm.quotation">Quotation</label></div>
+            
+            <div class="col-md-2 col-xs-6" ng-if="myForm.quotation">
+                <input type="checkbox" id="myForm.quot_add" ng-model="myForm.quot_add" />
+                <label for="myForm.quot_add">Add</label></div>
+            
+             <div class="col-md-2 col-xs-6" ng-if="myForm.quotation">
+                <input type="checkbox" id="myForm.quot_edit" ng-model="myForm.quot_edit" />
+                 <label for="myForm.quot_edit">Edit</label></div>
+                 
+            <div class="col-md-2 col-xs-6" ng-if="myForm.quotation">
+                <input type="checkbox" id="myForm.quot_delete" ng-model="myForm.quot_delete" />
+                <label for="myForm.quot_delete">Delete</label></div>
+           
+            <div class="col-md-2 col-xs-6" ng-if="myForm.quotation">
+                <input type="checkbox" id="myForm.quot_mail" ng-model="myForm.quot_mail" />
+                <label for="myForm.quot_mail">Mail</label></div>
+                
+             <div class="col-md-2 col-xs-6" ng-if="myForm.quotation">
+                <input type="checkbox" id="myForm.quot_approve" ng-model="myForm.quot_approve" />
+                 <label for="myForm.quot_approve">Approve</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+                <div class="col-md-2">
+                <input type="checkbox" id="myForm.purchase" ng-model="myForm.purchase" />
+                    <label for="myForm.purchase">Purchase Order</label></div>
+           
+            <div class="col-md-2 col-xs-6" ng-if="myForm.purchase">
+                <input type="checkbox" id="myForm.purchase_add" ng-model="myForm.purchase_add" />
+                <label for="myForm.purchase_add">Add</label></div>
+            
+               <div class="col-md-2 col-xs-6" ng-if="myForm.purchase">
+                <input type="checkbox" id="myForm.purchase_edit" ng-model="myForm.purchase_edit" />
+                   <label for="myForm.purchase_edit">Edit</label></div>
+            
+                <div class="col-md-2 col-xs-6" ng-if="myForm.purchase">
+                <input type="checkbox" id="myForm.purchase_delete" ng-model="myForm.purchase_delete" />
+                    <label for="myForm.purchase_delete">Delete</label></div>
+                    
+            <div class="col-md-2 col-xs-6" ng-if="myForm.purchase">
+                <input type="checkbox" id="myForm.purchase_mail" ng-model="myForm.purchase_mail" />
+                <label for="myForm.purchase_mail">Mail</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+                <div class="col-md-2">
+                <input type="checkbox" id="myForm.inventory" ng-model="myForm.inventory" />
+                    <label for="myForm.inventory">Material Ordered</label></div>
+           
+           <div  class="col-md-2 col-xs-6" ng-if="myForm.inventory">
+          <input type="checkbox" id="myForm.inv_edit" ng-model="myForm.inv_edit" />
+               <label for="myForm.inv_edit">Edit</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+               <div class="col-md-2">
+                <input type="checkbox" id="myForm.inventory_use" ng-model="myForm.inventory_use" />
+                   <label for="myForm.inventory_use">Material Stock</label></div>
+           
+           <div class="col-md-2 col-xs-6" ng-if="myForm.inventory_use">
+          <input type="checkbox" id="myForm.invuse_edit" ng-model="myForm.invuse_edit" />
+               <label for="myForm.invuse_edit">Edit</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+                <div class="col-md-2">
+                <input type="checkbox" id="myForm.product" ng-model="myForm.product" />
+                    <label for="myForm.product">Product</label></div>
+           
+            <div class="col-md-2 col-xs-6" ng-if="myForm.product">
+                <input type="checkbox" id="myForm.product_add" ng-model="myForm.product_add" />
+                <label for="myForm.product_add">Add</label></div>
+           
+               <div class="col-md-2 col-xs-6" ng-if="myForm.product">
+                <input type="checkbox" id="myForm.product_edit" ng-model="myForm.product_edit" />
+                   <label for="myForm.product_edit">Edit</label></div>
+                   
+            <div class="col-md-2 col-xs-6" ng-if="myForm.product">
+                <input type="checkbox" id="myForm.product_delete" ng-model="myForm.product_delete" />
+                <label for="myForm.product_delete">Delete</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.materials">
+            <td>
+               <div class="col-md-2">
+                <input type="checkbox" id="myForm.vendor" ng-model="myForm.vendor" />
+                   <label for="myForm.vendor">Vendor</label></div>
+           
+           <div class="col-md-2 col-xs-6" ng-if="myForm.vendor">
+                <input type="checkbox" id="myForm.vendor_add" ng-model="myForm.vendor_add" />
+              <label for="myForm.vendor_add">Add</label></div>
+           
+           <div class="col-md-2 col-xs-6" ng-if="myForm.vendor">
+                <input type="checkbox" id="myForm.vendor_edit" ng-model="myForm.vendor_edit" />
+               <label for="myForm.vendor_edit">Edit</label></div>
+          
+           <div class="col-md-2 col-xs-6" ng-if="myForm.vendor">
+                <input type="checkbox" id="myForm.vendor_delete" ng-model="myForm.vendor_delete" />
+               <label for="myForm.vendor_delete">Delete</label></div>
+            </td>
+        </tr>
+        <tr ng-show="myForm.userlist">
+            <td>
+                <div class="col-md-2">
+                <input type="checkbox" id="myForm.userlist" ng-model="myForm.userlist" />
+                    <label for="myForm.userlist">User Details</label></div>
+            
+          <div class="col-md-2 col-xs-6" ng-if="myForm.userlist">
+                <input type="checkbox" id="myForm.user_add" ng-model="myForm.user_add" />
+              <label for="myForm.user_add">Add</label></div>
+            
+            <div class="col-md-2 col-xs-6" ng-if="myForm.userlist">
+                <input type="checkbox" id="myForm.user_edit" ng-model="myForm.user_edit" />
+                <label for="myForm.user_edit">Edit</label></div>
+            
+           <div class="col-md-2 col-xs-6" ng-if="myForm.userlist">
+                <input type="checkbox" id="myForm.user_delete" ng-model="myForm.user_delete" />
+               <label for="myForm.user_delete">Delete</label></div>
+           
+           <div class="col-md-2 col-xs-6" ng-if="myForm.userlist">
+                <input type="checkbox" id="myForm.user_leave" ng-model="myForm.user_leave" />
+               <label for="myForm.user_leave">Leave</label></div>              
+               
+           <div class="col-md-2 col-xs-6" ng-if="myForm.userlist">
+                <input type="checkbox" id="myForm.user_permission" ng-model="myForm.user_permission" />
+               <label for="myForm.user_permission">user_permission</label></div>
+               
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <div class="col-md-2">
+                <input type="checkbox" id="myForm.accounts" ng-model="myForm.accounts" />
+                <label for="myForm.accounts">Accounts</label>
+              </div>
+              <div class="col-md-2 col-xs-6" ng-if="myForm.accounts">
+                <input type="checkbox" id="myForm.accounts_edit" ng-model="myForm.accounts_edit" />
+                <label for="myForm.accounts_edit">Edit</label>
+              </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <div class="col-md-2">
+                <input type="checkbox" id="myForm.billing" ng-model="myForm.billing" />
+                <label for="myForm.billing">Billing</label>
+              </div>
+              <div class="col-md-2 col-xs-6" ng-if="myForm.billing">
+                <input type="checkbox" id="myForm.billing_add" ng-model="myForm.billing_add" />
+                <label for="myForm.billing_add">Add</label>
+              </div>
+              <div class="col-md-2 col-xs-6" ng-if="myForm.billing">
+                <input type="checkbox" id="myForm.billing_delete" ng-model="myForm.billing_delete" />
+                <label for="myForm.billing_delete">Delete</label>
+              </div>
+              <div class="col-md-2 col-xs-6" ng-if="myForm.billing">
+                <input type="checkbox" id="myForm.billing_approve" ng-model="myForm.billing_approve" />
+                <label for="myForm.billing_approve">Verify</label>
+              </div>
+            </td>
+        </tr>
+        </tbody>
+    </table><br><br>
+    
+    <div ng-show="alert">
+        <strong style="color:red;">Failure !!!</strong>
+    </div>
+    
+    <div align="center">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+    </div>
+</form><br><br><br><br>
+</div>
+
+<style>
+th,td { 
+    text-align:left !important; 
+}
+label{
+	display:inline;
+}
+</style>

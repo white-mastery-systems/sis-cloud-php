@@ -1,0 +1,365 @@
+<script src="./js/session.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+    <div class="container-title">
+        <div class="row">
+            <div class="col s12 m12 l12">
+				<h5 id="prod" class="breadcrumbs-title">INVOICE</h5>
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-click="onBack()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">keyboard_backspace</i></a>
+</li></ul>
+</span>
+            </div>
+        </div> 
+    </div>
+</div>
+
+<html>
+<head>
+    <style>
+        .container-fluid{
+            margin-top: 2.5%;
+            margin-left: 1%;
+            margin-right: 1%;
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader"></div>
+    <div class="mainpart">
+    <div class='container-fluid' style="line-height:25px !important;">
+		   <div  class='text-right pad20'>
+		<button type="button" class="btn btn-pre" ng-click="onprebtn()" ng-disabled="IsPreDisabled"> < </button>
+		<button type="button" class="btn btn-next" ng-click="onnxtbtn()"  ng-disabled="IsDisabled"> > </button>
+		</div>
+			
+        
+        <div align='right'><b>{{purchaseForm.po_date}}</b><br></div>
+        <b>{{ purchaseForm.order_type_short }} Number: {{purchaseForm.po_number}}</b><br>
+        <b>To:</b><br>
+        <b>M/S. {{purchaseForm.company}}</b><br>
+        <div style='width:250px; height:auto' ng-bind-html='purchaseForm.comp_address'></div>
+		<div>Mob:{{purchaseForm.comp_mobile}}</div>
+        <div align='center' style='width:100%'><b>Kind Attention: {{purchaseForm.contact_person}}</b></div>
+        <div ng-if="purchaseForm.reference_no && purchaseForm.reference_date">
+            <b>Ref: </b>{{purchaseForm.reference_no}}<b> Dated</b> on {{purchaseForm.reference_date}}<br>
+        </div>
+        <div style='line-height:200%'><b>Sub: {{ purchaseForm.order_type_short }} for {{purchaseForm.po_subject}}.</b></div>
+        We are pleased to place the {{purchaseForm.order_type}} as per the details mentioned below for our  Project <b>{{purchaseForm.sis_project_name}}<span ng-if="purchaseForm.sis_project_block!='none'"> Block {{purchaseForm.sis_project_block}}</span></b> the address and the contact person are mentioned below.
+        <br><br>
+        
+        <div class="table-responsive">
+        <!--Standard or Work-->
+        <table ng-if="purchaseForm.type=='Standard' || purchaseForm.type=='Work'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>HSN Code</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Qty</th>
+                    <th>Price &#8377;</th>
+                    <th>Amount &#8377;</th>
+                    <th>GST %</th>
+                    <th>SGST &#8377;</th>
+                    <th>CGST &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="purchaseForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'>{{purchaseForm.code}}</td>
+                    <td class='text-left'><span ng-bind-html='purchaseForm.item'></span><br><span ng-if=purchaseForm.desc>{{purchaseForm.desc}}</span></td>
+                    <td>{{purchaseForm.quantity}} {{purchaseForm.unit}}</td>
+                    <td>{{purchaseForm.price | currency:"":2 }}</td>
+                    <td>{{purchaseForm.amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.gst}}</td>
+                    <td>{{purchaseForm.sgst_amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.cgst_amount | currency:"":2 }}</td>
+                    <td class='text-right'>{{purchaseForm.total | currency:"":2 }}&nbsp;</td>
+                </tr>
+                
+                <!-- Work start -->
+                <tr ng-if="purchaseForm.trans_amount!='0' && purchaseForm.type=='Work'">
+                    <td></td>
+                    <td colspan='2'><b>Total Quantity</b></td>
+                    <td><b>{{purchaseForm.work_ton}} Ton</b></td>
+                    <td colspan='4'></td>
+                    <td><b>Sub Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.sub_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <!-- Work end -->
+                
+                <tr ng-if="purchaseForm.trans_amount!='0' && purchaseForm.type!='Work'">
+                    <td colspan='8'></td>
+                    <td><b>Sub Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.sub_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='8'></td>
+                    <td>Transport</td>
+                    <td class='text-right'>{{purchaseForm.trans_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='8'></td>
+                    <td>Transport GST {{purchaseForm.trans_tax}}%</td>
+                    <td class='text-right'>{{ purchaseForm.trans_gst_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                
+                <!-- Work start -->
+                <tr ng-if="purchaseForm.trans_amount=='0' && purchaseForm.type=='Work'">
+                    <td></td>
+                    <td colspan='2'><b>Total Quantity</b></td>
+                    <td><b>{{purchaseForm.work_ton}} Ton</b></td>
+                    <td colspan='4'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0' && purchaseForm.type=='Work'">
+                    <td colspan='8'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <!-- Work end -->
+                
+                <tr ng-if="purchaseForm.type!='Work'">
+                    <td colspan='8'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!--Steel-->
+        <table ng-if="purchaseForm.type=='Steel'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>HSN Code</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Detail</th>
+                    <th>Qty</th>
+                    <th>Price &#8377;</th>
+                    <th>Amount &#8377;</th>
+                    <th>GST %</th>
+                    <th>SGST &#8377;</th>
+                    <th>CGST &#8377;</th>
+                    <th>Make</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="purchaseForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'>{{purchaseForm.code}}</td>
+                    <td class='text-left'><span ng-bind-html='purchaseForm.item'></span><br><span ng-if='purchaseForm.desc'>{{purchaseForm.desc}}</span></td>
+                    <td>{{purchaseForm.details}}</td>
+                    <td>{{purchaseForm.quantity}} {{purchaseForm.unit}}</td>
+                    <td>{{purchaseForm.price | currency:"":2 }}</td>
+                    <td>{{purchaseForm.amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.gst}}</td>
+                    <td>{{purchaseForm.sgst_amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.cgst_amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.make}}</td>
+                    <td class='text-right'>{{purchaseForm.total | currency:"":2 }}&nbsp;</td>
+                   
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td><b>Sub Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.sub_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport</td>
+                    <td class='text-right'>{{purchaseForm.trans_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport GST {{purchaseForm.trans_tax}}%</td>
+                    <td class='text-right'>{{ purchaseForm.trans_gst_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='10'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!--UPVC-->
+        <table ng-if="purchaseForm.type=='UPVC'" cellpadding='0' cellspacing='0' width='100%' border='0' style='border-collapse: collapse; border: 1px solid #000;' >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>HSN Code</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Qty</th>
+                    <th>Price &#8377;</th>
+                    <th>Amount &#8377;</th>
+                    <th>GST %</th>
+                    <th>SGST &#8377;</th>
+                    <th>CGST &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="purchaseForm in names track by $index">
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'>{{purchaseForm.code}}</td>
+                    <td class='text-left'><span ng-bind-html='purchaseForm.item'></span><br><span ng-if='purchaseForm.desc'>{{purchaseForm.desc}}</span> - ({{purchaseForm.upvc_type}}) W-{{purchaseForm.width}}; H-{{purchaseForm.height}}</td>
+                    <td>{{purchaseForm.quantity}} {{purchaseForm.unit}}  {{purchaseForm.item}} </td>
+                    <td>{{purchaseForm.price | currency:"":2 }}</td>
+                    <td>{{purchaseForm.amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.gst}}</td>
+                    <td>{{purchaseForm.sgst_amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.cgst_amount | currency:"":2 }}</td>
+                    <td class='text-right'>{{purchaseForm.total | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='8'></td>
+                    <td><b>Sub Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.sub_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='8'></td>
+                    <td>Transport</td>
+                    <td class='text-right'>{{purchaseForm.trans_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='8'></td>
+                    <td>Transport GST {{purchaseForm.trans_tax}}%</td>
+                    <td class='text-right'>{{ purchaseForm.trans_gst_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='8'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!--Door-->
+        <table ng-if="purchaseForm.type=='Door'" class="table table-bordered" width="100%" >
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class='text-left'>HSN Code</th>
+                    <th class='text-left'>Product Name</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>CFT</th>
+                    <th>Price &#8377;</th>
+                    <th>Amount &#8377;</th>
+                    <th>GST %</th>
+                    <th>SGST &#8377;</th>
+                    <th>CGST &#8377;</th>
+                    <th class='text-right'>Total &#8377;&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="purchaseForm in names track by $index">
+                   
+                    <td>{{$index+1}}</td>
+                    <td class='text-left'>{{purchaseForm.code}}</td>
+                    <td class='text-left'> <span ng-bind-html='purchaseForm.item'></span><br><span ng-if='purchaseForm.desc'>{{purchaseForm.desc}}</span></td>
+                    <td>{{purchaseForm.size}}</td>
+                    <td>{{purchaseForm.quantity}} Nos</td>
+                    <td>{{purchaseForm.cft}}</td>
+                    <td>{{purchaseForm.price | currency:"":2 }}</td>
+                    <td>{{purchaseForm.amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.gst}}</td>
+                    <td>{{purchaseForm.sgst_amount | currency:"":2 }}</td>
+                    <td>{{purchaseForm.cgst_amount | currency:"":2 }}</td>
+                    <td class='text-right'>{{purchaseForm.total | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td><b>Sub Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.sub_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport</td>
+                    <td class='text-right'>{{purchaseForm.trans_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.trans_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport GST {{purchaseForm.trans_tax}}%</td>
+                    <td class='text-right'>{{ purchaseForm.trans_gst_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+				<tr ng-if="purchaseForm.sum_cft!='0'">
+                    <td colspan='10'></td>
+                    <td>Total CFT</td>
+                    <td class='text-right'>{{purchaseForm.sum_cft | currency:"":2 }}&nbsp;</td>
+                </tr>
+				 <tr ng-if="purchaseForm.plain_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport</td>
+                    <td class='text-right'>{{purchaseForm.plain_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr ng-if="purchaseForm.plain_amount!='0'">
+                    <td colspan='10'></td>
+                    <td>Transport GST {{purchaseForm.plain_tax}}%</td>
+                    <td class='text-right'>{{ purchaseForm.plain_gst_amount | currency:"":2 }}&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan='10'></td>
+                    <td><b>Grand Total</b></td>
+                    <td class='text-right'><b>{{purchaseForm.grand_total | currency:"":2 }}&nbsp;</b></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+        
+        <div class="table-responsive">
+          <div class='col12 s12 m12 l6'>
+            <table style='width:100%'>
+                <tr><td colspan='3' class='text-left'><b>Term and Condition:</b> </td></tr>
+                <tr><td valign='top' class='text-left'>Our GSTIN</td><td class='text-left'>:</td><td class='text-left'>{{purchaseForm.our_gst}}</td><td></td></tr>
+                <tr><td valign='top' class='text-left'>Party GSTIN</td><td class='text-left'>:</td><td class='text-left'>{{purchaseForm.party_gst}}</td></tr>
+                <tr><td valign='top' class='text-left'>Payment</td><td class='text-left'>:</td><td class='text-left'>{{purchaseForm.payment}}</td></tr>
+                <tr><td valign='top' class='text-left'>Delivery</td><td class='text-left'>:</td><td class='text-left'>Door Delivery to our {{purchaseForm.delivery_place}}<span ng-if="purchaseForm.sis_project_block!='none'"> Site</span></td></tr>
+                <tr><td valign='top' class='text-left'>Loading & Vat</td><td class='text-left'>:</td><td class='text-left'>{{purchaseForm.vat}}</td></tr>
+                <tr><td colspan='3' class='text-left'><b>Please Supply by {{purchaseForm.delivery_date}} at our {{purchaseForm.sis_project_name}}<span ng-if="purchaseForm.sis_project_name!='Head Office'"> Site</span></b></td></tr>
+            </table>
+            <table style='width:100%'>
+                <tr>
+                    <td style='width:38%' valign='top' class='text-left'>Site contact Person </td>
+                    <td style='width:5%' class='text-left'>:</td>
+                    <td style='width:30%' class='text-left'>{{purchaseForm.site_contact_person}}</td>
+                    <td  style='width:5%' class='text-left'>:</td>
+                    <td  style='width:22%' class='text-left'>{{purchaseForm.mobile}}</td>
+                </tr>
+                <tr>
+                    <td valign='top' class='text-left'>Site address</td>
+                    <td class='text-left'>:</td>
+                    <td class='text-left'><b>{{purchaseForm.sis_project_name}}</b></td>
+                    <td></td><td></td><td></td>
+                </tr>
+                <tr>
+                    <td></td><td></td>
+                    <td style='width:300px' class='text-left' ng-bind-html='purchaseForm.site_address'></td>
+                    <td></td><td></td><td></td>
+                </tr>
+				<tr ng-if="purchaseForm.note">
+                    <td valign='top' class='text-left'>Note</td>
+                    <td class='text-left'>:</td>
+                    <td class='text-left'><b>{{purchaseForm.note}}</b></td>
+                    <td></td><td></td><td></td>
+                </tr>
+            </table>
+          </div>
+        </div>
+        <div>
+           <div class="padb50" >
+            <p>Thanking you,<br>Yours Sincerely<br></p>
+            <img ng-src='{{purchaseForm.sign}}' width='auto' height='57' />
+            <p>{{purchaseForm.name}}<br>{{purchaseForm.designation}}</p></div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

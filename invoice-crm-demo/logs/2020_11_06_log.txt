@@ -1,0 +1,18 @@
+IP: 103.92.202.152 TIME: 2020-11-06 10:51:51 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action : Admin Login
+IP: 103.92.202.152 TIME: 2020-11-06 10:51:52 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:57:08 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:57:08 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:57:33 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:57:48 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:57:48 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.152 TIME: 2020-11-06 10:59:13 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:04:31 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:04:32 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:06:01 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:06:15 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:06:15 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.152 TIME: 2020-11-06 11:06:55 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 12:51:48 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Purchase New Page
+IP: 103.92.202.152 TIME: 2020-11-06 12:51:48 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Invoice New Page
+IP: 103.92.202.152 TIME: 2020-11-06 12:54:42 User: Kavitha USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Order Page
+IP: 103.92.202.152 TIME: 2020-11-06 13:36:03 User:  USERAGENT: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36Action :Logout

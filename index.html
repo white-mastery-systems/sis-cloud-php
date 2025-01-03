@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=no">
+	
+  <link rel="stylesheet" href="css/common.css">
+	
+	<!-- Sangeetha CSS Start-->
+    <link href='//fonts.googleapis.com/css?family=RobotoDraft:regular,bold,italic,thin,light,bolditalic,black,medium&lang=en' rel='stylesheet' type='text/css'> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+    <link href="css/style/materialize.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <link href="css/style/style.css" type="text/css" rel="stylesheet" media="screen,projection">
+    <!-- Custome CSS-->
+    <link href="css/style/custom-style.css" type="text/css" rel="stylesheet" media="screen">
+    <link href="css/style/materialfamily.css" type="text/css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" href="css/style/jquery.dataTables.css">
+    <!-- viewport for Floating Button -->
+    <link href="css/style/mfb.css" rel="stylesheet">
+    <!-- viewport meta to reset iPhone inital scale -->
+    <link rel="stylesheet" href="css/angular-bootstrap-lightbox.css">
+    <link rel="stylesheet" href="css/style/bootstrap.css">
+    <link href="css/style/login.css" type="text/css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" type="text/css" href="css/style/jquery-ui-1.8.4.custom.css">
+	<link rel="stylesheet" type="text/css" href="css/style/perfect-scrollbar.css">
+
+  
+    <link rel="stylesheet" type="text/css" href="css/style/timeline.css">
+    <link rel="stylesheet" type="text/css" href="css/style/userview.css">
+    <link rel="stylesheet" type="text/css" href="css/style/userview_responsive.css">
+    <link rel="stylesheet" type="text/css" href="css/style/responsive.css">
+   
+  <style>
+	.md-autocomplete-suggestions-container{  
+   z-index:100000 !important; /* any number of choice > 1050*/
+  }
+</style>
+	  
+	  
+	  <script data-require="jquery@2.1.4" data-semver="2.1.4" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	
+	 <script src="js/bootstrap.min.js"></script>
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-sanitize.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-animate.min.js"></script>
+	<script src="js/angular-ui.min.js"></script>
+	<script src="js/angular-ui-router.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular-messages.min.js"></script>
+    <script src="js/angular-material.js"></script>
+    <link rel="stylesheet" href="css/angular-material.css" />
+   
+    <script src="js/ui-bootstrap-tpls.js"></script>
+    <script src="js/angular-bootstrap-lightbox.js"></script>
+    <script src="js/bootstrap-wysiwyg.js"></script>
+	     <script src="js/jquery.hotkeys.js"></script>
+	<script src="js/numeric.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<link rel="stylesheet" href="css/jquery-ui.css">
+	  
+    <script src="script.js"></script>
+
+    <script src="app.js"></script>
+    <script src="service.js"></script>
+    <script src="directive.js"></script>
+    
+    <!--login-->
+	<script src="modules/login/controller/login.js"></script>
+    
+    <!--common header-->
+    <script src="modules/common/controller/common.js"></script>
+    
+    <!-- projects -> projects -->
+    <script src="modules/projects/controller/projects.js"></script>
+    
+    <!-- material -> indent -->
+	<script src="modules/materials/indent/controller/indent.js"></script>
+    <script src="modules/materials/indent/controller/new_indent.js"></script>
+    <script src="modules/materials/indent/controller/indent_update.js"></script>
+    <script src="modules/materials/indent/controller/indent_duplicate.js"></script>
+    <script src="modules/materials/indent/controller/indent_view.js"></script>
+    <script src="modules/materials/indent/controller/mail_link.js"></script>
+    
+    <!-- material -> quotation -->
+    <script src="modules/materials/quotation/controller/quotation.js"></script>
+	<script src="modules/materials/quotation/controller/new_quotation.js"></script>
+    <script src="modules/materials/quotation/controller/quotation_update.js"></script>
+    <script src="modules/materials/quotation/controller/quotation_update_admin.js"></script>
+    <script src="modules/materials/quotation/controller/quotation_view.js"></script>
+    <script src="modules/materials/quotation/controller/approved.js"></script>
+    
+    <!-- material -> order -->
+	<script src="modules/materials/purchase/controller/order.js"></script>
+	<script src="modules/materials/purchase/controller/new_purchase.js"></script>
+	<script src="modules/materials/purchase/controller/purchase_duplicate.js"></script>
+	<script src="modules/materials/purchase/controller/purchase_update.js"></script>
+    <script src="modules/materials/purchase/controller/purchase_view.js"></script>
+    <script src="modules/materials/purchase/controller/vendors.js"></script>
+    <script src="modules/materials/purchase/controller/products.js"></script>
+    
+    <!-- material -> inventory -->
+	<script src="modules/materials/inventory/controller/inventory.js"></script>
+    <script src="modules/materials/inventory/controller/inventory_use.js"></script>
+    <script src="modules/materials/inventory/controller/category.js"></script>
+    
+    <!-- user -->
+	<script src="modules/user/controller/userlist.js"></script>
+    <script src="modules/user/controller/editprofile.js"></script>
+    <script src="modules/user/controller/adduser.js"></script>
+    <script src="modules/user/controller/user_permission.js"></script>
+    
+    <!-- Accounts -->
+    <script src="modules/accounts/controller/accounts.js"></script>
+
+    <!-- billing -->
+    <script src="modules/billing/controller/bill_list.js"></script>
+    <script src="modules/billing/controller/new_bill.js"></script>
+    <script src="modules/billing/controller/bill_view.js"></script>
+</head>
+<body ng-app="app" style="top: 0px !important">	
+	<div ui-view>
+	
+
+	</div>
+</body>
+</html>
