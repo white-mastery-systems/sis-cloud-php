@@ -1,5 +1,7 @@
 app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stateParams, orderService, $timeout) {
-        
+    $scope.isLoading = false;
+    $scope.isLoading2 = false;
+    $scope.isLoading3 = false;        
     var jsonData = jQuery.parseJSON(localStorage.getItem("order"));
     $scope.mailPermission = jsonData['mail'];
     if(jsonData['add'] != 1){
@@ -9,8 +11,12 @@ app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stat
     {
         //page back
         $scope.onBack = function(){
-            $state.go('home.orders', $stateParams);
-        }
+            $scope.isLoading3 = true;            
+            $timeout(function() {
+                $state.go('home.orders', $stateParams);
+                $scope.isLoading3 = false;
+            }, 100);
+        }      
         
         var poNum = localStorage.getItem("po_number");
         $scope.date = new Date();
@@ -244,6 +250,7 @@ app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stat
 		}
 		
 		$scope.mailContent = function(){
+        $scope.isLoading = true;
 		$scope.readonly = false;
 		$scope.selectedItem = null;
 		$scope.searchText = null;
@@ -275,7 +282,12 @@ app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stat
 		$scope.mail_list = response.data.user_mail;
 		$scope.loadMailids(response.data.user_mail)
 		$scope.maildatas = $scope.loadMailids(response.data.user_mail)
-		});
+		})
+
+        .finally(function() {
+            $scope.isLoading = false;
+        });
+
 		};
 		
 		
@@ -295,6 +307,7 @@ app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stat
 		
         //save
         $scope.onSubmit = function(){
+            $scope.isLoading2 = true;
             $scope.tableItems = [];
             angular.forEach($scope.names,function(purchaseForm){
                 $scope.tableItems.push({ code: purchaseForm.code, item: purchaseForm.item,  desc: purchaseForm.desc, unit: purchaseForm.unit, quantity: purchaseForm.quantity, price: purchaseForm.price, gst: purchaseForm.gst, details: purchaseForm.details, make: purchaseForm.make, width: purchaseForm.width, height: purchaseForm.height, upvc_type: purchaseForm.upvc_type, size: purchaseForm.size, cft: purchaseForm.cft });
@@ -315,6 +328,10 @@ app.controller('orderDupCtrl', function($scope, $http, dateFilter, $state, $stat
                 else{
                     $scope.alert = true;
                 }
+            })
+            
+            .finally(function() {
+                $scope.isLoading2 = false;
             });
         };
         

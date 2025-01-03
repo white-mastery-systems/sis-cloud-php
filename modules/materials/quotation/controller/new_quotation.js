@@ -1,4 +1,7 @@
 app.controller('quotationNewCtrl', function($scope, $http, $state, $stateParams, orderService, $timeout) {
+        $scope.isLoading = false;
+        $scope.isLoading2 = false;
+        $scope.isLoading3 = false;
         
         var jsonData = jQuery.parseJSON(localStorage.getItem("indent"));
         var quotJsonData = jQuery.parseJSON(localStorage.getItem("quotation"));
@@ -15,9 +18,16 @@ app.controller('quotationNewCtrl', function($scope, $http, $state, $stateParams,
     
         //page back
         var splitData = $stateParams.filter.split("_");
-        $scope.onBack = function(){
-            $state.go('home.quotation', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2]+'_'+splitData[3]+'_'+splitData[4] });
-        }
+        // $scope.onBack = function(){
+        //     $state.go('home.quotation', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2]+'_'+splitData[3]+'_'+splitData[4] });
+        // }
+        $scope.onBack = function(){       
+            $scope.isLoading3 = true;
+            $timeout(function() {
+                $state.go('home.quotation', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2]+'_'+splitData[3]+'_'+splitData[4] });
+                $scope.isLoading3 = false;
+            }, 100);
+        };
     
         $('#preloader').show();
         $http({
@@ -263,11 +273,15 @@ app.controller('quotationNewCtrl', function($scope, $http, $state, $stateParams,
         };
         
         $scope.onModal = function(){
+            $scope.isLoading2 = true;
             var vendorCount = 0;
             angular.forEach($scope.quot_list,function(quotForm){
                 if(quotForm.quot_items.length > 1) {
                     vendorCount++;
                 }
+            })
+            .finally(function() {
+                $scope.isLoading2 = false;
             });
             if(vendorCount==0) { $('#confirmModal').modal('show'); }
             else { $('#alertModal').modal('show'); }
@@ -275,6 +289,7 @@ app.controller('quotationNewCtrl', function($scope, $http, $state, $stateParams,
         
         //save, save and self approve
         $scope.onSubmit = function(x) {
+            $scope.isLoading = true;
             $scope.quotItems = [];
             angular.forEach($scope.quot_list,function(quotForm){
                 $scope.quotItems.push({ type: quotForm.type, category: quotForm.category,  quot_items: quotForm.quot_items });
@@ -305,6 +320,10 @@ app.controller('quotationNewCtrl', function($scope, $http, $state, $stateParams,
                 else{
                     $scope.alert = true;
                 }
+            })
+
+            .finally(function() {
+                $scope.isLoading = false;
             });
         };
     

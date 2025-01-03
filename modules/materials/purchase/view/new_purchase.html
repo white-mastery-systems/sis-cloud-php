@@ -414,9 +414,18 @@
 </div>
 
 <div class="row" align="center">
-<button ng-if="mailPermission==1" class="btn btn-primary" ng-click="purchase.$valid && mailContent()">Save & Send Mail</button>
-<button class="btn btn-primary" ng-click="purchase.$valid && onSubmit()">Save</button>
-<button class="btn btn-danger" ng-click="onBack()" >Cancel</button>
+<button ng-if="mailPermission==1" class="btn btn-primary btn-flex" ng-click="purchase.$valid && mailContent()">
+    <span ng-if="!isLoading">Save & Send Mail</span>
+    <span ng-if="isLoading" style="display:flex;align-items: center;">&nbsp;&nbsp;<div class="box"><div class="spinner"></div></div>&nbsp;&nbsp;</span>   
+</button>
+<button class="btn btn-primary btn-flex" ng-click="purchase.$valid && onSubmit()">
+    <span ng-if="!isLoading2">Save</span>
+    <span ng-if="isLoading2" style="display:flex;align-items: center;">&nbsp;&nbsp;<div class="box"><div class="spinner"></div></div>&nbsp;&nbsp;</span>
+</button>
+<button class="btn btn-danger btn-flex" ng-click="onBack()">
+    <span ng-if="!isLoading3">Cancel</span>
+    <span ng-if="isLoading3" style="display:flex;align-items: center;">&nbsp;&nbsp;<div class="box"><div class="spinner"></div></div>&nbsp;&nbsp;</span>
+</button>
 </div>
 </form>
 

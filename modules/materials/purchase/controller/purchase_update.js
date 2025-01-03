@@ -1,5 +1,7 @@
 app.controller('orderUpdateCtrl', function($scope, $http, $state, $stateParams, orderService, $timeout) {
-        
+    $scope.isLoading = false;
+    $scope.isLoading2 = false;
+    $scope.isLoading3 = false;         
     var jsonData = jQuery.parseJSON(localStorage.getItem("order"));
     $scope.mailPermission = jsonData['mail'];
     if(jsonData['edit'] != 1){
@@ -9,7 +11,12 @@ app.controller('orderUpdateCtrl', function($scope, $http, $state, $stateParams, 
     {
         //page back
         $scope.onBack = function(){
-            $state.go('home.orders', $stateParams);
+            $scope.isLoading3 = true; 
+            // $state.go('home.orders', $stateParams);
+            $timeout(function() {
+                $state.go('home.orders', $stateParams);
+                $scope.isLoading3 = false;
+            }, 100);
         }
           $scope.to_mail =[];
         var poNum = localStorage.getItem("po_number");
@@ -229,7 +236,7 @@ app.controller('orderUpdateCtrl', function($scope, $http, $state, $stateParams, 
 
 		
 		$scope.mailContent = function(){
-
+        $scope.isLoading = true;
 		$scope.readonly = false;
 		$scope.selectedItem = null;
 		$scope.searchText = null;
@@ -264,10 +271,11 @@ app.controller('orderUpdateCtrl', function($scope, $http, $state, $stateParams, 
 		$scope.mail_list = response.data.user_mail;
 		$scope.loadMailids(response.data.user_mail)
 		$scope.maildatas = $scope.loadMailids(response.data.user_mail)
+		})
 
-
-		});
-
+        .finally(function() {
+            $scope.isLoading = false;
+        });
 
 		};
 
@@ -287,6 +295,7 @@ return mailid;
 		
         //update
         $scope.onSubmit = function(){
+            $scope.isLoading2 = true;
             $scope.tableItems = [];
             angular.forEach($scope.names,function(tableForm){
                 $scope.tableItems.push({ _id: tableForm._id, code: tableForm.code, item: tableForm.item, desc: tableForm.desc,unit: tableForm.unit, quantity: tableForm.quantity, price: tableForm.price, gst: tableForm.gst, details: tableForm.details, make: tableForm.make, width: tableForm.width, height: tableForm.height, upvc_type: tableForm.upvc_type, size: tableForm.size, cft: tableForm.cft });
@@ -307,6 +316,10 @@ return mailid;
                 else{
                     $scope.alert = true;
                 }
+            })
+
+            .finally(function() {
+                $scope.isLoading2 = false;
             });
         };
         
