@@ -3249,13 +3249,18 @@ class DbHandler
         $endDate = new MongoDB\BSON\UTCDateTime(strtotime("last day of December $currentYear 23:59:59") * 1000);
     
         // Match conditions
+        // $matchConditions = [
+        //     "project_short" => ['$in' => $proShortArray],
+        //     "cancel_status" => $cancelStatus,
+        //     "date_time" => [
+        //         '$gte' => $startDate,  // Greater than or equal to the first day of the previous year
+        //         '$lte' => $endDate     // Less than or equal to the last day of the current year
+        //     ]
+        // ];
+
         $matchConditions = [
             "project_short" => ['$in' => $proShortArray],
-            "cancel_status" => $cancelStatus,
-            "date_time" => [
-                '$gte' => $startDate,  // Greater than or equal to the first day of the previous year
-                '$lte' => $endDate     // Less than or equal to the last day of the current year
-            ]
+            "cancel_status" => $cancelStatus
         ];
     
         if (!empty($jsonData['category'])) {

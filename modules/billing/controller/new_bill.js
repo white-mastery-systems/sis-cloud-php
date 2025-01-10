@@ -56,6 +56,7 @@ app.controller('newBillCtrl', function($scope, $http, dateFilter, $state, $state
                 data: { 'po_number': $scope.po_number, 'po_type': $scope.po_type }
             })
             .then(function (response) {
+                console.log("response", response.data.purchase_items)
                 $scope.item_list = response.data.purchase_items;			
                 $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
             });
