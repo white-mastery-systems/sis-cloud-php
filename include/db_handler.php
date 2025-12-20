@@ -7336,6 +7336,108 @@ public function stockupdate_use($getData)
     return $response;
 }
 
+//get paginated billing list
+public function getbillinglistPaginated($getData)
+{
+    $response = array();
+    $response['bill_list'] = array();
+    $jsonData = json_decode($getData, true);
+    $collectionBill = $this->conn->purchase_bill;
+
+    // Pagination parameters
+    $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+    $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+    $search = isset($jsonData['search']) ? $jsonData['search'] : '';
+    $skip = ($page - 1) * $limit;
+
+    // Site list
+    $siteData = $this->internalsitelist($jsonData['emp_id']);
+    $response['site_list'] = $siteData["site_list"];
+
+    $proShortArray = $siteData["project_short_list"];
+    if($jsonData['project_short'] != '') { 
+        $proShortArray = array($jsonData['project_short']); 
+    }
+
+    // Base match condition - NO date restriction
+    $matchCondition = array(
+        "project_short" => array('$in' => $proShortArray)
+    );
+
+    // Add search filter if provided
+    if(!empty($search)) {
+        $searchRegex = new \MongoDB\BSON\Regex($search, 'i');
+        $matchCondition['$or'] = array(
+            array('sis_bill_no' => $searchRegex),
+            array('vendor_bill_no' => $searchRegex),
+            array('vendor_name' => $searchRegex)
+        );
+    }
+
+    // Get total count for pagination
+    $countPipeline = array(
+        array('$match' => $matchCondition),
+        array('$count' => 'total')
+    );
+    
+    $countResult = $collectionBill->aggregate($countPipeline)->toArray();
+    $totalRecords = !empty($countResult) ? $countResult[0]['total'] : 0;
+    $totalPages = ceil($totalRecords / $limit);
+
+    // Main aggregation with pagination
+    $cursor = $collectionBill->aggregate(array(
+        array('$match' => $matchCondition),
+        array('$lookup' => array(
+            'from' => 'signintable',
+            'localField' => 'emp_id',
+            'foreignField' => 'emp_id',
+            'as' => 'user_data'
+        )),
+        array('$sort' => array('_id' => -1)),
+        array('$skip' => $skip),
+        array('$limit' => $limit)
+    ));
+
+    if($cursor) {
+        foreach($cursor as $rowData) {
+            $sendData = array();
+            $sendData['_id'] = (string)$rowData['_id'];
+            
+            // Extract PO number from bill_list array
+            $poNumbers = array();
+            if(isset($rowData['bill_list']) && is_array($rowData['bill_list'])) {
+                foreach($rowData['bill_list'] as $billItem) {
+                    if(isset($billItem['po_number'])) {
+                        $poNumbers[] = $billItem['po_number'];
+                    }
+                }
+            }
+            $sendData['po_no'] = implode(', ', array_unique($poNumbers)); // Join unique PO numbers
+            
+            $sendData['sis_bill_no'] = isset($rowData['sis_bill_no']) ? $rowData['sis_bill_no'] : '';
+            $sendData['emp_name'] = isset($rowData['user_data'][0]['name']) ? $rowData['user_data'][0]['name'] : '';
+            $sendData['vendor_bill_no'] = isset($rowData['vendor_bill_no']) ? $rowData['vendor_bill_no'] : '';
+            $sendData['vendor_name'] = isset($rowData['vendor_name']) ? $rowData['vendor_name'] : '';
+            $sendData['grand_total'] = isset($rowData['grand_total']) ? $rowData['grand_total'] : 0;
+            $sendData['status'] = isset($rowData['status']) ? $rowData['status'] : 0;
+            $sendData['bill_date'] = $rowData['created_at']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format("d-m-Y");
+            array_push($response['bill_list'], $sendData);
+        }
+    }
+
+    // Pagination metadata
+    $response['pagination'] = array(
+        'current_page' => $page,
+        'total_pages' => $totalPages,
+        'total_records' => $totalRecords,
+        'limit' => $limit,
+        'has_next' => $page < $totalPages,
+        'has_prev' => $page > 1
+    );
+
+    return $response;
+}
+
     public function getBillingVendorList($getData)
     {
         $response = array();

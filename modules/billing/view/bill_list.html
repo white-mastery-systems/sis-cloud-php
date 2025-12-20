@@ -19,7 +19,7 @@
 <span id="ord-headright" class="left navigations padl130">  
 <ul id="menu" class="mfb-component--tr" >
 <li class="mfb-component__wrap">
-<a ui-sref="home.bill_list({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
+<a ng-click="refreshData()" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
 </li></ul>
 </span>
 
@@ -35,16 +35,16 @@
     
     <div class="row" style="padding-left:20px">
         <div class="col-md-2 col-xs-6 pr20">Project:
-            <select ng-options="list.project_short as list.project_name for list in projects | filter : { project_name: '!' + 'Common' }" ng-model="project_short" ng-change="tableData(project_short)" required> 
+            <select ng-options="list.project_short as list.project_name for list in projects | filter : { project_name: '!' + 'Common' }" ng-model="project_short" ng-change="projectChanged()" required> 
                 <option value="">All</option>
             </select>
         </div>
         <div class="col-md-2 col-xs-6 pr20">PageSize:
             <select ng-model="entryLimit" ng-change="pageEntries()">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-                <option>100</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
             </select>
         </div>
          <div class="col-md-2 col-xs-6 pr20 padt13 pull-right">
@@ -54,57 +54,71 @@
         </div>
     </div>
  
-    <div class="row" data-ng-init="tableData(project_short)">
+    <div class="row">
         <div class="col-md-12">
             <div class="">
-           <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+           <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60 dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
                 <thead>
-                    <th width="5%">#</th>
-                    <th class="hidden-xs hidden-sm">BILL NO</th>
-                    <th class="hidden-xs hidden-sm">PO NO</th>
-                    <th class="hidden-xs hidden-sm">DATE</th>
-                    <th class="hidden-xs hidden-sm">EMP NAME</th>
-                    <th class="hidden-xs hidden-sm">VENDOR BILL NO</th>
-                    <th class="hidden-xs hidden-sm">VENDOR NAME</th>
-                    <th class="hidden-xs hidden-sm">TOTAL</th>
-                    <th class="hidden-xs hidden-sm">STATUS</th>
-                    <th class="hidden-xs hidden-sm">ACTION</th>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th class="hidden-xs hidden-sm">BILL NO</th>
+                        <th class="hidden-xs hidden-sm">PO NO</th>
+                        <th class="hidden-xs hidden-sm">DATE</th>
+                        <th class="hidden-xs hidden-sm">EMP NAME</th>
+                        <th class="hidden-xs hidden-sm">VENDOR BILL NO</th>
+                        <th class="hidden-xs hidden-sm">VENDOR NAME</th>
+                        <th class="hidden-xs hidden-sm">TOTAL</th>
+                        <th class="hidden-xs hidden-sm">STATUS</th>
+                        <th class="hidden-xs hidden-sm">ACTION</th>
+                    </tr>
                 </thead>
-                <tbody ng-show="filteredItems > 0">
-                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
-                    <td width="5%">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.sis_bill_no }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.sis_bill_no }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.bill_date }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.emp_name }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.vendor_bill_no }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.vendor_name }}</td>
-                    <td class="hidden-xs hidden-sm">{{ x.grand_total | currency:"":2 }}</td>
-                    <td class="hidden-xs hidden-sm">
-                        <span ng-if="x.status==0" style="color:blue;">Checked</span>
-                        <span ng-if="x.status==1" style="color:green;">Verified</span>
-                        <span ng-if="x.status==2" style="color:red;">Declined</span>
-                    </td>
-                    <td style="cursor: pointer; color: #e91e63;">
-                        <i class="material-icons m-i" ng-click="onView(x._id)" aria-hidden="true" title="Salary History">info_outline</i>
-                        <span ng-if="deletePermission && x.status==0" class="material-icons m-i" ng-click="onDelete(x._id)" title="Delete">delete</span>
-                    </td>
-                </td>
-                </tr>
+                <tbody ng-show="list.length > 0">
+                    <tr ng-repeat="x in list">
+                        <td width="5%">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.sis_bill_no }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.po_no }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.bill_date }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.emp_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.vendor_bill_no }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.vendor_name }}</td>
+                        <td class="hidden-xs hidden-sm">{{ x.grand_total | currency:"":2 }}</td>
+                        <td class="hidden-xs hidden-sm">
+                            <span ng-if="x.status==0" style="color:blue;">Checked</span>
+                            <span ng-if="x.status==1" style="color:green;">Verified</span>
+                            <span ng-if="x.status==2" style="color:red;">Declined</span>
+                        </td>
+                        <td style="cursor: pointer; color: #e91e63;">
+                            <i class="material-icons m-i" ng-click="onView(x._id)" aria-hidden="true" title="View">info_outline</i>
+                            <span ng-if="deletePermission && x.status==0" class="material-icons m-i" ng-click="onDelete(x._id)" title="Delete">delete</span>
+                        </td>
+                    </tr>
                 </tbody>
-                <tbody ng-show="filteredItems == 0">
-                    <tr><td colspan="8">No records found</td></tr>
+                <tbody ng-show="list.length == 0">
+                    <tr><td colspan="10" style="text-align:center;">No records found</td></tr>
                 </tbody>
-                </table> </div>
+            </table> 
+            </div>
         </div>
     </div>
-    <div class="row pad20" ng-show="filteredItems > 0">
+    <div class="row pad20" ng-show="totalRecords > 0">
         <div class="col-md-6 showitem"><br>
-            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+            {{ getShowingText() }}
         </div>
         <div class="col-md-6">
             <div class="p-r">
-                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                <ul uib-pagination 
+                    boundary-links="true" 
+                    total-items="totalRecords"  
+                    items-per-page="entryLimit" 
+                    ng-model="currentPage" 
+                    ng-change="pageChanged()"
+                    max-size="5" 
+                    class="pagination-sm" 
+                    previous-text="&lsaquo;" 
+                    next-text="&rsaquo;" 
+                    first-text="&laquo;" 
+                    last-text="&raquo;">
+                </ul>
             </div>
         </div>
     </div>
@@ -119,7 +133,7 @@
               <input type="hidden" ng-model="modal_id" />
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-primary" ng-click="delete(modal_id)">Yes</button>
               <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
             </div>
         </div>

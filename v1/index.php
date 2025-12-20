@@ -667,6 +667,13 @@ $app->post('/getbillinglist', function() use($app) {
     echo json_encode($result);
 });
 
+$app->post('/getbillinglistPaginated', function() use($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();  
+    $result = $db->getbillinglistPaginated($postData);
+    echo json_encode($result);
+});
+
 $app->post('/getBillingVendorList', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();  
