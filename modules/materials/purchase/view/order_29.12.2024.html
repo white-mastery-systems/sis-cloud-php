@@ -1,0 +1,442 @@
+<script src="./js/session.js"></script>
+<script src="./js/text-editor.js"></script>
+
+<div id="breadcrumbs-wrapper" class=" grey lighten-3">
+<div class="container-title">
+<div class="row">
+<div class="col s12 m12 l12">
+<h5 id="ord-head" class="breadcrumbs-title">Purchase Order</h5>
+<span id="ord-headright" class="right rightspace navigations">  
+
+<ul ng-if="addPermission=='1'" id="menu" class="mfb-component--tr mfb-zoomin" data-mfb-toggle="hover">
+<li class="mfb-component__wrap">
+<a ui-sref="home.orders({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">add</i><i class="mfb-component__main-icon--active material-icons">close</i></a>
+
+<ul class="mfb-component__list">
+<li class="mbtn"><a title="New Purchase Order" data-mfb-label="New Purchase" ng-click="onAdd()" class="mfb-component__button--child  "><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
+
+<li class="mbtn"><a ng-click="addVendorModal()" title="Add Vendor"  data-mfb-label="Add Vendor" class="mfb-component__button--child " ><i class="mfb-component__child-icon material-icons">person_add</i></a></li>
+
+<li class="mbtn"><a ng-click="addProductModal()" data-mfb-label="Add Products"  title="Add Product" class="mfb-component__button--child " ><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
+
+<li class="mbtn"><a  data-mfb-label="Purchase Export" title="Purchase Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i></a></li>
+</ul></li></ul>
+</span>
+
+
+<span id="ord-headright" class="left navigations padl130">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ui-sref="home.orders({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
+</li></ul>
+</span>
+
+<span id="ord-headright" class="right navigations" style="margin-right: 60px">  
+<ul id="menu" class="mfb-component--tr" >
+<li class="mfb-component__wrap">
+<a ng-if="deletePermission=='1'"  ng-click='deleteall()' ng-show="showDelBtn" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+</li></ul>
+</span>
+   
+  
+
+</div></div>
+</div></div>
+
+<div id="preloader"></div>
+<div class="mainpart">
+    			
+    <div ng-show="alert" class="alert">
+        <strong>{{alert_content}}</strong>
+    </div>
+    
+    <div class="row" style="padding-left:20px">
+        <div class="col-md-2 col-xs-6 pr20">Project:
+            <select  ng-options="list.project_short as list.project_name for list in projects" ng-model="project_short" ng-change="tableData(tabletype, project_short)" required> 
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">Type:
+            <select ng-model="tabletype" ng-change="tableData(tabletype, project_short)" >
+                <option value="usage">Issued</option>
+                <option value="cancel">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-xs-6 pr20">PageSize:
+            <select ng-model="entryLimit" ng-change="pageEntries()">
+                <option>10</option>
+                <option>25</option>
+                <option>50</option>
+                <option>100</option>
+            </select>
+        </div>
+         <div class="col-md-2 col-xs-6 pr20 padt13 pull-right">
+           <label><i class="material-icons ihide">search</i>
+              <input id="searchitems" type="text" ng-model="search" ng-change="filter()" onkeypress='searchValidation(event)' placeholder="search" />
+          </label>
+        </div>
+    </div>
+ 
+    
+
+	
+    <div class="row" data-ng-init="tableData(tabletype, project_short)">
+        <div class="col-md-12">
+            <div class="">
+           <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                <thead>
+                    <th width="5%">#</th>
+                    <th width="10%" class="hidden-xs hidden-sm">CATEGORY</th>
+                    <th width="10%" class="hidden-xs hidden-sm">PO NUMBER&nbsp;<a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">DATE&nbsp;<a ng-click="sort_by('po_date');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-lg hidden-md">PO NUMBER & <br> DATE <a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="30%">SUMMARY&nbsp;<a ng-click="sort_by('summary');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">TOTAL&nbsp;<a ng-click="sort_by('total');"><i class="material-icons tiny1">sort</i></a></th>
+                    <th width="10%" class="hidden-xs hidden-sm">MAIL STATUS</th>
+                    <th width="15%">ACTION</th>
+                </thead>
+                <tbody ng-show="filteredItems > 0">
+                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                    <td width="5%" ng-if="deletePermission=='1'"><input type="checkbox" ng-model="x.singlecheck" ng-disabled="x.received_status=='1'" ng-change="deleteShow()" id="{{ x.po_number }}"/> <label class="" for="{{ x.po_number }}"></label></td>
+                    <td width="10%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.category }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.po_number }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.po_date }}</td>
+                    <td width="10%" class="hidden-lg hidden-md">{{ x.po_number }} <br>{{ x.po_date }}</td>
+                    <td width="30%" ng-click='onView(x.po_number)' ><a>{{ x.summary }}</a></td>
+                    <td width="10%" class="hidden-xs hidden-sm">{{ x.total | currency:"&#8377;":0 }}</td>
+                    <td width="10%" class="hidden-xs hidden-sm">
+                        <i ng-if="x.mail_status==''">
+                            <svg fill="#e91e63" height="20" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="19" r="2"/>
+                            <path d="M10 3h4v12h-4z"/>
+                            <path d="M0 0h24v24H0z" fill="none"/>
+                            </svg></i>
+                        <i ng-if="x.mail_status=='send'" style="color:limegreen;" class="material-icons">check</i>
+                        <i ng-if="x.mail_status=='failure'" style="color:red;" class="material-icons">clear</i>
+                    </td>
+                    <td width="15%">
+						<span ng-if="emp_designation == 'Purchase Manager'"><i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit" >edit</i></span>
+						<span ng-if="emp_designation != 'Purchase Manager'"><i ng-if="editPermission=='1' && x.received_status!='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit" >edit</i></span>                        
+                        <i ng-if="addPermission=='1'" class="material-icons micon" ng-click=onDuplicate(x.po_number) title="Duplicate" >content_copy</i>
+                        <i ng-if="mailPermission=='1'" class="material-icons micon" ng-click=onMail(x.po_number) title="Email" >email</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='usage' && x.received_status!='1'" class="material-icons micon" ng-click=onRemove(x.po_number) title="Remove" >delete</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onDelete(x.po_number) title="Delete" >delete</i>
+                        <i class="material-icons micon" ng-click=onPdf(x.po_number) title="PDF" >picture_as_pdf</i>
+                        <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onWord(x.po_number) title="WORD" >insert_drive_file</i>
+                        <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onReopen(x.po_number) title="Reopen" >refresh</i>
+                    </td>
+                </tr>
+                </tbody>
+                <tbody ng-show="filteredItems == 0">
+                    <tr><td colspan="8">No records found</td></tr>
+                </tbody>
+                </table> </div>
+        </div>
+    </div>
+    <div class="row pad20" ng-show="filteredItems > 0">
+        <div class="col-md-6 showitem"><br>
+            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+        </div>
+        <div class="col-md-6">
+            <div class="p-r">
+                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mail Modal -->
+<div class="modal fade" id="mailModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <p class="modal-title title3">PO Number: {{ mailForm.po_number }}</p>
+        </div>
+        <form name="mailForm" ng-submit="onSend()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+
+        
+       
+	
+                        <input type="hidden" ng-model="mailForm.po_number" />
+                        <input type="hidden" ng-model="mailForm.order_type_short" />
+                        <input type="hidden" ng-model="mailForm.emp_id" />
+                        <label>From</label>
+                        <input type="text"  ng-model="mailForm.from_mail" required readonly /><br>
+                        	
+			<label>To</label>
+			<md-chips ng-model="to_mail" md-require-match="true">
+			<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id" >
+			<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+			<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+			</md-chips>	<br>
+						
+		    <label>CC</label>		
+			<md-chips ng-model="cc_mail" md-require-match="true">
+			<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+			<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+			<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+			</md-chips><br>	
+						
+			<label>BCC</label>			
+			<md-chips ng-model="bcc_mail" md-require-match="true">
+			<md-autocomplete md-selected-item="selectedItem" md-search-text="searchText" md-items="item in querySearch(searchText)"  md-item-text="item.mail_id">
+			<span md-highlight-text="searchText">{{item.mail_id}}</span></md-autocomplete>
+			<md-chip-template><span>{{$chip.mail_id}}</span></md-chip-template>
+			</md-chips>	<br>
+
+                        <label>Subject</label>
+                        <input type="text" ng-model="mailForm.subject" required /><br>
+            
+                        <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor">
+                            <div class="btn-group">
+                                <a class="btn-sm dropdown-toggle" data-toggle="dropdown" id="fontlist"><i class="fa fa-font"></i><b class="caret"></b></a>
+                                <ul class="dropdown-menu"></ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class=" btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a data-edit="fontSize 5"><font size="5">Huge</font></a></li>
+                                  <li><a data-edit="fontSize 3"><font size="3">Normal</font></a></li>
+                                  <li><a data-edit="fontSize 1"><font size="1">Small</font></a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="bold"><i class="fa fa-bold"></i></a>
+                                <a class="btn-sm" data-edit="italic"><i class="fa fa-italic"></i></a>
+                                <a class="btn-sm" data-edit="underline"><i class="fa fa-underline"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm" data-edit="justifyleft"><i class="fa fa-align-left"></i></a>
+                               <a class="btn-sm" data-edit="justifycenter"><i class="fa fa-align-center"></i></a>
+                                <a class="btn-sm" data-edit="justifyright"><i class="fa fa-align-right"></i></a>
+                                <a class="btn-sm" data-edit="justifyfull"><i class="fa fa-align-justify"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <a class="btn-sm btn-sm" data-edit="undo"><i class="fa fa-undo"></i></a>
+                                <a class="btn-sm" data-edit="redo"><i class="fa fa-repeat"></i></a>
+                            </div>
+                        </div>
+                        <div id="editor"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" id="send" class="btn btn-primary bt"> Send &nbsp;&nbsp; <i id="sendLoader" style="color: white ! important;"></i> </button>
+              <button type="button" id="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Vendor Modal -->
+<div class="modal fade" id="addVendorModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Add Vendor</h4>
+        </div>
+        <form name="addVendorForm" ng-submit="onAddVendor()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Vendor Name</label>
+                        <input type="text" ng-model="addVendorForm.company_name" required /> <br>
+                        <label>Name</label>
+                        <input type="text" ng-model="addVendorForm.contact_person" required /> <br>
+                        <label>Address</label>
+                        <textarea class="materialize-textarea" rows="2" ng-model="addVendorForm.address" required></textarea> <br>
+                        <label>Mobile</label>
+                        <input type="text" ng-model="addVendorForm.mobile" />
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Phone</label>
+                        <input type="text" ng-model="addVendorForm.phone" />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Fax</label>
+                        <input type="text" ng-model="addVendorForm.fax" />
+                    </div>
+                    <div class="col-sm-12">
+                        <label>Email</label>
+                        <input type="text" ng-model="addVendorForm.email" /><br>
+                        <label>GST No</label>
+                        <input type="text" ng-model="addVendorForm.party_gst" required /><br>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Add" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" role="dialog" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title">Add Product</h4>
+        </div>
+        <form name="addProductForm" ng-submit="onAddProduct()">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>Type</label>
+                        <select ng-model="addProductForm.type" ng-options="list.type as list.type for list in category_list | unique:'type'" ng-change="typeChange(addProductForm.type, addProductForm.category, addProductForm.sub_category)" required></select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 padr20">
+                        <label>Category</label>
+                        <select ng-model="addProductForm.category" ng-options="list.category as list.category for list in category_list | unique:'category' | filter:{type: addProductForm.type}" ng-change="typeChange(addProductForm.type, addProductForm.category, addProductForm.sub_category)" required>
+                            <option value="">SELECT</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label>Sub Category</label>
+                        <select ng-disabled="!addProductForm.category" ng-model="addProductForm.sub_category" ng-options="list.sub_category as list.sub_category for list in category_list | filter:{type: addProductForm.type, category: addProductForm.category}" ng-change="typeChange(addProductForm.type, addProductForm.category, addProductForm.sub_category)" required>
+                            <option value="">SELECT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label>HSN Code</label>
+                        <input type="text" ng-disabled="!addProductForm.category" ng-model="addProductForm.code" addcode-auto-complete required /><br>
+                        <label>Item Name</label>
+                        <textarea class="materialize-textarea" ng-disabled="!addProductForm.category" rows="2" ng-model="addProductForm.product_name" addproduct-auto-complete required></textarea> <br>
+                        <div ng-if="addProductForm.type=='UPVC'">
+                            <div class="col-sm-6 padr20">
+                                <label>Width</label> 
+                                <input type="text" ng-model="addProductForm.width" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Height</label>
+                                <input type="text" ng-model="addProductForm.height" required />
+                            </div><br>
+                            <label>UPVC Type</label>
+                            <input type="text" ng-model="addProductForm.upvc_type" required /><br>
+                        </div>
+                        <div ng-if="addProductForm.type=='Steel'">
+                            <div class="col-sm-6 padr20">
+                                <label>Details</label>
+                                <input type="text"ng-model="addProductForm.details" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label>Make</label>
+                                <input type="text" ng-model="addProductForm.make" required />
+                            </div><br>
+                        </div>
+                        <div ng-if="addProductForm.type=='Door'">
+                            <div class="col-sm-6 padr20">
+                                <label>Size</label>
+                                <input type="text" ng-model="addProductForm.size" onkeypress='sizeValidation(event)' ng-keyup="doorcalcAdd(addProductForm.size)" required />
+                            </div>
+                            <div class="col-sm-6">
+                                <label>CFT</label>
+                                <input type="text" ng-model="addProductForm.cft" readonly required />
+                            </div><br>
+                        </div>
+                        <div ng-if="addProductForm.type!='Door'">
+                            <label>Unit</label>
+                            <input type="text" ng-model="addProductForm.unit" required /><br>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 padr20">
+                        <label>Price</label>
+                        <input type="text"  ng-model="addProductForm.price" onkeypress='IsNumeric(event)' required />
+                    </div>
+                    <div class="col-sm-6">
+                        <label>GST</label>
+                        <input type="text"  ng-model="addProductForm.gst" onkeypress='IsNumeric(event)' required />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" value="Add" class="btn btn-primary" />
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<!-- confirm modal -->
+<div class="modal fade" id="confirmModal" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body">
+              <p>{{ alert_msg }}</p>
+              <input type="hidden" ng-model="modal_id" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" ng-click="this[confirmFn](modal_id)">Yes</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    md-chips {
+  
+    font-size: 13px !important;
+	}
+ .mbtn
+    {
+        
+    }
+    
+    .padl130
+    {
+        padding-left: 130px;
+    }
+   
+@media only screen and (device-width: 320px) and (orientation: portrait)  
+{
+   
+    .mbtn
+    {
+           top: -20px ! important;
+    }
+    
+     .padl130
+    {
+        padding-left: 100px;
+    }
+    
+    }
+    
+
+@media only screen and (min-device-width: 360px) and (max-device-width: 480px)  
+{
+
+    .mbtn
+    {
+           top: -20px ! important;
+    }
+   .padl130
+    {
+        padding-left: 100px;
+    }
+}
+
+@media only screen and (min-device-width: 568px) and (max-device-width: 854px)
+ {
+      .padl130
+    {
+        padding-left: 110px;
+    }
+    }
+</style>

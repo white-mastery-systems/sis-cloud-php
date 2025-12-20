@@ -1,8 +1,6 @@
 app.controller('loginCtrl', function($scope, $http, $state) {
     console.log("login...................")
-    $scope.isLoading = false;
     $scope.onSubmit = function(){
-        $scope.isLoading = true;
         console.log("login Data........",$scope.loginFormData)
         $http({
             url: './v1/userlogin',
@@ -36,12 +34,6 @@ app.controller('loginCtrl', function($scope, $http, $state) {
                 $scope.alert = true;
                 $scope.alert_content = response.data.code;
             }
-        })
-        .catch(function(error) {
-            console.error("Error during login: ", error);
-        })
-        .finally(function() {
-            $scope.isLoading = false;
         });
     };
 });

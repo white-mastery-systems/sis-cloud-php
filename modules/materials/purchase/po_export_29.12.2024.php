@@ -9,7 +9,6 @@ echo "\xEF\xBB\xBF";
 $status = $_GET['status'];
 $project_short = $_GET['project_short'];
 $emp_id = $_GET['emp_id'];
-$category = $_GET['category'];
 $collectionMaster = $db->purchase_master;  
 $delimiter = ',';
 if($project_short == '' &&  $status == 'usage')
@@ -67,7 +66,7 @@ echo 'PO_no,PO_Date,Project,Company,Grandtotal,Category'."\n";
 foreach($result as $rows)
             {
 
-    			$product['category'] = $rows['category'];
+    $product['category'] = $rows['category'];
                 $product['company'] = $rows['company'];
                 $product['po_number'] = $rows['po_number'];
                 $product['po_date'] = $rows['po_date'];

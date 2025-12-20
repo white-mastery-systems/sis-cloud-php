@@ -3,10 +3,6 @@ ini_set('max_execution_time', 1800);    // 30 minutes
 error_reporting(0);
 date_default_timezone_set("Asia/Kolkata");
 
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
 class DbHandler
 {
     private $conn;
@@ -3222,74 +3218,43 @@ class DbHandler
     public function getorderlist($getData) 
     {
         $response = array();
-    
         $response['purchase_data'] = array();
         
         $jsonData = json_decode($getData, true);
-        $response["category"] = $jsonData['category'];
+        
         if($jsonData['cancel_status'] == 'usage'){ $cancelStatus = '0'; }
         else{ $cancelStatus = '1'; }
         
         // collection
         $collectionMaster = $this->conn->purchase_master;
         
-        // site list
+        //site list
         $siteData = $this->internalsitelist($jsonData['emp_id']);
         $response['site_list'] = $siteData["site_list"];
         
         $proShortArray = $siteData["project_short_list"];
-        if($jsonData['project_short'] != '') { $proShortArray = array($jsonData['project_short']); }
-    
-        // Get current year and previous year
-        $currentYear = date('Y');
-        $previousYear = $currentYear - 1;
-    
-        // Set the date range for the current and previous years
-        $startDate = new MongoDB\BSON\UTCDateTime(strtotime("first day of January $previousYear 00:00:00") * 1000);
-        $endDate = new MongoDB\BSON\UTCDateTime(strtotime("last day of December $currentYear 23:59:59") * 1000);
-    
-        // Match conditions
-        // $matchConditions = [
-        //     "project_short" => ['$in' => $proShortArray],
-        //     "cancel_status" => $cancelStatus,
-        //     "date_time" => [
-        //         '$gte' => $startDate,  // Greater than or equal to the first day of the previous year
-        //         '$lte' => $endDate     // Less than or equal to the last day of the current year
-        //     ]
-        // ];
-
-        $matchConditions = [
-            "project_short" => ['$in' => $proShortArray],
-            "cancel_status" => $cancelStatus
-        ];
-    
-        if (!empty($jsonData['category'])) {
-            $matchConditions["category"] = $jsonData['category'];
-        }
-    
-        // Query with $dateFromString conversion
-        $result = $collectionMaster->aggregate([
-            [
-                '$addFields' => [
-                    'date_time' => [
-                        '$dateFromString' => [
-                            'dateString' => '$date_time',  // Assuming 'date_time' is a string in "Y-m-d H:i:s"
-                            'format' => '%Y-%m-%d %H:%M:%S'  // Format used to parse the date string
-                        ]
-                    ]
-                ]
-            ],
-            ['$match' => $matchConditions],
-            ['$sort' => ['_id' => -1]]
-        ]);
-    
-        if($result) {
+        if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
+        
+        //retrieve data
+        $result = $collectionMaster->aggregate(array(
+            array( '$match' => array(
+                "project_short" => array( '$in' => $proShortArray ),
+                "cancel_status" => $cancelStatus
+            )),
+            array( '$sort' => array( 
+                '_id' => -1
+            ))
+        ));
+        
+        if($result)
+        {
             $product = array();
-            foreach($result as $rows) {
+            foreach($result as $rows)
+            {
                 $product['category'] = $rows['category'];
                 $product['prf_number'] = $rows['prf_number'];
                 $product['po_number'] = $rows['po_number'];
-                $product['po_date'] = $rows['po_date'];  // This will now be a Date object
+                $product['po_date'] = $rows['po_date'];
                 $product['summary'] = $rows['description'];
                 $product['total'] = $rows['grand_total'];
                 $product['mail_status'] = $rows['mail_status'];
@@ -3298,13 +3263,12 @@ class DbHandler
                 array_push($response['purchase_data'], $product);
             }
             $response["code"] = "Success";
-        } else {
+        }
+        else {
             $response["code"] = "failed";
         }
-    
         return $response;        
     }
-    
     
     //get product list for new purchase
     public function getproductlist($getData)
@@ -4439,254 +4403,107 @@ class DbHandler
 	
 	
     //send purchase order mail
-//     public function sendpomail($getData)
-//     {
-//         $response = array();
+    public function sendpomail($getData)
+    {
+        $response = array();
         
-//         //collection
-//         $collection = $this->conn->mail_details;
-//         $collectionMaster = $this->conn->purchase_master;
-//         $collectionUser = $this->conn->signintable;
-//         $collectionDuration = $this->conn->quotation_duration;
-//         $collectionInventory = $this->conn->inventory;
-//         $collectionVendor = $this->conn->vendor_details;
+        //collection
+        $collection = $this->conn->mail_details;
+        $collectionMaster = $this->conn->purchase_master;
+        $collectionUser = $this->conn->signintable;
+        $collectionDuration = $this->conn->quotation_duration;
+        $collectionInventory = $this->conn->inventory;
+        $collectionVendor = $this->conn->vendor_details;
         
-//         $jsonData = json_decode($getData, true);
+        $jsonData = json_decode($getData, true);
           
-//         file_get_contents($this->path.'/modules/materials/purchase/po_pdf.php?type=upload&id='.$jsonData['po_number'].'&emp_id='.$jsonData['emp_id']);
-// 		sleep(8);
+        file_get_contents($this->path.'/modules/materials/purchase/po_pdf.php?type=upload&id='.$jsonData['po_number'].'&emp_id='.$jsonData['emp_id']);
+		sleep(8);
             
-//        if(file_exists('../modules/materials/purchase/'.$jsonData['po_number'].'.pdf'))
-//         {
+       if(file_exists('../modules/materials/purchase/'.$jsonData['po_number'].'.pdf'))
+        {
            
-//             $sendData['emp_id'] = $jsonData['emp_id'];
-//             $sendData['mail_name'] = 'South India Shelters Pvt.Ltd.';
-//             $sendData['to_mail'] = $jsonData['to_mail'];
-//             $sendData['cc_mail'] = $jsonData['cc_mail'];
-//             $sendData['bcc_mail'] = $jsonData['bcc_mail'];
-//             $sendData['subject'] = $jsonData['subject'];
-//             $sendData['content'] = $jsonData['content'];
-//             $sendData['attachment'] = 'true';
-//             $sendData['attached_file'] = '../modules/materials/purchase/'.$jsonData['po_number'].'.pdf';
-//             $sendData['attached_name'] = date("d-m-Y ").$jsonData['order_type_short'].'-'.$jsonData['po_number'].'.pdf';
+            $sendData['emp_id'] = $jsonData['emp_id'];
+            $sendData['mail_name'] = 'South India Shelters Pvt.Ltd.';
+            $sendData['to_mail'] = $jsonData['to_mail'];
+            $sendData['cc_mail'] = $jsonData['cc_mail'];
+            $sendData['bcc_mail'] = $jsonData['bcc_mail'];
+            $sendData['subject'] = $jsonData['subject'];
+            $sendData['content'] = $jsonData['content'];
+            $sendData['attachment'] = 'true';
+            $sendData['attached_file'] = '../modules/materials/purchase/'.$jsonData['po_number'].'.pdf';
+            $sendData['attached_name'] = date("d-m-Y ").$jsonData['order_type_short'].'-'.$jsonData['po_number'].'.pdf';
                 
-//             $reqResp = $this->internalMailer(json_encode($sendData));
+            $reqResp = $this->internalMailer(json_encode($sendData));
             
-//             if($reqResp=='Success')
-//             {
-//                 $purchaseData = $collectionMaster->findOne(array("po_number" => $jsonData['po_number']));
+            if($reqResp=='Success')
+            {
+                $purchaseData = $collectionMaster->findOne(array("po_number" => $jsonData['po_number']));
                 
-//                 $collectionVendor->updateOne(
-//                     array("company_name" => $purchaseData['company']),
-//                     array('$set' => array(
-//                         "email" => $jsonData['to_mail']
-//                 )));
+                $collectionVendor->updateOne(
+                    array("company_name" => $purchaseData['company']),
+                    array('$set' => array(
+                        "email" => $jsonData['to_mail']
+                )));
                 
-//                 $collectionMaster->updateOne(
-//                     array("po_number" => $jsonData['po_number']),
-//                     array('$set' => array(
-//                         "mail_status" => "send"
-//                 )));
+                $collectionMaster->updateOne(
+                    array("po_number" => $jsonData['po_number']),
+                    array('$set' => array(
+                        "mail_status" => "send"
+                )));
                 
-//                 $collectionInventory->updateMany(
-//                     array("po_number" => $jsonData['po_number']),
-//                     array('$set' => array(
-//                         "mail_status" => "1"
-//                 )));
+                $collectionInventory->updateMany(
+                    array("po_number" => $jsonData['po_number']),
+                    array('$set' => array(
+                        "mail_status" => "1"
+                )));
                 
-//                 //timer
-//                 $durationData = $collectionDuration->findOne(array("quot_number" => $purchaseData['quot_number']));
-//                 if($durationData && !$durationData['po_datetime'])
-//                 {
-//                     $respDuration = $this->secondsToWords($durationData['approved_datetime'], date("Y-m-d H:i:s"));
-//                     $collectionDuration->updateOne(
-//                         array("quot_number" => $purchaseData['quot_number']),
-//                             array('$set' => array(
-//                             "po_number" => $jsonData['po_number'],
-//                             "po_duration" => $respDuration,
-//                             "po_datetime" => date("Y-m-d H:i:s")
-//                     )));
-//                 }
+                //timer
+                $durationData = $collectionDuration->findOne(array("quot_number" => $purchaseData['quot_number']));
+                if($durationData && !$durationData['po_datetime'])
+                {
+                    $respDuration = $this->secondsToWords($durationData['approved_datetime'], date("Y-m-d H:i:s"));
+                    $collectionDuration->updateOne(
+                        array("quot_number" => $purchaseData['quot_number']),
+                            array('$set' => array(
+                            "po_number" => $jsonData['po_number'],
+                            "po_duration" => $respDuration,
+                            "po_datetime" => date("Y-m-d H:i:s")
+                    )));
+                }
                 
-//                 $staffData = $collectionUser->findOne(array("emp_id" => (int)$jsonData['emp_id']));
-//                 $collection->insertOne(array(
-//                     "emp_id" => $staffData['emp_id'],
-//                     "date_time" => date("Y-m-d H:i:s"),
-//                     "po_number" => $jsonData['po_number'],
-//                     "from_mail" => $staffData['mail_id'],
-//                     "to_mail" => $jsonData['to_mail'],
-//                     "cc_mail" => $jsonData['cc_mail'],
-//                     "bcc_mail" => $jsonData['bcc_mail'],
-//                     "subject" => $jsonData['subject'],
-//                     "content" => $jsonData['content'],
-//                     "type" => 'purchase'
-//                 ));
-//                 $resp = "Success";
-//             }
-//             else
-//             {
-//                 $collectionMaster->updateOne(
-//                     array("po_number" => $jsonData['po_number']),
-//                     array('$set' => array(
-//                         "mail_status" => "failure"
-//                 )));
-//                 $resp = "Failure !!!";
-//             }
-//              unlink('../modules/materials/purchase/'.$jsonData['po_number'].'.pdf');
-//    }
-//       else {
-//            $resp = "Network Error, Try Again !!!";
-//       }
-//         $response['code'] = $resp;
-//         return $response;
-//     }
-
-
-public function sendpomail($getData)
-{
-    $response = array();
-
-    // Decode JSON data
-    $jsonData = json_decode($getData, true);
-
-    // Generate PDF and wait for it to be available
-    $pdfPath = $this->generatePDF($jsonData['po_number'], $jsonData['emp_id']);
-    $response["filepath"] = $pdfPath;
-    if ($this->waitForFile($pdfPath, 10)) {  // Wait for a maximum of 10 seconds
-        // Prepare email data
-        $response["data1"] = "Data";
-        $sendData = $this->prepareEmailData($jsonData, $pdfPath);
-        // $response["data2"] = $sendData;
-        // Send email
-        $reqResp = $this->internalMailer(json_encode($sendData));
-        // $response["data3"] = $reqResp;
-        if ($reqResp == 'Success') {
-            // Update database records
-            $response["data4"] = $jsonData;
-            $this->updateDatabase($jsonData);
-            $resp = "Success";
-        } else {
-            $this->updateMailStatus($jsonData['po_number'], "failure");
-            $resp = "Failure !!!";
-        }
-
-        // Delete PDF file
-        unlink($pdfPath);
-    } else {
-        $response["data"] = "No Data";
-        $resp = "Network Error, Try Again !!!";
+                $staffData = $collectionUser->findOne(array("emp_id" => (int)$jsonData['emp_id']));
+                $collection->insertOne(array(
+                    "emp_id" => $staffData['emp_id'],
+                    "date_time" => date("Y-m-d H:i:s"),
+                    "po_number" => $jsonData['po_number'],
+                    "from_mail" => $staffData['mail_id'],
+                    "to_mail" => $jsonData['to_mail'],
+                    "cc_mail" => $jsonData['cc_mail'],
+                    "bcc_mail" => $jsonData['bcc_mail'],
+                    "subject" => $jsonData['subject'],
+                    "content" => $jsonData['content'],
+                    "type" => 'purchase'
+                ));
+                $resp = "Success";
+            }
+            else
+            {
+                $collectionMaster->updateOne(
+                    array("po_number" => $jsonData['po_number']),
+                    array('$set' => array(
+                        "mail_status" => "failure"
+                )));
+                $resp = "Failure !!!";
+            }
+             unlink('../modules/materials/purchase/'.$jsonData['po_number'].'.pdf');
+   }
+      else {
+           $resp = "Network Error, Try Again !!!";
+      }
+        $response['code'] = $resp;
+        return $response;
     }
-
-    $response['code'] = $resp;
-    return $response;
-}
-
-private function generatePDF($poNumber, $empId)
-{
-    $pdfUrl = $this->path.'/modules/materials/purchase/po_pdf.php?type=upload&id='.$poNumber.'&emp_id='.$empId;
-    file_get_contents($pdfUrl);
-    return '../modules/materials/purchase/'.$poNumber.'.pdf';
-}
-
-private function waitForFile($filePath, $timeout)
-{
-    $start = time();
-    while (!file_exists($filePath)) {
-        if (time() - $start > $timeout) {
-            return false;
-        }
-        usleep(500000); // Sleep for 0.5 seconds
-    }
-    return true;
-}
-
-private function prepareEmailData($jsonData, $pdfPath)
-{
-    return array(
-        'emp_id' => $jsonData['emp_id'],
-        'mail_name' => 'South India Shelters Pvt.Ltd.',
-        'to_mail' => $jsonData['to_mail'],
-        'cc_mail' => $jsonData['cc_mail'],
-        'bcc_mail' => $jsonData['bcc_mail'],
-        'subject' => $jsonData['subject'],
-        'content' => $jsonData['content'],
-        'attachment' => 'true',
-        'attached_file' => $pdfPath,
-        'attached_name' => date("d-m-Y ").$jsonData['order_type_short'].'-'.$jsonData['po_number'].'.pdf'
-    );
-}
-
-private function updateDatabase($jsonData)
-{
-    $collectionMaster = $this->conn->purchase_master;
-    $collectionVendor = $this->conn->vendor_details;
-    $collectionInventory = $this->conn->inventory;
-    $collectionDuration = $this->conn->quotation_duration;
-    $collectionUser = $this->conn->signintable;
-    $collection = $this->conn->mail_details;
-
-    $purchaseData = $collectionMaster->findOne(array("po_number" => $jsonData['po_number']));
-
-    $collectionVendor->updateOne(
-        array("company_name" => $purchaseData['company']),
-        array('$set' => array("email" => $jsonData['to_mail']))
-    );
-
-    $collectionMaster->updateOne(
-        array("po_number" => $jsonData['po_number']),
-        array('$set' => array("mail_status" => "send"))
-    );
-
-    $collectionInventory->updateMany(
-        array("po_number" => $jsonData['po_number']),
-        array('$set' => array("mail_status" => "1"))
-    );
-
-    $this->updateQuotationDuration($purchaseData, $jsonData['po_number']);
-
-    $staffData = $collectionUser->findOne(array("emp_id" => (int)$jsonData['emp_id']));
-    $collection->insertOne(array(
-        "emp_id" => $staffData['emp_id'],
-        "date_time" => date("Y-m-d H:i:s"),
-        "po_number" => $jsonData['po_number'],
-        "from_mail" => $staffData['mail_id'],
-        "to_mail" => $jsonData['to_mail'],
-        "cc_mail" => $jsonData['cc_mail'],
-        "bcc_mail" => $jsonData['bcc_mail'],
-        "subject" => $jsonData['subject'],
-        "content" => $jsonData['content'],
-        "type" => 'purchase'
-    ));
-}
-
-private function updateQuotationDuration($purchaseData, $poNumber)
-{
-    $collectionDuration = $this->conn->quotation_duration;
-
-    $durationData = $collectionDuration->findOne(array("quot_number" => $purchaseData['quot_number']));
-    if ($durationData && !$durationData['po_datetime']) {
-        $respDuration = $this->secondsToWords($durationData['approved_datetime'], date("Y-m-d H:i:s"));
-        $collectionDuration->updateOne(
-            array("quot_number" => $purchaseData['quot_number']),
-            array('$set' => array(
-                "po_number" => $poNumber,
-                "po_duration" => $respDuration,
-                "po_datetime" => date("Y-m-d H:i:s")
-            ))
-        );
-    }
-}
-
-private function updateMailStatus($poNumber, $status)
-{
-    $collectionMaster = $this->conn->purchase_master;
-    $collectionMaster->updateOne(
-        array("po_number" => $poNumber),
-        array('$set' => array("mail_status" => $status))
-    );
-}
-
-
 	
 	
 	
@@ -7283,58 +7100,49 @@ public function stockupdate_use($getData)
     }
 
     public function getbillinglist($getData)
-{
-    $response = array();
-    $response['bill_list'] = array();
-    $jsonData = json_decode($getData, true);
-    $collectionBill = $this->conn->purchase_bill;
+    {
+        $response = array();
+        $response['bill_list'] = array();
+        $jsonData = json_decode($getData, true);
+        $collectionBill = $this->conn->purchase_bill;
 
-    //site list
-    $siteData = $this->internalsitelist($jsonData['emp_id']);
-    $response['site_list'] = $siteData["site_list"];
+        //site list
+        $siteData = $this->internalsitelist($jsonData['emp_id']);
+        $response['site_list'] = $siteData["site_list"];
 
-    $proShortArray = $siteData["project_short_list"];
-    if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
+        $proShortArray = $siteData["project_short_list"];
+        if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
 
-    // Get current year and two years before
-    $currentYear = (int)date('Y');
-    $threeYearsAgo = $currentYear - 2;
-    
-    // Create date limits for the aggregation
-    $startDate = new \MongoDB\BSON\UTCDateTime(strtotime($threeYearsAgo.'-01-01 00:00:00') * 1000);
-    
-    $cursor = $collectionBill->aggregate(array(
-        array('$match' => array(
-            "project_short" => array( '$in' => $proShortArray ),
-            "created_at" => array( '$gte' => $startDate ) // Filter for last 3 years (current + last 2)
-        )),
-        array( '$lookup' => array(
-            'from' => 'signintable',
-            'localField' => 'emp_id',
-            'foreignField' => 'emp_id',
-            'as' => 'user_data'
-        )),
-        array( '$sort' => array( 
-            '_id' => -1
-        ))
-    ));
-    if($cursor) {
-        foreach($cursor as $rowData)
-        {
-            $sendData['_id'] = $rowData['_id'].$oid;
-            $sendData['po_no'] = $rowData['bill_list'];
-            $sendData['sis_bill_no'] = $rowData['sis_bill_no'];
-            $sendData['emp_name'] = $rowData['user_data'][0]['name'];
-            $sendData['vendor_bill_no'] = $rowData['vendor_bill_no'];
-            $sendData['vendor_name'] = $rowData['vendor_name'];
-            $sendData['grand_total'] = $rowData['grand_total'];
-            $sendData['status'] = $rowData['status'];
-            $sendData['bill_date'] = $rowData['created_at']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format("d-m-Y");
-            array_push($response['bill_list'], $sendData);
+        $cursor = $collectionBill->aggregate(array(
+            array('$match' => array(
+                "project_short" => array( '$in' => $proShortArray )
+            )),
+            array( '$lookup' => array(
+                'from' => 'signintable',
+                'localField' => 'emp_id',
+                'foreignField' => 'emp_id',
+                'as' => 'user_data'
+            )),
+            array( '$sort' => array( 
+                '_id' => -1
+            ))
+        ));
+        if($cursor) {
+            foreach($cursor as $rowData)
+            {
+                $sendData['_id'] = $rowData['_id'].$oid;
+                $sendData['sis_bill_no'] = $rowData['sis_bill_no'];
+                $sendData['emp_name'] = $rowData['user_data'][0]['name'];
+                $sendData['vendor_bill_no'] = $rowData['vendor_bill_no'];
+                $sendData['vendor_name'] = $rowData['vendor_name'];
+                $sendData['grand_total'] = $rowData['grand_total'];
+                $sendData['status'] = $rowData['status'];
+                $sendData['bill_date'] = $rowData['created_at']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format("d-m-Y");
+                array_push($response['bill_list'], $sendData);
+            }
         }
+        return $response;
     }
-    return $response;
-}
 
     public function getBillingVendorList($getData)
     {
@@ -7812,13 +7620,12 @@ public function stockupdate_use($getData)
         $jsonData = json_decode($getData, true);
         
         // mongo collection
-         $resData = $this->getcategory(json_encode($jsonData));
+          $resData = $this->getcategory(json_encode($jsonData));
          $collectionMaster = $this->conn->product_list;
          $validate = $collectionMaster->findOne(array("category" => $resData['category']));
-         
       if($validate) {
     //$response['product_code'] = $jsonData['category'].'0002';
-            $regex = new \MongoDB\BSON\Regex("^" . $resData['product_short'] . "-");    //LIKE query
+                      $regex = new \MongoDB\BSON\Regex($resData['product_short']);    //LIKE query
             $results = $collectionMaster->aggregate(array(
                 array( '$match' => array(
                     'product_code' => $regex
@@ -8472,105 +8279,30 @@ public function stockupdate_use($getData)
 
         return trim($words);
     }
-
-        public function testmailer()
-        {
-                $response = array();
-                $validate = array(
-                    'mail_id' => 'prabha@sis.in', // Gmail ID
-                    'mail_pwd' => 'vlou vadz wolu dfgn'    // Gmail app password
-                );
-                try {
-                // Server settings
-                $mail = new PHPMailer\PHPMailer\PHPMailer();
-                $mail->isSMTP();                                            // Set mailer to use SMTP
-                $mail->Host       = 'smtp.gmail.com';                     // Specify SMTP server
-                $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-                $mail->Username   = $validate['mail_id'];               // SMTP username
-                $mail->Password   = $validate['mail_pwd'];                        // SMTP password
-                $mail->SMTPSecure = 'ssl';
-                $mail->Port       = 465; 
-                // $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         // Enable TLS encryption
-                // $mail->Port       = 587;           
-                
-                $mail->SMTPDebug = 2; // Enable verbose debug output
-                $mail->Debugoutput = 'error_log'; // Log output to PHP error log
-
-                $mail->setFrom($validate['mail_id'], 'Your Name');
-                $mail->addAddress('prabha1094@gmail.com');
-                $mail->addAddress('prabha@whitemastery.com');
-                $mail->addAddress('hari@squareht.com');
-                // $mail->addAddress('dev@bdcode.in'); // Add a recipient
-                $mail->addReplyTo($validate['mail_id'], 'Your Name');
-
-                // Content
-                $mail->isHTML(true);                                        // Set email format to HTML
-                $mail->Subject = 'Test Email from PHPMailer';
-                $mail->Body    = '<p>Hello, this is a <strong>test email</strong> sent using PHPMailer.</p>';
-                $mail->AltBody = 'Hello, this is a test email sent using PHPMailer.'; // Plain text for non-HTML mail clients
-
-                // Send the email
-                $mail->send();
-                $response["message"] = "Email has been sent successfully!";
-                } catch (Exception $e) 
-                {
-                    $response["message"] = "Error: " . $mail->ErrorInfo . "; Exception: " . $e->getMessage();
-                    $response["message"] = $mail->ErrorInfo;
-                }
-
-                    $imapStream = imap_open("{imap.gmail.com:993/imap/ssl}", $validate['mail_id'], $validate['mail_pwd']);
-
-                    // List all mailboxes/folders in Gmail
-                    // $folders = imap_list($imapStream, "{imap.gmail.com:993/imap/ssl}", "*");
-                    // if ($folders) {
-                    //     $response["all"] = $folders;
-                    // } else {
-                    // $response["error"] = "Unable to list folders: " . imap_last_error();
-                    // }
-
-                    if (!$imapStream) {
-                        $response["imap"] = imap_last_error();
-                    exit;
-                    }
-
-                    // Get the MIME message (PHPMailer provides this method)
-                    $sentMimeMessage = $mail->getSentMIMEMessage();
-
-                    // Append the email to Gmail's "Sent Mail" folder
-                    $result = imap_append($imapStream, "{imap.gmail.com:993/imap/ssl}[Gmail]/Sent Mail", $sentMimeMessage, "\\Seen");
-
-                    if ($result) {
-                            echo "Email appended to Sent Mail folder successfully!";
-                            $response["imap"] = "Email appended to Sent Mail folder successfully!";
-                    } else {
-                            echo "Failed to append email: " . imap_last_error();
-                            $response["imap"] = imap_last_error();
-                    }
-                    imap_close($imapStream);
-
-            return $response;
-        }
     
     //php mailer
     public function internalMailer($getData)
     {
-        $jsonData = json_decode($getData, true);        
+        $jsonData = json_decode($getData, true);
+        
         // collection
-        $collectionUser = $this->conn->signintable;        
+        $collectionUser = $this->conn->signintable;
+        
         $validate = $collectionUser->findOne(array("emp_id" => (int)$jsonData['emp_id']));
         if($validate)
         {
             $mail = new PHPMailer\PHPMailer\PHPMailer();
-            $mail->isSMTP();                                      // Set mailer to use SMTP
-            $mail->Host       = 'smtp.gmail.com';                 // Specify main and backup SMTP servers
-            $mail->SMTPAuth   = true;                             // Enable SMTP authentication
-            $mail->Username = $validate['config_mailid'];
-            $mail->Password = $validate['mail_pwd'];
+            $mail->isSMTP();
             $mail->CharSet="UTF-8";
+            $mail->Host = 'lin.ezveb.com';
+	       //$mail->SMTPDebug = 3;
             $mail->Port = 465;
+            $mail->Username = $validate['mail_id'];
+            $mail->Password = $validate['mail_pwd'];
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = 'ssl';
-            $mail->setFrom($validate['config_mailid'], $jsonData['mail_name']);            
+            $mail->setFrom($validate['mail_id'], $jsonData['mail_name']);
+            
             //to mail
             $to_mail_id = explode(',', $jsonData['to_mail']);
             foreach($to_mail_id as $toMailId)
@@ -8607,13 +8339,13 @@ public function stockupdate_use($getData)
             if($mail->Send()){
                 $response = 'Success';
             }
-            else
-            {
+            else{
+				    //$singleErrorMessage = $mail->ErrorInfo;
                 $response = 'Failure';
             }
                 
-            $imapStream = imap_open("{imap.gmail.com:993/imap/ssl}", $validate['config_mailid'], $validate['mail_pwd']);
-            $result = imap_append($imapStream, "{imap.gmail.com:993/imap/ssl}[Gmail]/Sent Mail", $sentMimeMessage, "\\Seen");
+            $imapStream = imap_open("{lin.ezveb.com:993/imap/ssl}", $validate['mail_id'], $validate['mail_pwd']);
+            imap_append($imapStream, "{lin.ezveb.com:993/imap/ssl}Sent", $mail->getSentMIMEMessage(), "\\Seen");  
             imap_close($imapStream);
         }
         return $response;

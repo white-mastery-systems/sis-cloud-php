@@ -4554,15 +4554,13 @@ public function sendpomail($getData)
     $response["filepath"] = $pdfPath;
     if ($this->waitForFile($pdfPath, 10)) {  // Wait for a maximum of 10 seconds
         // Prepare email data
-        $response["data1"] = "Data";
         $sendData = $this->prepareEmailData($jsonData, $pdfPath);
-        // $response["data2"] = $sendData;
+
         // Send email
         $reqResp = $this->internalMailer(json_encode($sendData));
-        // $response["data3"] = $reqResp;
+
         if ($reqResp == 'Success') {
             // Update database records
-            $response["data4"] = $jsonData;
             $this->updateDatabase($jsonData);
             $resp = "Success";
         } else {
@@ -4573,7 +4571,6 @@ public function sendpomail($getData)
         // Delete PDF file
         unlink($pdfPath);
     } else {
-        $response["data"] = "No Data";
         $resp = "Network Error, Try Again !!!";
     }
 
@@ -7283,58 +7280,50 @@ public function stockupdate_use($getData)
     }
 
     public function getbillinglist($getData)
-{
-    $response = array();
-    $response['bill_list'] = array();
-    $jsonData = json_decode($getData, true);
-    $collectionBill = $this->conn->purchase_bill;
+    {
+        $response = array();
+        $response['bill_list'] = array();
+        $jsonData = json_decode($getData, true);
+        $collectionBill = $this->conn->purchase_bill;
 
-    //site list
-    $siteData = $this->internalsitelist($jsonData['emp_id']);
-    $response['site_list'] = $siteData["site_list"];
+        //site list
+        $siteData = $this->internalsitelist($jsonData['emp_id']);
+        $response['site_list'] = $siteData["site_list"];
 
-    $proShortArray = $siteData["project_short_list"];
-    if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
+        $proShortArray = $siteData["project_short_list"];
+        if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
 
-    // Get current year and two years before
-    $currentYear = (int)date('Y');
-    $threeYearsAgo = $currentYear - 2;
-    
-    // Create date limits for the aggregation
-    $startDate = new \MongoDB\BSON\UTCDateTime(strtotime($threeYearsAgo.'-01-01 00:00:00') * 1000);
-    
-    $cursor = $collectionBill->aggregate(array(
-        array('$match' => array(
-            "project_short" => array( '$in' => $proShortArray ),
-            "created_at" => array( '$gte' => $startDate ) // Filter for last 3 years (current + last 2)
-        )),
-        array( '$lookup' => array(
-            'from' => 'signintable',
-            'localField' => 'emp_id',
-            'foreignField' => 'emp_id',
-            'as' => 'user_data'
-        )),
-        array( '$sort' => array( 
-            '_id' => -1
-        ))
-    ));
-    if($cursor) {
-        foreach($cursor as $rowData)
-        {
-            $sendData['_id'] = $rowData['_id'].$oid;
-            $sendData['po_no'] = $rowData['bill_list'];
-            $sendData['sis_bill_no'] = $rowData['sis_bill_no'];
-            $sendData['emp_name'] = $rowData['user_data'][0]['name'];
-            $sendData['vendor_bill_no'] = $rowData['vendor_bill_no'];
-            $sendData['vendor_name'] = $rowData['vendor_name'];
-            $sendData['grand_total'] = $rowData['grand_total'];
-            $sendData['status'] = $rowData['status'];
-            $sendData['bill_date'] = $rowData['created_at']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format("d-m-Y");
-            array_push($response['bill_list'], $sendData);
+        $cursor = $collectionBill->aggregate(array(
+            array('$match' => array(
+                "project_short" => array( '$in' => $proShortArray )
+            )),
+            array( '$lookup' => array(
+                'from' => 'signintable',
+                'localField' => 'emp_id',
+                'foreignField' => 'emp_id',
+                'as' => 'user_data'
+            )),
+            array( '$sort' => array( 
+                '_id' => -1
+            ))
+        ));
+        if($cursor) {
+            foreach($cursor as $rowData)
+            {
+                $sendData['_id'] = $rowData['_id'].$oid;
+                $sendData['po_no'] = $rowData['bill_list'];
+                $sendData['sis_bill_no'] = $rowData['sis_bill_no'];
+                $sendData['emp_name'] = $rowData['user_data'][0]['name'];
+                $sendData['vendor_bill_no'] = $rowData['vendor_bill_no'];
+                $sendData['vendor_name'] = $rowData['vendor_name'];
+                $sendData['grand_total'] = $rowData['grand_total'];
+                $sendData['status'] = $rowData['status'];
+                $sendData['bill_date'] = $rowData['created_at']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format("d-m-Y");
+                array_push($response['bill_list'], $sendData);
+            }
         }
+        return $response;
     }
-    return $response;
-}
 
     public function getBillingVendorList($getData)
     {

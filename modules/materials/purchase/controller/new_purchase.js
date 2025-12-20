@@ -1,7 +1,5 @@
 app.controller('neworderCtrl', function($scope, $http, dateFilter, $state, $stateParams, orderService, $timeout) {
-    $scope.isLoading = false;
-    $scope.isLoading2 = false;
-    $scope.isLoading3 = false;
+
 var jsonData = jQuery.parseJSON(localStorage.getItem("order"));
 
 $scope.mailPermission = jsonData['mail'];
@@ -21,14 +19,9 @@ $scope.cc_mail.push({mail_id:'ranjith@sis.in'});
 }
 //page back
 var splitData = $stateParams.filter.split("_");
-$scope.onBack = function(){       
-    $scope.isLoading3 = true; 
-    $timeout(function() {
-        $state.go('home.orders', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2]+'_'+splitData[3]+'_'+splitData[4] });
-        $scope.isLoading3 = false;
-    }, 100);
-};
-
+$scope.onBack = function(){
+$state.go('home.orders', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2]+'_'+splitData[3]+'_'+splitData[4] });
+}
 //po date
 $scope.date = new Date();
 $scope.$watch('date', function(date){
@@ -317,7 +310,6 @@ return (mail_id._lowername.indexOf(lowercaseQuery) === 0);
 }
 
 $scope.mailContent = function(){
-$scope.isLoading = true;
 $scope.readonly = false;
 $scope.selectedItem = null;
 $scope.searchText = null;
@@ -337,9 +329,6 @@ $scope.mailForm.from_mail = response.data.mail_id;
 $scope.mail_list = response.data.user_mail;
 $scope.loadMailids(response.data.user_mail)
 $scope.maildatas = $scope.loadMailids(response.data.user_mail)
-})
-.finally(function() {
-    $scope.isLoading = false;
 });
 };
     
@@ -358,7 +347,6 @@ return mailid;
 
 //save
 $scope.onSubmit = function(){
-$scope.isLoading2 = true;
 $scope.tableItems = [];
 angular.forEach($scope.names,function(tableForm){
 $scope.tableItems.push({ code: tableForm.code, item: tableForm.item,desc: tableForm.desc, unit: tableForm.unit, quantity: tableForm.quantity, price: tableForm.price, gst: tableForm.gst, details: tableForm.details, make: tableForm.make, width: tableForm.width, height: tableForm.height, upvc_type: tableForm.upvc_type, size: tableForm.size, cft: tableForm.cft });
@@ -378,9 +366,6 @@ $state.go('home.orders', { filter: splitData[0]+'_'+splitData[1]+'_'+splitData[2
 else{
 $scope.alert = true;
 }
-})
-.finally(function() {
-    $scope.isLoading2 = false;
 });
 };
 

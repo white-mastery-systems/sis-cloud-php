@@ -1,7 +1,5 @@
 app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state, $stateParams, $timeout, orderService) {
-    $scope.isLoading = false;
-    $scope.isLoading2 = false;
-    $scope.isLoading3 = false;  
+        
     var jsonData = jQuery.parseJSON(localStorage.getItem("indent"));
     $scope.mailPermission = jsonData['mail'];
     if(jsonData['add'] != 1){
@@ -10,14 +8,9 @@ app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state
     else
     {
         //page back
-        $scope.onBack = function(){       
-            $scope.isLoading3 = true;    
-            // $state.go('home.indent', $stateParams); 
-            $timeout(function() {
-                $state.go('home.indent', $stateParams);
-                $scope.isLoading3 = false;
-            }, 100);
-        };
+        $scope.onBack = function(){
+            $state.go('home.indent', $stateParams);
+        }
         
         $scope.date = new Date();
         $scope.$watch('date', function(date) {
@@ -151,8 +144,7 @@ app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state
 		} 
 		
 		
-		 $scope.mailContent = function(){
-            $scope.isLoading = true;			
+		 $scope.mailContent = function(){			
 			$scope.readonly = false;
 			$scope.selectedItem = null;
 			$scope.searchText = null;
@@ -176,11 +168,7 @@ app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state
 			$scope.mail_list = response.data.user_mail;
 			$scope.loadMailids(response.data.user_mail)
 			$scope.maildatas = $scope.loadMailids(response.data.user_mail)
-			})
-
-            .finally(function() {
-                $scope.isLoading = false;
-            });
+			});
 	     };
 		
 		
@@ -201,7 +189,6 @@ app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state
 		
         //save
         $scope.onSubmit = function(){
-            $scope.isLoading2 = true;
             $scope.indentForm.jsonArrayData = JSON.stringify($scope.names);
             $scope.indentForm.jsonSupplierData = JSON.stringify($scope.items);
             $scope.indentForm.emp_id = localStorage.getItem("user_id");
@@ -218,10 +205,6 @@ app.controller('indentDuplicateCtrl', function($scope, $http, dateFilter, $state
                 else{
                     $scope.alert = true;
                 }
-            })
-
-            .finally(function() {
-                $scope.isLoading2 = false;
             });
         };
         
