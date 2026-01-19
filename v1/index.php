@@ -168,6 +168,13 @@ $app->post('/deleteallproducts', function() use($app) {
 
 /***** INDENT *****/
 
+$app->post('/getpaginatedindentlist', function() use($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();	
+    $result = $db->getpaginatedindentlist($postData);
+    echo json_encode($result);
+});
+
 $app->post('/getindentlist', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();	
