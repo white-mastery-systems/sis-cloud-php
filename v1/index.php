@@ -168,10 +168,10 @@ $app->post('/deleteallproducts', function() use($app) {
 
 /***** INDENT *****/
 
-$app->post('/getpaginatedindentlist', function() use($app) {
+$app->post('/getindentlistPaginated', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();	
-    $result = $db->getpaginatedindentlist($postData);
+    $result = $db->getindentlistPaginated($postData);
     echo json_encode($result);
 });
 
@@ -362,6 +362,13 @@ $app->post('/admineditquotation', function() use($app) {
 });
 
 /***** PURCHASE ORDER *****/
+
+$app->post('/getorderlistPaginated', function() use ($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();
+    $result = $db->getorderlistPaginated($postData);    
+    echo json_encode($result);
+});
 
 $app->post('/getorderlist', function() use ($app) {
     $postData = $app->request->getBody();

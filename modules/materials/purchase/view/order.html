@@ -13,32 +13,30 @@
 <a ui-sref="home.orders({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">add</i><i class="mfb-component__main-icon--active material-icons">close</i></a>
 
 <ul class="mfb-component__list">
-<li class="mbtn"><a title="New Purchase Order" data-mfb-label="New Purchase" ng-click="onAdd()" class="mfb-component__button--child  "><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
+<li class="mbtn"><a title="New Purchase Order" data-mfb-label="New Purchase" ng-click="onAdd()" class="mfb-component__button--child"><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
 
-<li class="mbtn"><a ng-click="addVendorModal()" title="Add Vendor"  data-mfb-label="Add Vendor" class="mfb-component__button--child " ><i class="mfb-component__child-icon material-icons">person_add</i></a></li>
+<li class="mbtn"><a ng-click="addVendorModal()" title="Add Vendor" data-mfb-label="Add Vendor" class="mfb-component__button--child"><i class="mfb-component__child-icon material-icons">person_add</i></a></li>
 
-<li class="mbtn"><a ng-click="addProductModal()" data-mfb-label="Add Products"  title="Add Product" class="mfb-component__button--child " ><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
+<li class="mbtn"><a ng-click="addProductModal()" data-mfb-label="Add Products" title="Add Product" class="mfb-component__button--child"><i class="mfb-component__child-icon material-icons">add_shopping_cart</i></a></li>
 
-<li class="mbtn"><a  data-mfb-label="Purchase Export" title="Purchase Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i></a></li>
+<li class="mbtn"><a data-mfb-label="Purchase Export" title="Purchase Export" class="mfb-component__button--child" ng-click="export()"><i class="mfb-component__child-icon ion-social-twitter material-icons">import_export</i></a></li>
 </ul></li></ul>
 </span>
 
 
 <span id="ord-headright" class="left navigations padl130">  
-<ul id="menu" class="mfb-component--tr" >
+<ul id="menu" class="mfb-component--tr">
 <li class="mfb-component__wrap">
 <a ui-sref="home.orders({filter: ''})" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">refresh</i></a>
 </li></ul>
 </span>
 
 <span id="ord-headright" class="right navigations" style="margin-right: 60px">  
-<ul id="menu" class="mfb-component--tr" >
+<ul id="menu" class="mfb-component--tr">
 <li class="mfb-component__wrap">
-<a ng-if="deletePermission=='1'"  ng-click='deleteall()' ng-show="showDelBtn" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
+<a ng-if="deletePermission=='1'" ng-click='deleteall()' ng-show="showDelBtn" class="mfb-component__button--main"><i class="mfb-component__main-icon--resting material-icons">delete</i></a>
 </li></ul>
 </span>
-   
-  
 
 </div></div>
 </div></div>
@@ -52,103 +50,126 @@
     
     <div class="row" style="padding-left:20px">
         <div class="col-md-2 col-xs-6 pr20">Project:
-            <select  ng-options="list.project_short as list.project_name for list in projects" ng-model="project_short" ng-change="tableData(tabletype, project_short, category)" required> 
+            <select ng-options="list.project_short as list.project_name for list in projects" ng-model="project_short" ng-change="projectChanged()" required> 
                 <option value="">All</option>
             </select>
         </div>
         <div class="col-md-2 col-xs-6 pr20">Type:
-            <select ng-model="tabletype" ng-change="tableData(tabletype, project_short, category)" >
+            <select ng-model="tabletype" ng-change="tableTypeChanged()">
                 <option value="usage">Issued</option>
                 <option value="cancel">Cancelled</option>
             </select>
         </div>
         <div class="col-md-2 col-xs-6 pr20">PageSize:
             <select ng-model="entryLimit" ng-change="pageEntries()">
-                <option>10</option>
-                <option>25</option>
-                <option>50</option>
-                <option>100</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
             </select>
         </div>
         <div class="col-md-2 col-xs-6 pr20">Category:
-            <select ng-options="list.category as list.category for list in category_list | unique:'category'" ng-model="category" ng-change="tableData(tabletype, project_short, category)" required> 
+            <select ng-options="list.category as list.category for list in category_list | unique:'category'" ng-model="category" ng-change="categoryChanged()" required> 
                 <option value="">All</option>
             </select>
         </div>
-         <div class="col-md-2 col-xs-6 pr20 padt13 pull-right">
-           <label><i class="material-icons ihide">search</i>
-              <input id="searchitems" type="text" ng-model="search" ng-change="filter()" onkeypress='searchValidation(event)' placeholder="search" />
-          </label>
+        <div class="col-md-2 col-xs-6 pr20 padt13 pull-right">
+            <label><i class="material-icons ihide">search</i>
+                <input id="searchitems" type="text" ng-model="search" ng-change="filter()" onkeypress='searchValidation(event)' placeholder="search" />
+            </label>
         </div>
     </div>
- 
-    
 
-	
-    <div class="row" data-ng-init="tableData(tabletype, project_short, category)">
+    <!-- Debug line - Remove after testing -->
+<div class="row" style="padding-left:20px; background: #ffeb3b; padding: 10px;">
+    <strong>Debug:</strong> totalRecords = {{totalRecords}} | currentPage = {{currentPage}} | entryLimit = {{entryLimit}} | list.length = {{list.length}}
+</div>
+ 
+    <div class="row">
         <div class="col-md-12">
             <div class="">
-           <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60  dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
-                <thead>
-                    <th width="5%">#</th>
-                    <th width="10%" class="hidden-xs hidden-sm">CATEGORY</th>
-                    <th width="10%" class="hidden-xs hidden-sm">PO NUMBER&nbsp;<a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
-                    <th width="10%" class="hidden-xs hidden-sm">DATE&nbsp;<a ng-click="sort_by('po_date');"><i class="material-icons tiny1">sort</i></a></th>
-                    <th width="10%" class="hidden-lg hidden-md">PO NUMBER & <br> DATE <a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
-                    <th width="30%">SUMMARY&nbsp;<a ng-click="sort_by('summary');"><i class="material-icons tiny1">sort</i></a></th>
-                    <th width="10%" class="hidden-xs hidden-sm">TOTAL&nbsp;<a ng-click="sort_by('total');"><i class="material-icons tiny1">sort</i></a></th>
-                    <th width="10%" class="hidden-xs hidden-sm">MAIL STATUS</th>
-                    <th width="15%">ACTION</th>
-                </thead>
-                <tbody ng-show="filteredItems > 0">
-                <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
-                    <td width="5%" ng-if="deletePermission=='1'"><input type="checkbox" ng-model="x.singlecheck" ng-disabled="x.received_status=='1'" ng-change="deleteShow()" id="{{ x.po_number }}"/> <label class="" for="{{ x.po_number }}"></label></td>
-                    <td width="10%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
-                    <td width="10%" class="hidden-xs hidden-sm">{{ x.category }}</td>
-                    <td width="10%" class="hidden-xs hidden-sm">{{ x.po_number }}</td>
-                    <td width="10%" class="hidden-xs hidden-sm">{{ x.po_date }}</td>
-                    <td width="10%" class="hidden-lg hidden-md">{{ x.po_number }} <br>{{ x.po_date }}</td>
-                    <td width="30%" ng-click='onView(x.po_number)' ><a>{{ x.summary }}</a></td>
-                    <td width="10%" class="hidden-xs hidden-sm">{{ x.total | currency:"&#8377;":0 }}</td>
-                    <td width="10%" class="hidden-xs hidden-sm">
-                        <i ng-if="x.mail_status==''">
-                            <svg fill="#e91e63" height="20" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="19" r="2"/>
-                            <path d="M10 3h4v12h-4z"/>
-                            <path d="M0 0h24v24H0z" fill="none"/>
-                            </svg></i>
-                        <i ng-if="x.mail_status=='send'" style="color:limegreen;" class="material-icons">check</i>
-                        <i ng-if="x.mail_status=='failure'" style="color:red;" class="material-icons">clear</i>
-                    </td>
-                    <td width="15%">
-						<span ng-if="emp_designation == 'Purchase Manager'"><i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit" >edit</i></span>
-						<span ng-if="emp_designation != 'Purchase Manager'"><i ng-if="editPermission=='1' && x.received_status!='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit" >edit</i></span>                        
-                        <i ng-if="addPermission=='1'" class="material-icons micon" ng-click=onDuplicate(x.po_number) title="Duplicate" >content_copy</i>
-                        <i ng-if="mailPermission=='1'" class="material-icons micon" ng-click=onMail(x.po_number) title="Email" >email</i>
-                        <i ng-if="deletePermission=='1' && tabletype=='usage' && x.received_status!='1'" class="material-icons micon" ng-click=onRemove(x.po_number) title="Remove" >delete</i>
-                        <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onDelete(x.po_number) title="Delete" >delete</i>
-                        <i class="material-icons micon" ng-click=onPdf(x.po_number) title="PDF" >picture_as_pdf</i>
-                        <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onWord(x.po_number) title="WORD" >insert_drive_file</i>
-                        <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onReopen(x.po_number) title="Reopen" >refresh</i>
-                    </td>
-                </tr>
-                </tbody>
-                <tbody ng-show="filteredItems == 0">
-                    <tr><td colspan="8">No records found</td></tr>
-                </tbody>
-                </table> </div>
-        </div>
-    </div>
-    <div class="row pad20" ng-show="filteredItems > 0">
-        <div class="col-md-6 showitem"><br>
-            The selected page no: {{currentPage}}/{{filteredItems}} Entries
-        </div>
-        <div class="col-md-6">
-            <div class="p-r">
-                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                <table id="itemsTable" cellpadding="0" cellspacing="0" width="100%" border="0" class="table avail-div m-b-60 dataTable no-footer" role="grid" aria-describedby="itemsTable_info" style="width: 100%;">
+                    <thead>
+                        <th width="5%">#</th>
+                        <th width="10%" class="hidden-xs hidden-sm">CATEGORY</th>
+                        <th width="10%" class="hidden-xs hidden-sm">PO NUMBER&nbsp;<a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                        <th width="10%" class="hidden-xs hidden-sm">DATE&nbsp;<a ng-click="sort_by('po_date');"><i class="material-icons tiny1">sort</i></a></th>
+                        <th width="10%" class="hidden-lg hidden-md">PO NUMBER & <br> DATE <a ng-click="sort_by('po_number');"><i class="material-icons tiny1">sort</i></a></th>
+                        <th width="30%">SUMMARY&nbsp;<a ng-click="sort_by('summary');"><i class="material-icons tiny1">sort</i></a></th>
+                        <th width="10%" class="hidden-xs hidden-sm">TOTAL&nbsp;<a ng-click="sort_by('total');"><i class="material-icons tiny1">sort</i></a></th>
+                        <th width="10%" class="hidden-xs hidden-sm">MAIL STATUS</th>
+                        <th width="15%">ACTION</th>
+                    </thead>
+                    <!-- CHANGED: Server-side pagination - removed client-side filters -->
+                    <tbody ng-show="list.length > 0">
+                        <tr ng-repeat="x in list track by $index">
+                            <td width="5%" ng-if="deletePermission=='1'">
+                                <input type="checkbox" ng-model="x.singlecheck" ng-disabled="x.received_status=='1'" ng-change="deleteShow()" id="{{ x.po_number }}"/> 
+                                <label class="" for="{{ x.po_number }}"></label>
+                            </td>
+                            <td width="10%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
+                            <td width="10%" class="hidden-xs hidden-sm">{{ x.category }}</td>
+                            <td width="10%" class="hidden-xs hidden-sm">{{ x.po_number }}</td>
+                            <td width="10%" class="hidden-xs hidden-sm">{{ x.po_date }}</td>
+                            <td width="10%" class="hidden-lg hidden-md">{{ x.po_number }} <br>{{ x.po_date }}</td>
+                            <td width="30%" ng-click='onView(x.po_number)'><a>{{ x.summary }}</a></td>
+                            <td width="10%" class="hidden-xs hidden-sm">{{ x.total | currency:"&#8377;":0 }}</td>
+                            <td width="10%" class="hidden-xs hidden-sm">
+                                <i ng-if="x.mail_status==''">
+                                    <svg fill="#e91e63" height="20" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="12" cy="19" r="2"/>
+                                    <path d="M10 3h4v12h-4z"/>
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    </svg>
+                                </i>
+                                <i ng-if="x.mail_status=='send'" style="color:limegreen;" class="material-icons">check</i>
+                                <i ng-if="x.mail_status=='failure'" style="color:red;" class="material-icons">clear</i>
+                            </td>
+                            <td width="15%">
+                                <span ng-if="emp_designation == 'Purchase Manager'"><i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit">edit</i></span>
+                                <span ng-if="emp_designation != 'Purchase Manager'"><i ng-if="editPermission=='1' && x.received_status!='1'" class="material-icons micon" ng-click=onEdit(x.po_number) title="Edit">edit</i></span>                        
+                                <i ng-if="addPermission=='1'" class="material-icons micon" ng-click=onDuplicate(x.po_number) title="Duplicate">content_copy</i>
+                                <i ng-if="mailPermission=='1'" class="material-icons micon" ng-click=onMail(x.po_number) title="Email">email</i>
+                                <i ng-if="deletePermission=='1' && tabletype=='usage' && x.received_status!='1'" class="material-icons micon" ng-click=onRemove(x.po_number) title="Remove">delete</i>
+                                <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onDelete(x.po_number) title="Delete">delete</i>
+                                <i class="material-icons micon" ng-click=onPdf(x.po_number) title="PDF">picture_as_pdf</i>
+                                <i ng-if="editPermission=='1'" class="material-icons micon" ng-click=onWord(x.po_number) title="WORD">insert_drive_file</i>
+                                <i ng-if="deletePermission=='1' && tabletype=='cancel' && x.received_status!='1'" class="material-icons micon" ng-click=onReopen(x.po_number) title="Reopen">refresh</i>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-show="list.length == 0">
+                        <tr><td colspan="8">No records found</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+    
+<!-- Pagination -->
+<div class="row pad20" ng-show="totalRecords > 0">
+    <div class="col-md-6 showitem"><br>
+        {{ getShowingText() }}
+    </div>
+    <div class="col-md-6">
+        <div class="p-r">
+            <ul uib-pagination 
+                boundary-links="true" 
+                total-items="totalRecords"  
+                items-per-page="entryLimit" 
+                ng-model="currentPage" 
+                ng-change="pageChanged()"
+                max-size="5" 
+                class="pagination pagination-sm" 
+                previous-text="&lsaquo;" 
+                next-text="&rsaquo;" 
+                first-text="&laquo;" 
+                last-text="&raquo;">
+            </ul>
+        </div>
+    </div>
+</div>
+
 </div>
 
 <!-- Mail Modal -->

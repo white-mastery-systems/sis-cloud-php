@@ -83,8 +83,8 @@
                     <th width="15%">STATUS</th>
                     <th width="10%">ACTION</th>
                 </thead>
-                <tbody ng-show="filteredItems > 0">
-                    <tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+                <tbody ng-show="list.length > 0">
+                    <tr ng-repeat="x in list track by $index">
                         <td width="5%" ng-if="deletePermission=='1'">
                             <input type="checkbox" ng-disabled="x.mail_status=='send'" ng-model="x.singlecheck" ng-change="deleteShow()" id="{{ $index }}" />
                             <label class="" for="{{ $index }}"></label>
@@ -123,20 +123,32 @@
                         </td>
                     </tr>
                 </tbody>
-                <tbody ng-show="filteredItems == 0">
+                <tbody ng-show="list.length == 0">
                     <tr><td colspan="10">No records found</td></tr>
                 </tbody>
             </table>
         </div>
       </div>
     </div>
-    <div class="row pad20" ng-show="filteredItems > 0">
+    <div class="row pad20" ng-show="totalRecords > 0">
         <div class="col-md-6 showitem"><br>
-            The selected page no: {{currentPage}}/{{filteredItems}} Entries
+            {{ getShowingText() }}
         </div>
         <div class="col-md-6">
             <div class="p-r">
-                <ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+                <ul uib-pagination 
+                    boundary-links="true" 
+                    total-items="totalRecords"  
+                    items-per-page="entryLimit" 
+                    ng-model="currentPage" 
+                    ng-change="pageChanged()"
+                    max-size="5" 
+                    class="pagination-sm" 
+                    previous-text="&lsaquo;" 
+                    next-text="&rsaquo;" 
+                    first-text="&laquo;" 
+                    last-text="&raquo;">
+                </ul>
             </div>
         </div>
     </div>

@@ -32,7 +32,7 @@ app.controller('indentCtrl', function($scope, $http, $timeout, $state, $statePar
         $scope.tableData = function(x, y) {
             $('#preloader').show();
             $http({
-                url: './v1/getindentlist',
+                url: './v1/getindentlistPaginated',
                 method: "POST",
                 data: {'cancel_status': x, 'quot_status': $scope.quotPermission, 'emp_id': localStorage.getItem("user_id"), 'project_short': y}
             })

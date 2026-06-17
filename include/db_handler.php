@@ -870,6 +870,131 @@ class DbHandler
     }
     
 /***** INDENT *****/
+//get paginated indent list
+public function getindentlistPaginated($getData)
+{
+    $response = array();
+    $response['indent_data'] = array();
+    $jsonData = json_decode($getData, true);
+    
+    // Pagination parameters
+    $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+    $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+    $search = isset($jsonData['search']) ? trim($jsonData['search']) : '';
+    $skip = ($page - 1) * $limit;
+    
+    // collection
+    $collectionMaster = $this->conn->indent_master;
+    
+    // site list
+    $siteData = $this->internalsitelist($jsonData['emp_id']);
+    $response['site_list'] = $siteData["site_list"];
+    
+    $proShortArray = $siteData["project_short_list"];
+    if($jsonData['project_short'] != '') { 
+        $proShortArray = array($jsonData['project_short']); 
+    }
+    
+    // Build match conditions based on status
+    if($jsonData['cancel_status'] == 'pending') {
+        $matchConditions = array(
+            "project_short" => array('$in' => $proShortArray),
+            "cancel_status" => '0',
+            "quot_status" => array('$ne' => "1")
+        );
+    } else {
+        if($jsonData['cancel_status'] == 'usage') { 
+            $cancelStatus = '0'; 
+        } else { 
+            $cancelStatus = '1'; 
+        }
+
+        if($jsonData['quot_status'] == '1') {
+            $matchConditions = array(
+                "project_short" => array('$in' => $proShortArray),
+                "cancel_status" => $cancelStatus,
+                "mail_status" => 'send'
+            );
+        } else {
+            $matchConditions = array(
+                "project_short" => array('$in' => $proShortArray),
+                "cancel_status" => $cancelStatus
+            );
+        }
+    }
+    
+    // Add search condition if search term provided
+    if($search != '') {
+        $matchConditions['$or'] = array(
+            array('prf_number' => array('$regex' => $search, '$options' => 'i')),
+            array('description' => array('$regex' => $search, '$options' => 'i'))
+        );
+    }
+    
+    // Get total count for pagination
+    $totalCount = $collectionMaster->count($matchConditions);
+    
+    // Retrieve paginated data
+    $result = $collectionMaster->aggregate(array(
+        array('$match' => $matchConditions),
+        array('$lookup' => array(
+            'from' => 'signintable',
+            'localField' => 'emp_id',
+            'foreignField' => 'emp_id',
+            'as' => 'user_data'
+        )),
+        array('$sort' => array('_id' => -1)),
+        array('$skip' => $skip),
+        array('$limit' => $limit)
+    ));
+    
+    if($result)
+    {
+        $product = array();
+        foreach($result as $rows)
+        {
+            if(!$rows['quot_status']) { 
+                $rows['quot_status'] = ''; 
+            }
+            $product['prf_number'] = $rows['prf_number'];
+            $product['prf_date'] = $rows['prf_date'];
+            $product['name'] = isset($rows['user_data'][0]['name']) ? $rows['user_data'][0]['name'] : '';
+            $product['summary'] = $rows['description'];
+            $product['total'] = $rows['grand_total'];
+            $product['mail_status'] = $rows['mail_status'];
+            $product['quot_status'] = $rows['quot_status'];
+
+            // indent status
+            if($rows['quot_status'] == '1') {
+                $product['indent_status'] = $rows['quot_status_details'];
+            } elseif($rows['mail_datetime']) {
+                $respDuration = $this->secondsToWords($rows['mail_datetime'], date("Y-m-d H:i:s"));
+                $product['indent_status'] = 'Raised ' . $respDuration;
+            } else {
+                $product['indent_status'] = '-';
+            }
+            
+            array_push($response['indent_data'], $product);
+        }
+        
+        // Pagination metadata
+        $response['pagination'] = array(
+            'current_page' => $page,
+            'per_page' => $limit,
+            'total_records' => $totalCount,
+            'total_pages' => ceil($totalCount / $limit),
+            'has_next' => ($page * $limit) < $totalCount,
+            'has_previous' => $page > 1
+        );
+        
+        $response["code"] = "Success";
+    }
+    else {
+        $response["code"] = "failed";
+    }
+    
+    return $response;
+}
     
     //indent list
     public function getindentlist($getData)
@@ -1230,22 +1355,41 @@ class DbHandler
         $dummyData = '';
         $desc = $this->internalsummary($projectData['project_short'],$dummyData,$pro1,$pro2);
         
-        $collectionMaster->insertOne(array(
-            "emp_id" => (int)$jsonData["emp_id"],
-            "type" => $jsonData["type"],
-            "prf_number" => $resData["prf_number"],
-            "project_short" => $projectData["project_short"],
-            "prf_date" => date("d-m-Y"),
-            "purpose" => $jsonData["purpose"],
-            "project_id" => $projectData["_id"],
-            "description" => $desc,
-            "grand_total" => $jsonData["grand_total"],
-            "supplier_list" => $sendData['supplier_list'],
-            "date_time" => date("Y-m-d H:i:s"),
-            "cancel_status" => "0",
-            "mail_status" => "0"
-        ));
-        
+        // Atomic duplicate guard: create the indent only if no record with this
+        // prf_number exists yet. This is an upsert keyed on prf_number, so if two
+        // requests race (double-click / retry, or both handed the same number by
+        // internalprfnum), only ONE actually inserts. Prevents duplicate indents.
+        $insertResult = $collectionMaster->updateOne(
+            array("prf_number" => $resData["prf_number"]),
+            array('$setOnInsert' => array(
+                "emp_id" => (int)$jsonData["emp_id"],
+                "type" => $jsonData["type"],
+                "prf_number" => $resData["prf_number"],
+                "project_short" => $projectData["project_short"],
+                "prf_date" => date("d-m-Y"),
+                "purpose" => $jsonData["purpose"],
+                "project_id" => $projectData["_id"],
+                "description" => $desc,
+                "grand_total" => $jsonData["grand_total"],
+                "supplier_list" => $sendData['supplier_list'],
+                "date_time" => date("Y-m-d H:i:s"),
+                "cancel_status" => "0",
+                "mail_status" => "0"
+            )),
+            array("upsert" => true)
+        );
+
+        // No document was inserted => a record with this prf_number already exists.
+        // This is a duplicate request: skip item creation and mail so we don't
+        // create a second copy of the same indent.
+        if($insertResult->getUpsertedCount() == 0)
+        {
+            $response['duplicate'] = true;
+            $response['prf_number'] = $resData["prf_number"];
+            $response['code'] = 'This indent ('.$resData["prf_number"].') was already submitted. Duplicate request ignored.';
+            return $response;
+        }
+
         //product data
         $listCount = count($jsonArrayData);
         $n=1;
@@ -3217,6 +3361,119 @@ class DbHandler
     }
     
 /***** PURCHASE ORDER *****/
+
+//purchase order list - paginated
+public function getorderlistPaginated($getData) 
+{
+    $response = array();
+    $response['purchase_data'] = array();
+    
+    $jsonData = json_decode($getData, true);
+    $response["category"] = $jsonData['category'];
+    
+    if($jsonData['cancel_status'] == 'usage') { 
+        $cancelStatus = '0'; 
+    } else { 
+        $cancelStatus = '1'; 
+    }
+    
+    // Pagination parameters
+    $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+    $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+    $search = isset($jsonData['search']) ? trim($jsonData['search']) : '';
+    $skip = ($page - 1) * $limit;
+    
+    // Collection
+    $collectionMaster = $this->conn->purchase_master;
+    
+    // Site list
+    $siteData = $this->internalsitelist($jsonData['emp_id']);
+    $response['site_list'] = $siteData["site_list"];
+    
+    $proShortArray = $siteData["project_short_list"];
+    if($jsonData['project_short'] != '') { 
+        $proShortArray = array($jsonData['project_short']); 
+    }
+
+    // Match conditions
+    $matchConditions = [
+        "project_short" => ['$in' => $proShortArray],
+        "cancel_status" => $cancelStatus
+    ];
+
+    // Add category filter if provided
+    if (!empty($jsonData['category'])) {
+        $matchConditions["category"] = $jsonData['category'];
+    }
+    
+    // Add search condition if search term provided
+    if($search != '') {
+        $matchConditions['$or'] = [
+            ['po_number' => ['$regex' => $search, '$options' => 'i']],
+            ['prf_number' => ['$regex' => $search, '$options' => 'i']],
+            ['description' => ['$regex' => $search, '$options' => 'i']]
+        ];
+    }
+
+    // Get total count for pagination (without $addFields for better performance)
+    $countPipeline = [
+        ['$match' => $matchConditions],
+        ['$count' => 'total']
+    ];
+    
+    $countResult = $collectionMaster->aggregate($countPipeline)->toArray();
+    $totalCount = isset($countResult[0]['total']) ? $countResult[0]['total'] : 0;
+
+    // Main query with pagination
+    $result = $collectionMaster->aggregate([
+        [
+            '$addFields' => [
+                'date_time' => [
+                    '$dateFromString' => [
+                        'dateString' => '$date_time',
+                        'format' => '%Y-%m-%d %H:%M:%S'
+                    ]
+                ]
+            ]
+        ],
+        ['$match' => $matchConditions],
+        ['$sort' => ['_id' => -1]],
+        ['$skip' => $skip],
+        ['$limit' => $limit]
+    ]);
+
+    if($result) {
+        $product = array();
+        foreach($result as $rows) {
+            $product['category'] = $rows['category'];
+            $product['prf_number'] = $rows['prf_number'];
+            $product['po_number'] = $rows['po_number'];
+            $product['po_date'] = $rows['po_date'];
+            $product['summary'] = $rows['description'];
+            $product['total'] = $rows['grand_total'];
+            $product['mail_status'] = $rows['mail_status'];
+            $product['received_status'] = $rows['received_status'];
+            
+            array_push($response['purchase_data'], $product);
+        }
+        
+        // Pagination metadata
+        $response['pagination'] = [
+            'current_page' => $page,
+            'per_page' => $limit,
+            'total_records' => $totalCount,
+            'total_pages' => ceil($totalCount / $limit),
+            'has_next' => ($page * $limit) < $totalCount,
+            'has_previous' => $page > 1
+        ];
+        
+        $response["code"] = "Success";
+    } else {
+        $response["code"] = "failed";
+    }
+
+    return $response;        
+}
     
     //purchase order list
     public function getorderlist($getData) 
