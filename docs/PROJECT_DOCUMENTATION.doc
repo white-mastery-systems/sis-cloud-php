@@ -1,0 +1,557 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<title>SIS Cloud — Project Documentation</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;line-height:1.55;color:#1f2328;max-width:1080px;margin:32px auto;padding:0 24px;}
+h1{font-size:30px;border-bottom:3px solid #00bcd4;padding-bottom:8px;}
+h2{font-size:23px;border-bottom:1px solid #d0d7de;padding-bottom:6px;margin-top:34px;}
+h3{font-size:18px;margin-top:26px;}
+h4{font-size:15px;color:#444;}
+code{background:#f0f3f6;padding:1px 5px;border-radius:4px;font-family:Consolas,'Courier New',monospace;font-size:90%;}
+pre{background:#0d1117;color:#e6edf3;padding:14px 16px;border-radius:8px;overflow:auto;}
+pre code{background:none;color:inherit;padding:0;font-size:13px;}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;}
+th,td{border:1px solid #d0d7de;padding:7px 10px;text-align:left;vertical-align:top;}
+th{background:#00bcd4;color:#fff;}
+tr:nth-child(even) td{background:#f6f8fa;}
+blockquote{border-left:4px solid #00bcd4;background:#f6fdff;margin:14px 0;padding:8px 16px;color:#444;}
+a{color:#0969da;text-decoration:none;}a:hover{text-decoration:underline;}
+hr{border:none;border-top:1px solid #d0d7de;margin:24px 0;}
+
+@page{size:A4;margin:2cm;}
+table{font-size:10pt;}
+body{font-size:11pt;}
+</style></head>
+<body>
+<h1>SIS Cloud — Project Documentation</h1>
+<blockquote>Reference documentation of the existing legacy application, produced as the baseline for a planned rewrite to <strong>Next.js / React</strong> (with a relational DB via Drizzle, per <code>package.json</code>). It captures the working flow, modules, REST API, MongoDB schema, business workflows/state machines, infrastructure, and migration notes.</blockquote>
+<p>Generated: 2026-06-17. Authoritative source files referenced inline (e.g. <a href="../include/db_handler.php">include/db_handler.php</a>, <a href="../v1/index.php">v1/index.php</a>, <a href="../app.js">app.js</a>).</p>
+<hr>
+<h2>1. Overview &amp; Purpose</h2>
+<p>SIS Cloud is an internal <strong>materials-procurement + HR/ERP</strong> system for a construction/real-estate company (SIS). Its core is a procurement chain:</p>
+<pre><code>Project → Indent (PRF) → Quotation → Purchase Order (PO) → Inventory (receipt → usage) → Purchase Bill</code></pre>
+<p>Supporting domains: SIS Projects, Vendors, Products/Categories, Users &amp; HR (leave, salary, permissions, transfers), Accounts, Billing, and a (stub) Dashboard.</p>
+<p>It is a <strong>single-page AngularJS app</strong> talking to a <strong>Slim-based PHP REST API</strong>, backed by <strong>MongoDB</strong> (<code>sis_crm_DB</code>, a 3-node replica set). PDFs are rendered with <strong>mPDF</strong>; email is sent with <strong>PHPMailer</strong> over Gmail SMTP.</p>
+<hr>
+<h2>2. Technology Stack</h2>
+<table>
+<thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+<tbody>
+<tr><td>Frontend</td><td>AngularJS 1.4.x SPA (ui-router, ngMaterial, Materialize CSS, Bootstrap, jQuery 2.1.4, jQuery UI)</td></tr>
+<tr><td>API</td><td>Slim micro-framework (bundled in <a href="../libs/Slim">libs/Slim</a>), single front controller <a href="../v1/index.php">v1/index.php</a></td></tr>
+<tr><td>Business logic</td><td>One monolithic class <code>DbHandler</code> (~9000 lines) in <a href="../include/db_handler.php">include/db_handler.php</a></td></tr>
+<tr><td>Database</td><td>MongoDB <code>sis_crm_DB</code> (replica set <code>mongodineamik</code>), driver <code>mongodb/mongodb ^1.1</code></td></tr>
+<tr><td>PDF</td><td><code>mpdf/mpdf ^7.0</code> via per-document <code>*_pdf.php</code> scripts</td></tr>
+<tr><td>Email</td><td><code>phpmailer/phpmailer ^6.0</code> over Gmail SMTP (+ IMAP append to Sent)</td></tr>
+<tr><td>Server</td><td>XAMPP / Apache on Windows; URL rewrite via <a href="../v1/.htaccess">v1/.htaccess</a> + <code>web.config</code></td></tr>
+<tr><td>Auth</td><td>Custom: plaintext password check; client session held in <code>localStorage</code></td></tr>
+</tbody>
+</table>
+<p>Dependencies declared in <a href="../composer.json">composer.json</a>; <code>drizzle-kit</code> is the only entry in <a href="../package.json">package.json</a> (placeholder for the planned relational rewrite).</p>
+<hr>
+<h2>3. High-Level Architecture</h2>
+<h3>3.1 Request flow</h3>
+<pre><code>Browser (AngularJS SPA, index.html)
+   │  $http POST  ./v1/&lt;endpoint&gt;   (JSON body; some fields are JSON strings)
+   ▼
+Apache + .htaccess  ──►  v1/index.php  (Slim router, ~107 routes)
+   │  new DbHandler(); $db-&gt;&lt;method&gt;($rawBody); echo json_encode($result)
+   ▼
+include/db_handler.php  ──►  MongoDB (sis_crm_DB)
+   │  side effects: PDF (HTTP self-call to *_pdf.php) + Email (PHPMailer)
+   ▼
+JSON response  { code: "Success" | &lt;error&gt;, ...data }</code></pre>
+<p>Key conventions:</p>
+<ul>
+<li>Every endpoint reads the raw POST body, the method <code>json_decode</code>s it, and the result is <code>echo json_encode(...)</code>.</li>
+<li>Response status lives in a <code>code</code> field — <strong>inconsistently</strong> valued (<code>"Success"</code>, <code>"failed"</code>, <code>"failure"</code>, human sentences, or omitted on lookups).</li>
+<li>Several payload fields are <strong>double-encoded JSON strings</strong> (<code>jsonArrayData</code>, <code>jsonSupplierData</code>) decoded a second time server-side.</li>
+</ul>
+<h3>3.2 Directory layout (active)</h3>
+<pre><code>/                       SPA root: index.html, app.js (routes), service.js, directive.js, script.js
+/v1                     REST API: index.php (Slim routes), adduser.php, user_update.php, user_doc.php
+/include                db_handler.php (logic), db_connect.php / conn.php (Mongo connection)
+/libs/Slim              bundled Slim framework
+/modules                feature modules, each with controller/*.js + view/*.html
+  ├─ login, common, dashboard, projects, accounts, billing, user, settings, uploads
+  └─ materials/         dashboard, indent, quotation, purchase, inventory
+/modules/.../*_pdf.php  per-document mPDF generators (indent_pdf.php, quotation_pdf.php, po_pdf.php, salaryslip_pdf.php)
+/vendor                 composer deps (mongodb, mpdf, phpmailer)
+/uploads, /modules/uploads   file/PDF storage</code></pre>
+<blockquote><strong>Legacy/dead code to ignore in the rewrite</strong> (dated backups &amp; duplicate modules): <code>modules/materials/indent22072021/</code>, <code>modules/materials/inventory1/</code>, <code>modules/materials/indent/controller_14.12.2022/</code>, <code>include/db_handler*&lt;date&gt;*.php</code>, <code>include/db_connect_*.php</code>, <code>include/conn_*.php</code>, <code>directive31.05.2019.js</code>, <code>indexr.html</code>, <code>indexrr.html</code>, <code>indextest.htm</code>, dated controller copies (e.g. <code>*_29.12.2024.js</code>, <code>*_r.js</code>), <code>curlupload.php</code> (legacy FTP, broken), <code>invoice-crm-demo/</code>.</blockquote>
+<h3>3.3 Numbering schemes (business keys)</h3>
+<table>
+<thead><tr><th>Document</th><th>Format</th><th>Example</th><th>Generator</th></tr></thead>
+<tbody>
+<tr><td>Indent / PRF</td><td><code>PRF-{project_short}{NNNN}</code></td><td><code>PRF-LX0556</code></td><td><code>internalprfnum()</code></td></tr>
+<tr><td>Quotation</td><td><code>Q-{project_short}{NNNN}</code></td><td><code>Q-LX0001</code></td><td>inline in <code>newquotation()</code></td></tr>
+<tr><td>Purchase Order</td><td><code>{project_short}{NNNN}</code> (no prefix)</td><td><code>LX0556</code></td><td><code>internalponum()</code></td></tr>
+<tr><td>Purchase Bill</td><td><code>B-{project_short}{NNNN}</code></td><td><code>B-LX0001</code></td><td>inline in billing</td></tr>
+<tr><td>Product code</td><td><code>{category.short}-{NNNN}</code></td><td>—</td><td><code>getproductcode()</code></td></tr>
+</tbody>
+</table>
+<blockquote>⚠️ <strong>All numbering uses read-max-then-+1 with no atomic counter/lock</strong> → concurrent or double-submitted requests can produce duplicate keys. This already caused a real duplicate <code>PRF-LX0556</code>. A guarded insert was added to <code>newindent</code>; the same hardening is still needed for quotation/PO/bill generation. Replace with DB sequences/unique constraints in the rewrite.</blockquote>
+<hr>
+<h2>4. Frontend Architecture (AngularJS SPA)</h2>
+<h3>4.1 Bootstrapping &amp; entry point</h3>
+<p>Entry: <a href="../index.html">index.html</a> → <code>&lt;body ng-app="app"&gt;&lt;div ui-view&gt;&lt;/div&gt;&lt;/body&gt;</code>.</p>
+<p>Module declaration (<a href="../app.js">app.js</a>): <code>angular.module('app', ['ui.router','ngMaterial','ui.directives','ui.filters','ngSanitize','bootstrapLightbox'])</code></p>
+<p>Global script load order: jQuery 2.1.4 → Bootstrap → AngularJS 1.4.4 (+sanitize/animate/aria/messages) → angular-material → angular-ui (ui.directives, ui.filters) → ui-router → ui-bootstrap-tpls → bootstrap-lightbox → bootstrap-wysiwyg → jQuery UI/hotkeys/numeric → <code>script.js</code> → <code>app.js</code> → <code>service.js</code> (<code>orderService</code>) → <code>directive.js</code> → ~52 controller scripts (global scope; no module bundler).</p>
+<p>CSS: Materialize + Bootstrap + jQuery UI + Font Awesome, plus <code>css/common.css</code> and <code>css/style/*.css</code>. Primary accent cyan <code>#00bcd4</code>.</p>
+<h3>4.2 Routing &amp; states (<a href="../app.js">app.js</a>)</h3>
+<p><code>$urlRouterProvider.otherwise('/login')</code>. <code>home</code> (<code>commonHeaderCtrl</code>, template <code>modules/common/view/index.html</code>) is the authenticated shell; all feature states are nested <code>home.*</code>. State param <code>{filter}</code> packs list UI state as <code>project_tabletype_limit_search_page</code>.</p>
+<table>
+<thead><tr><th>State</th><th>URL</th><th>Controller</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>login</td><td>/login</td><td>loginCtrl</td><td>Authentication</td></tr>
+<tr><td>home</td><td>/home</td><td>commonHeaderCtrl</td><td>Layout shell (sidebar + header)</td></tr>
+<tr><td>home.dashboard</td><td>/dashboard</td><td>—</td><td>Stub ("under construction")</td></tr>
+<tr><td>home.projects</td><td>/projects</td><td>sisProjectCtrl</td><td>SIS Projects CRUD</td></tr>
+<tr><td>home.materials</td><td>/materials</td><td>—</td><td>Materials hub</td></tr>
+<tr><td>home.indent</td><td>/indent/{filter}</td><td>indentCtrl</td><td>Indent list (paginated)</td></tr>
+<tr><td>home.new_indent</td><td>/new_indent/{filter}</td><td>newIndentCtrl</td><td>Create indent</td></tr>
+<tr><td>home.indent_update</td><td>/indent_update/{filter}</td><td>indentUpdateCtrl</td><td>Edit indent</td></tr>
+<tr><td>home.indent_duplicate</td><td>/indent_duplicate/{filter}</td><td>indentDuplicateCtrl</td><td>Clone indent</td></tr>
+<tr><td>home.indent_view</td><td>/indent_view/{filter}</td><td>indentViewCtrl</td><td>View indent</td></tr>
+<tr><td>indent_mail</td><td>/indent_mail/{filter}</td><td>indentMailCtrl</td><td>Email-link landing</td></tr>
+<tr><td>home.quotation</td><td>/quotation/{filter}</td><td>quotationCtrl</td><td>Quotation list</td></tr>
+<tr><td>home.new_quotation</td><td>/new_quotation/{filter}</td><td>quotationNewCtrl</td><td>Create quotation</td></tr>
+<tr><td>home.quotation_update</td><td>/quotation_update/{filter}</td><td>quotationUpdateCtrl</td><td>Edit quotation</td></tr>
+<tr><td>home.quotation_update_admin</td><td>/quotation_update_admin/{filter}</td><td>quotationUpdateAdminCtrl</td><td>Admin edit</td></tr>
+<tr><td>home.quotation_view</td><td>/quotation_view/{filter}</td><td>quotationViewCtrl</td><td>View quotation</td></tr>
+<tr><td>quotation_approve</td><td>/quotation_approve/{filter}</td><td>quotationApprovedCtrl</td><td>Approve flow</td></tr>
+<tr><td>home.orders</td><td>/orders/{filter}</td><td>orderCtrl</td><td>PO list</td></tr>
+<tr><td>home.new_purchase</td><td>/new_purchase/{filter}</td><td>neworderCtrl</td><td>Create PO</td></tr>
+<tr><td>home.purchase_duplicate</td><td>/purchase_duplicate/{filter}</td><td>orderDupCtrl</td><td>Clone PO</td></tr>
+<tr><td>home.purchase_update</td><td>/purchase_update/{filter}</td><td>orderUpdateCtrl</td><td>Edit PO</td></tr>
+<tr><td>home.purchase_view</td><td>/purchase_view/{filter}</td><td>orderViewCtrl</td><td>View PO</td></tr>
+<tr><td>home.vendors</td><td>/vendors</td><td>vendorCtrl</td><td>Vendor CRUD</td></tr>
+<tr><td>home.products</td><td>/products</td><td>productCtrl</td><td>Product catalog</td></tr>
+<tr><td>home.inventory</td><td>/inventory</td><td>inventoryCtrl</td><td>Received stock</td></tr>
+<tr><td>home.inventory_use</td><td>/inventory_use/{filter}</td><td>inventoryUseCtrl</td><td>Usage/consumption</td></tr>
+<tr><td>home.category</td><td>/category/{filter}</td><td>categoryCtrl</td><td>Categories</td></tr>
+<tr><td>home.userlist</td><td>/userlist/{filter}</td><td>userListCtrl</td><td>Employees</td></tr>
+<tr><td>home.user_view</td><td>/user_view/{filter}</td><td>userEditCtrl</td><td>View/edit employee</td></tr>
+<tr><td>home.add_user</td><td>/add_user/{filter}</td><td>addUserCtrl</td><td>Add employee</td></tr>
+<tr><td>home.permission</td><td>/permission/{filter}</td><td>userPermissionCtrl</td><td>Permissions</td></tr>
+<tr><td>home.accounts</td><td>/accounts</td><td>accountsCtrl</td><td>Salary/accounts</td></tr>
+<tr><td>home.bill_list</td><td>/bill_list/{filter}</td><td>billListCtrl</td><td>Bills</td></tr>
+<tr><td>home.new_bill</td><td>/new_bill/{filter}</td><td>newBillCtrl</td><td>Create bill</td></tr>
+<tr><td>home.bill_view</td><td>/bill_view/{filter}</td><td>billViewCtrl</td><td>View/confirm bill</td></tr>
+</tbody>
+</table>
+<h3>4.3 Module → controllers/views</h3>
+<table>
+<thead><tr><th>Module</th><th>Controllers</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>login</td><td>login.js</td><td>Auth; writes session + permissions to localStorage</td></tr>
+<tr><td>common</td><td>common.js</td><td>Header + permission-gated sidebar menu; reads 11 permission keys</td></tr>
+<tr><td>dashboard</td><td>—</td><td>Placeholder</td></tr>
+<tr><td>projects</td><td>projects.js</td><td>SIS project CRUD</td></tr>
+<tr><td>materials/indent</td><td>indent.js, new_indent.js, indent_update.js, indent_duplicate.js, indent_view.js, mail_link.js</td><td>PRF lifecycle; product types Standard/Work/Steel/UPVC/Door; door CFT via <code>orderService.doorcalculation()</code></td></tr>
+<tr><td>materials/quotation</td><td>quotation.js, new_quotation.js, quotation_update.js, quotation_update_admin.js, quotation_view.js, approved.js</td><td>Multi-vendor quotes (nested quot_list→table_items); approval flow</td></tr>
+<tr><td>materials/purchase</td><td>order.js, new_purchase.js, purchase_duplicate.js, purchase_update.js, purchase_view.js, vendors.js, products.js</td><td>PO from quotation/direct; vendor/product autocompletes; GST</td></tr>
+<tr><td>materials/inventory</td><td>inventory.js, inventory_use.js, category.js</td><td>Received stock &amp; consumption</td></tr>
+<tr><td>user</td><td>userlist.js, editprofile.js, adduser.js, user_permission.js</td><td>Employee mgmt; profile upload via FormData</td></tr>
+<tr><td>accounts</td><td>accounts.js</td><td>Salary/payroll calcs</td></tr>
+<tr><td>billing</td><td>bill_list.js, new_bill.js, bill_view.js</td><td>Vendor bills from PO items; partial-billed tracking; confirm</td></tr>
+<tr><td>settings</td><td>mail_settings.js</td><td>Mail config</td></tr>
+</tbody>
+</table>
+<h3>4.4 API communication</h3>
+<ul>
+<li>All calls: <code>$http({ url:'./v1/&lt;endpoint&gt;', method:'POST', data:{...} })</code>; base URL is relative (<code>./v1/</code>).</li>
+<li>Controllers branch on <code>response.data.code === 'Success'</code>; otherwise show <code>response.data.code</code> in a Bootstrap alert.</li>
+<li>Complex forms build nested JS structures and <code>JSON.stringify</code> them into <code>jsonArrayData</code> / <code>jsonSupplierData</code>.</li>
+<li>File upload (add user) posts <code>FormData</code> to <code>./v1/adduser.php</code> with <code>transformRequest: angular.identity</code> and <code>Content-Type: undefined</code>.</li>
+</ul>
+<h3>4.5 Auth &amp; session (client-side)</h3>
+<p><code>loginCtrl</code> POSTs <code>{email,password}</code> to <code>./v1/userlogin</code>; on <code>code:'Success'</code> it stores in <code>localStorage</code>: <code>user_id, user_name, user_department, user_designation, user_profile</code>, plus one JSON entry per permission module (<code>project, indent, quotation, order, vendor, product, inventory, inventory_use, userlist, accounts, billing</code>). Redirects via <code>page_redirect</code>/<code>page_filter</code>.</p>
+<p><strong>No state-level route guards.</strong> Each controller re-reads its permission key from localStorage and <code>$state.go('home.dashboard')</code> if missing. Menu items use <code>ng-if="&lt;module&gt;_perm"</code>. Permissions are plaintext JSON in localStorage (tamperable) — replace with server-enforced RBAC in the rewrite.</p>
+<h3>4.6 Shared UI patterns</h3>
+<ul>
+<li><strong>Pagination:</strong> <code>ng-repeat ... | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit</code> (<code>startFrom</code> filter in <code>directive.js</code>); page sizes 10/25/50/100. Newer lists (indent, billing, orders) use server-side pagination returning a <code>pagination{...}</code> object.</li>
+<li><strong>Modals/alerts:</strong> Bootstrap <code>$('#id').modal('show'|'hide')</code>; <code>ng-show="alert"</code> danger/success div, auto-hidden after ~2s via <code>$timeout</code>.</li>
+<li><strong>Autocomplete/date directives</strong> (<code>directive.js</code>): <code>commondatepicker</code>/<code>datepicker</code>/<code>refdatepicker</code> (jQuery UI, <code>dd-mm-yy</code>), <code>vendorAutoComplete</code>, <code>quotproductAutoComplete</code>/<code>quotcodeAutoComplete</code> (call <code>./v1/getitemstock</code>), <code>userAutoComplete</code>, <code>supplierAutoComplete</code>, <code>mailAutoComplete</code>.</li>
+<li><strong>Rich text:</strong> <code>contenteditable</code> <code>#editor</code> with bootstrap-wysiwyg; content read via jQuery <code>.html()</code> for mail bodies.</li>
+<li><strong>Shared service:</strong> <code>orderService.doorcalculation()</code> parses door dimensions → CFT.</li>
+</ul>
+<hr>
+<h2>5. REST API Endpoints (Slim, base <code>/v1</code>)</h2>
+<p>All routes accept a raw JSON POST body (unless GET) and return <code>json_encode($result)</code>. <code>code</code> is the conventional status field (inconsistent vocabulary — see §9). Routes defined in <a href="../v1/index.php">v1/index.php</a>; logic in <a href="../include/db_handler.php">include/db_handler.php</a>. ~107 routes across 12 domains.</p>
+<h3>Auth / Login</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/testmailer</td><td>GET</td><td>testmailer</td><td>—</td><td>mailer diagnostic</td></tr>
+<tr><td>/userlogin</td><td>POST</td><td>userlogin</td><td>email, password</td><td>code, emp_id, emp_name, emp_department, emp_designation, emp_profile, staff_data[], mac/ip. Shells out to Windows <code>ipconfig</code> for MAC</td></tr>
+</tbody>
+</table>
+<h3>SIS Projects</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getsisprojects</td><td>GET</td><td>getsisprojects</td><td>—</td><td>project_list[], user_list[], code</td></tr>
+<tr><td>/addsisproject</td><td>POST</td><td>addsisproject</td><td>contact_name, block_name, project_name, project_short, place, city, address, payment</td><td>code</td></tr>
+<tr><td>/editsisproject</td><td>POST</td><td>editsisproject</td><td>id</td><td>project_list (doc)</td></tr>
+<tr><td>/updatesisproject</td><td>POST</td><td>updatesisproject</td><td>_id, …project fields…, gst_in, pan_no, hsn_sac_code</td><td>code</td></tr>
+<tr><td>/delsisproject</td><td>POST</td><td>delsisproject</td><td>id</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Vendors</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getvendorlist</td><td>POST</td><td>getvendorlist</td><td>cancel_status</td><td>vendor_details[], code</td></tr>
+<tr><td>/addpovendor</td><td>POST</td><td>addpovendor</td><td>company_name, emp_id, contact_person, address, party_gst, taxtype, mobile, phone, fax, email</td><td>code / "Vendor already exist !!!"</td></tr>
+<tr><td>/editpovendor</td><td>POST</td><td>editpovendor</td><td>id</td><td>vendor_details</td></tr>
+<tr><td>/updatepovendor</td><td>POST</td><td>updatepovendor</td><td>_id, …vendor fields…</td><td>code</td></tr>
+<tr><td>/deletevendor</td><td>POST</td><td>deletevendor</td><td>id, type (delete/remove/reopen)</td><td>code</td></tr>
+<tr><td>/deleteallvendors</td><td>POST</td><td>deleteallvendors</td><td>jsonArrayData[{type,id}]</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Products / Category</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getproductdetails</td><td>POST</td><td>getproductdetails</td><td>cancel_status (none/usage)</td><td>category_list, product_details[], code</td></tr>
+<tr><td>/getsingleproductdetails</td><td>POST</td><td>getsingleproductdetails</td><td>product_name</td><td>product_details[]</td></tr>
+<tr><td>/addcategory</td><td>POST</td><td>addcategory</td><td>category_ws, shortname, category, emp_id, type</td><td>code</td></tr>
+<tr><td>/getproductcode</td><td>POST</td><td>getproductcode</td><td>category/type</td><td>product_code</td></tr>
+<tr><td>/addpoproduct</td><td>POST</td><td>addpoproduct</td><td>type, category, sub_category, product_name(+_ws), emp_id, code, details, make, width, height, upvc_type, unit, price, gst, size, cft</td><td>code</td></tr>
+<tr><td>/editpoproduct</td><td>POST</td><td>editpoproduct</td><td>id</td><td>product_details</td></tr>
+<tr><td>/updatepoproduct</td><td>POST</td><td>updatepoproduct</td><td>_id, …product fields…</td><td>code (bug: count&gt;1 sets <code>codeo</code>)</td></tr>
+<tr><td>/deleteproduct</td><td>POST</td><td>deleteproduct</td><td>id, type</td><td>code</td></tr>
+<tr><td>/deleteallproducts</td><td>POST</td><td>deleteallproducts</td><td>jsonArrayData[{type,id}]</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Indent</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getindentlistPaginated</td><td>POST</td><td>getindentlistPaginated</td><td>emp_id, project_short, cancel_status, quot_status, page, limit, search</td><td>indent_data[], site_list, pagination{}</td></tr>
+<tr><td>/getindentlist</td><td>POST</td><td>getindentlist</td><td>emp_id, project_short, cancel_status, quot_status</td><td>indent_data[], site_list</td></tr>
+<tr><td>/indentdetailedview</td><td>POST</td><td>indentdetailedview</td><td>prf_number</td><td>indent_duration, quot_list[]</td></tr>
+<tr><td>/getprfnumber</td><td>POST</td><td>getprfnumber</td><td>project_short</td><td>prf_number</td></tr>
+<tr><td>/getindentdetails</td><td>POST</td><td>getindentdetails</td><td>emp_id</td><td>vendor_list, category_list, project_list, product_list</td></tr>
+<tr><td>/newindent</td><td>POST</td><td>newindent</td><td>sis_project_name, sis_project_block, emp_id, type, purpose, grand_total, jsonSupplierData, jsonArrayData, to_mail, cc_mail, bcc_mail, content</td><td>code (+ duplicate guard: duplicate, prf_number)</td></tr>
+<tr><td>/viewpurchaseindent</td><td>POST</td><td>viewpurchaseindent</td><td>prf_number</td><td>indent_data, supplier_list, product_list[], purchase_list[]</td></tr>
+<tr><td>/editpurchaseindent</td><td>POST</td><td>editpurchaseindent</td><td>emp_id, prf_number, type</td><td>vendor/project/supplier/product/indent lists</td></tr>
+<tr><td>/updatepurchaseindent</td><td>POST</td><td>updatepurchaseindent</td><td>emp_id, project, prf_number, purpose, grand_total, jsonSupplierData, jsonArrayData(+_id), mail fields</td><td>code</td></tr>
+<tr><td>/getindentmailcontent</td><td>POST</td><td>getindentmailcontent</td><td>emp_id, project_name, block_name, purpose, send_from, prf_number</td><td>mail_id, user_mail[], content, subject</td></tr>
+<tr><td>/sendindentmail</td><td>POST</td><td>sendindentmail</td><td>jsonArrayData{prf_number, emp_id, to/cc/bcc, subject, content}</td><td>code / "Network Error, Try Again !!!"</td></tr>
+<tr><td>/deleteindent</td><td>POST</td><td>deleteindent</td><td>prf_number, type (delete/remove/reopen)</td><td>code</td></tr>
+<tr><td>/deleteallindent</td><td>POST</td><td>deleteallindent</td><td>jsonArrayData[{prf_number,type}]</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Quotation</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getquotationdetails</td><td>POST</td><td>getquotationdetails</td><td>prf_number</td><td>quot_status, vendor/category/supplier/indent lists</td></tr>
+<tr><td>/getitemstock</td><td>POST</td><td>getitemstock</td><td>project_name, product_name, block_name</td><td>stock_details{}</td></tr>
+<tr><td>/newquotation</td><td>POST</td><td>newquotation</td><td>jsonArrayData{...table_items}, sis_project, prf_number, emp_id, approve_status (approve/save)</td><td>code, quot_number</td></tr>
+<tr><td>/deletequotation</td><td>POST</td><td>deletequotation</td><td>quot_number</td><td>code</td></tr>
+<tr><td>/getquotationlist</td><td>POST</td><td>getquotationlist</td><td>emp_id, project_short, status</td><td>quotation_data[], site_list</td></tr>
+<tr><td>/viewpurchasequotation</td><td>POST</td><td>viewpurchasequotation</td><td>emp_id, quot_number</td><td>indent_data, product_list[], final_list, quotation_list, supplier_list</td></tr>
+<tr><td>/editpurchasequotation</td><td>POST</td><td>editpurchasequotation</td><td>quot_number</td><td>vendor_list, product_list, quot_list</td></tr>
+<tr><td>/updatepurchasequotation</td><td>POST</td><td>updatepurchasequotation</td><td>emp_id, quot_number, jsonArrayData{...}, mail fields</td><td>code</td></tr>
+<tr><td>/updateandapprovequotation</td><td>POST</td><td>updateandapprovequotation</td><td>emp_id, quot_number, jsonArrayData{...}</td><td>code</td></tr>
+<tr><td>/getquotationmailcontent</td><td>POST</td><td>getquotationmailcontent</td><td>emp_id, quot_number, purpose</td><td>mail_id, user_mail[], content, subject</td></tr>
+<tr><td>/sendquotationmail</td><td>POST</td><td>sendquotationmail</td><td>jsonArrayData{quot_number, emp_id, mail fields}</td><td>code</td></tr>
+<tr><td>/approvequotation</td><td>POST</td><td>approvequotation</td><td>submit_type (approved/declined), jsonArrayData, quot_number, emp_id, mail fields</td><td>code</td></tr>
+<tr><td>/pofromquotation</td><td>POST</td><td>pofromquotation</td><td>quot_number</td><td>invoice_no (po_number), quotation_list, invoice_data</td></tr>
+<tr><td>/admineditquotation</td><td>POST</td><td>admineditquotation</td><td>emp_id, quot_number</td><td>user_mail[], supplier/quotation/indent lists</td></tr>
+</tbody>
+</table>
+<h3>Purchase Orders</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getorderlistPaginated</td><td>POST</td><td>getorderlistPaginated</td><td>category, cancel_status, page, limit, search, emp_id, project_short</td><td>purchase_data[], site_list, pagination{}</td></tr>
+<tr><td>/getorderlist</td><td>POST</td><td>getorderlist</td><td>category, cancel_status, emp_id, project_short</td><td>purchase_data[], site_list</td></tr>
+<tr><td>/getpomailcontent</td><td>POST</td><td>getpomailcontent</td><td>po_number, emp_id</td><td>mail_data, user_mail[], vendor_mail, subject</td></tr>
+<tr><td>/getmailid</td><td>POST</td><td>getmailid</td><td>emp_id</td><td>mail_data, mail_id, user_mail[]</td></tr>
+<tr><td>/getprojectdetails</td><td>POST</td><td>getprojectdetails</td><td>po_number, emp_id</td><td>vendor_details, payment/vat/project/quotation lists, order_type</td></tr>
+<tr><td>/getproductlist</td><td>POST</td><td>getproductlist</td><td>type, category, sub_category</td><td>product_list</td></tr>
+<tr><td>/getponumber</td><td>POST</td><td>getponumber</td><td>project_short</td><td>invoice_no (po_number), person_list</td></tr>
+<tr><td>/newpurchase</td><td>POST</td><td>newpurchase</td><td>emp_id, vendor fields, project, jsonArrayData(items), trans/plain amounts+tax, sum_cft, quot_number, prf_number, type, category, references, order_type, grand_total, payment, delivery, mail fields</td><td>code</td></tr>
+<tr><td>/viewpurchaseorder</td><td>POST</td><td>viewpurchaseorder</td><td>po_number</td><td>invoice_data{}, purchase_list[]</td></tr>
+<tr><td>/editpurchaseorder</td><td>POST</td><td>editpurchaseorder</td><td>po_number, emp_id, page_type</td><td>product/purchase lists, vendor_details, invoice_data</td></tr>
+<tr><td>/updatepurchaseorder</td><td>POST</td><td>updatepurchaseorder</td><td>po_number + newpurchase fields (items w/ _id)</td><td>code</td></tr>
+<tr><td>/sendpomail</td><td>POST</td><td>sendpomail</td><td>po_number, emp_id, mail fields, order_type_short</td><td>code, filepath. Side effects: PDF, vendor/inventory/quotation/mail updates</td></tr>
+<tr><td>/deleteorder</td><td>POST</td><td>deleteorder</td><td>po_number, type</td><td>code</td></tr>
+<tr><td>/deleteallorders</td><td>POST</td><td>deleteallorders</td><td>jsonArrayData[{type,po_number}]</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Inventory (stock in / use)</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getinventorylist</td><td>POST</td><td>getinventorylist</td><td>emp_id, project_short, cancel_status</td><td>inventory[], site_list</td></tr>
+<tr><td>/getstockdetails</td><td>POST</td><td>getstockdetails</td><td>id</td><td>dc_list[], inventory{}</td></tr>
+<tr><td>/inventorydetailedview</td><td>POST</td><td>inventorydetailedview</td><td>id</td><td>inventory[] (movements)</td></tr>
+<tr><td>/inventory_detailupdate</td><td>POST</td><td>inventory_detailupdate</td><td>id, grn_no, dc_no, veh_no</td><td>code</td></tr>
+<tr><td>/stockupdate_in</td><td>POST</td><td>stockupdate_in</td><td>id, status(receive/return), received_qty, return_status, return_qty, emp_id, grn_no, dc_no, veh_no, return_reason</td><td>code</td></tr>
+<tr><td>/stockupdate_use</td><td>POST</td><td>stockupdate_use</td><td>project_id, status(use/break/balance/transfer), total_*_qty, inventory_id[], jsonArrayData{flat_no,contractor,quantity,reason}, project, emp_id</td><td>code</td></tr>
+<tr><td>/stockuse_balanceupdate</td><td>POST</td><td>stockuse_balanceupdate</td><td>id, balance</td><td>code</td></tr>
+<tr><td>/getinventoryuselist</td><td>POST</td><td>getinventoryuselist</td><td>emp_id, project_short, category</td><td>inventory[], project_list, site_list</td></tr>
+<tr><td>/inventoryusedetailedview</td><td>POST</td><td>inventoryusedetailedview</td><td>project_id, code, item</td><td>inventory[]</td></tr>
+<tr><td>/get_flatlist</td><td>POST</td><td>get_flatlist</td><td>id (project_id)</td><td>flat_details[]</td></tr>
+<tr><td>/internalcategorylist</td><td>GET</td><td>internalcategorylist</td><td>—</td><td>category_list</td></tr>
+</tbody>
+</table>
+<h3>Users &amp; HR</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/userlistfilter</td><td>GET</td><td>userlistfilter</td><td>—</td><td>userfilter[]</td></tr>
+<tr><td>/userlist</td><td>POST</td><td>userlist</td><td>status, site, department</td><td>user_list[]</td></tr>
+<tr><td>/userdetails</td><td>POST</td><td>userdetails</td><td>emp_id</td><td>user_data{}, doc/image/project/dprt lists, transfer_data[]</td></tr>
+<tr><td>/userdelete</td><td>POST</td><td>userdelete</td><td>emp_id</td><td>code (cascades)</td></tr>
+<tr><td>/deleteallusers</td><td>POST</td><td>deleteallusers</td><td>jsonArrayData[{emp_id}]</td><td>code</td></tr>
+<tr><td>/leaveyear</td><td>POST</td><td>leaveyear</td><td>emp_id, year</td><td>leave_data[]</td></tr>
+<tr><td>/leaveinsert</td><td>POST</td><td>leaveinsert</td><td>emp_id, leavefrom, leaveto, leave, reason</td><td>code</td></tr>
+<tr><td>/adduserdetails</td><td>GET</td><td>adduserdetails</td><td>—</td><td>emp_id (next), dprt_list[], project_list[]</td></tr>
+<tr><td>/usertransfer</td><td>POST</td><td>usertransfer</td><td>emp_id, site, project_block</td><td>code</td></tr>
+<tr><td>/permissiondetails</td><td>POST</td><td>permissiondetails</td><td>emp_id</td><td>project_list[], permission_data{}</td></tr>
+<tr><td>/permissionupdate</td><td>POST</td><td>permissionupdate</td><td>emp_id, checkedAll, jsonArrayData(sites), per-module toggles</td><td>code</td></tr>
+<tr><td>/holidaycalc</td><td>POST</td><td>holidaycalc</td><td>leavefrom, leaveto</td><td>leave (working days)</td></tr>
+<tr><td>/changepwd</td><td>POST</td><td>changepwd</td><td>emp_id, password</td><td>code</td></tr>
+</tbody>
+</table>
+<h3>Salary</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/salarylist</td><td>POST</td><td>salarylist</td><td>—</td><td>salary_list[]</td></tr>
+<tr><td>/salarydetails</td><td>POST</td><td>salarydetails</td><td>emp_id</td><td>salary_details{}, bank_list[]</td></tr>
+<tr><td>/salaryupdate</td><td>POST</td><td>salaryupdate</td><td>emp_id, mode, user_status, earnings+deductions, leave, dw, credited, inc</td><td>code (inserts salary_history)</td></tr>
+<tr><td>/getdirectorlist</td><td>GET</td><td>getdirectorlist</td><td>—</td><td>director_list[]</td></tr>
+<tr><td>/salaryhistory</td><td>POST</td><td>salaryhistory</td><td>emp_id</td><td>salary_data[], financial_year[], leave_data[]</td></tr>
+</tbody>
+</table>
+<h3>Billing</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/getbillinglist</td><td>POST</td><td>getbillinglist</td><td>emp_id, project_short</td><td>bill_list[], site_list</td></tr>
+<tr><td>/getbillinglistPaginated</td><td>POST</td><td>getbillinglistPaginated</td><td>emp_id, project_short, page, limit, search</td><td>bill_list[], pagination{}, site_list</td></tr>
+<tr><td>/getBillingVendorList</td><td>POST</td><td>getBillingVendorList</td><td>—</td><td>project_list[], vendor_details[]</td></tr>
+<tr><td>/getVendorPoList</td><td>POST</td><td>getVendorPoList</td><td>company, project_short</td><td>po_list[]</td></tr>
+<tr><td>/billingPoDetails</td><td>POST</td><td>billingPoDetails</td><td>po_number, po_type</td><td>purchase_items[] (billed/unbilled qty)</td></tr>
+<tr><td>/generatePurchaseBill</td><td>POST</td><td>generatePurchaseBill</td><td>project_short, emp_id, vendor_bill_no/date, vendor_name, grand_total, bill_list[]</td><td>code (creates sis_bill_no, status 0)</td></tr>
+<tr><td>/viewpurchasebill</td><td>POST</td><td>viewpurchasebill</td><td>bill_id</td><td>bill_details{}</td></tr>
+<tr><td>/confirmpurchasebill</td><td>POST</td><td>confirmpurchasebill</td><td>bill_id, status, credit_note</td><td>code (updates inventory billed_qty + PO)</td></tr>
+<tr><td>/deletepurchasebill</td><td>POST</td><td>deletepurchasebill</td><td>bill_id</td><td>code</td></tr>
+<tr><td>/billcheckout</td><td>POST</td><td>billcheckout</td><td>project_short, vendor_name</td><td>code (Success=no pending bill)</td></tr>
+</tbody>
+</table>
+<h3>Dashboard / Reports</h3>
+<table>
+<thead><tr><th>Endpoint</th><th>Method</th><th>Fn</th><th>Request</th><th>Response</th></tr></thead>
+<tbody>
+<tr><td>/get_annualsales</td><td>GET</td><td>get_annualsales</td><td>—</td><td>project_blocked[] (hard-coded date window)</td></tr>
+</tbody>
+</table>
+<hr>
+<h2>6. Database Schema (MongoDB: <code>sis_crm_DB</code>)</h2>
+<p>Reconstructed from <a href="../include/db_handler.php">include/db_handler.php</a> and the <code>*_pdf.php</code> files.</p>
+<h3>Conventions</h3>
+<ul>
+<li>Every collection has an ObjectId <code>_id</code> (serialized as <code>{"$oid":"..."}</code> in payloads).</li>
+<li><strong>Dates are mostly strings</strong>: <code>Y-m-d H:i:s</code> (timestamps in <code>date_time</code>/<code>*_datetime</code>), <code>d-m-Y</code> (human dates: <code>prf_date</code>, <code>po_date</code>, <code>quot_date</code>, <code>delivery_date</code>). Newer features use BSON <code>UTCDateTime</code> (<code>purchase_bill.created_at</code>, <code>inventory.qty_ledger[].create_at</code>).</li>
+<li><strong><code>emp_id</code> (int)</strong> is the universal person key; it maps to BOTH <code>signintable.emp_id</code> and <code>user_list.emp_id</code>.</li>
+<li><strong>Status enums are inconsistent</strong>: string <code>"0"/"1"</code> in legacy collections, int <code>0/1/2</code> in newer billing fields; <code>mail_status</code> ∈ {"0","", "send","failure","1"}.</li>
+</ul>
+<h3>People / Org</h3>
+<p><strong><code>signintable</code></strong> — auth + contact + per-user SMTP config.</p>
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>emp_id</td><td>int</td><td>login key</td></tr>
+<tr><td>name, designation, department, site, mobile, officeno</td><td>string</td><td></td></tr>
+<tr><td>mail_id</td><td>string</td><td>login email</td></tr>
+<tr><td>password</td><td>string</td><td><strong>plaintext</strong></td></tr>
+<tr><td>status</td><td>string</td><td>login allowed if joined <code>user_list.status=="Active"</code></td></tr>
+<tr><td>mac_address, mac_status</td><td>string</td><td>device licensing</td></tr>
+<tr><td>sign / digital_sign</td><td>string</td><td>signature image for PDFs</td></tr>
+<tr><td>config_mailid, mail_pwd, mail_sign</td><td>string</td><td>outbound SMTP creds + HTML signature</td></tr>
+</tbody>
+</table>
+<p><strong><code>user_list</code></strong> — HR/employee profile (1:1 with signintable on emp_id). Fields: emp_id, name/firstname/lastname/sirname, status (Active/Inactive/Resigned/waiting), designation, department, site, email, personnel_email, officeno, emergency_conno, dob/doj/resigned_date, address, bloodgroup, qualification, profileimage, profilepath.</p>
+<p><strong><code>permissiontable</code></strong> — RBAC, one doc per emp_id. <code>site_list</code>: <code>"All"</code> or array of <code>{project_name, project_short}</code>. <code>permission</code>: array of <code>{permission_type (project|indent|quotation|order|inventory|inventory_use|product|vendor|userlist|accounts|billing), add, edit, delete, mail, quotation, approve, leave}</code> (booleans).</p>
+<p><strong><code>transfer_history</code></strong> — emp_id, transfer_date (d-m-Y), transfer_dateformat, transfer_site, block, transfer_duration.</p>
+<h3>Projects</h3>
+<p><strong><code>project_details</code></strong> — emp_id (contact), project_name, project_short (key for numbering), project_type, block_name (<code>"none"</code> if single-phase), place, city, address, payment, mobile, gst_in/pan_no/hsn_sac_code (company-wide, written via updateMany), status, date_time.</p>
+<p><strong><code>flat_details</code></strong> — project_id (→project_details._id), flat_no.</p>
+<h3>Vendors &amp; Catalog</h3>
+<p><strong><code>vendor_details</code></strong> — emp_id, company_name (join key), contact_person, address, party_gst, taxtype, mobile/phone/fax, email, date_time, cancel_status ("0"/"1").</p>
+<p><strong><code>vendor_product_list</code></strong> — vendor (→company_name), type/category/sub_category, code, product_name, details, make, width/height, upvc_type, size, cft, unit, price, sgst/cgst, cancel_status. Auto-populated from POs.</p>
+<p><strong><code>category</code></strong> — emp_id, type, category, short (feeds product_code), category_ws, date_time.</p>
+<p><strong><code>product_list</code></strong> — emp_id, type, category, sub_category, code, product_code (<code>{short}-{NNNN}</code>), product_name(+_ws), details, make, width/height, upvc_type, size, cft, unit, price, gst (split sgst/cgst=gst/2), taxtype, date_time, cancel_status.</p>
+<p><strong>Reference lists:</strong> <code>order_types{name, short_name}</code>, <code>folder{folder}</code>, <code>bank_list{name}</code>, <code>holidays_list{leave (d-m-Y)}</code>, <code>sis_department{department, designation}</code>, <code>userdepartment{department, site, status}</code>, <code>user_documents{name}</code>.</p>
+<h3>Procurement — Indent</h3>
+<p><strong><code>indent_master</code></strong> — header per <code>prf_number</code>.</p>
+<table>
+<thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>emp_id</td><td>int</td><td>requester</td></tr>
+<tr><td>type</td><td>string</td><td>Standard/Work/Steel/UPVC/Door (drives PDF + item shape)</td></tr>
+<tr><td>prf_number</td><td>string</td><td>unique key (<code>PRF-LX0556</code>)</td></tr>
+<tr><td>project_short, project_id, prf_date, purpose, description, grand_total</td><td>mixed</td><td></td></tr>
+<tr><td>supplier_list</td><td>array</td><td><code>{company_name, reason, contact_person, mobile, comp_address}</code></td></tr>
+<tr><td>cancel_status</td><td>"0"/"1"</td><td>active / cancelled</td></tr>
+<tr><td>mail_status</td><td>"0"/"send"/"failure"</td><td>quotation-request mail state</td></tr>
+<tr><td>mail_datetime</td><td>string</td><td>when mail sent (drives "Raised X ago")</td></tr>
+<tr><td>quot_status</td><td>"0"/"1"</td><td>quotation raised?</td></tr>
+<tr><td>quot_status_details</td><td>string</td><td>"Quotation Raised"/"Approved"/"PO Partially Raised"/"PO Raised"</td></tr>
+</tbody>
+</table>
+<p><strong><code>indent_table</code></strong> — line items, child via <code>prf_number</code>: code, item, unit, quantity, price, details, make, width/height, upvc_type, size, cft, required_date, stock_details{block_available, block_usage, site_available, site_usage}.</p>
+<h3>Procurement — Quotation</h3>
+<p><strong><code>quotation_master</code></strong> — header per <code>quot_number</code>; links indent via <code>prf_number</code>. Fields: emp_id, prf_number, quot_number (<code>Q-{short}{NNNN}</code>), quot_date, project_id, project_short, type/category/sub_category, purpose, description, <code>quot_list[]</code> (per-vendor draft quotes: vendor_name, reason, grand_total, table_items[{item, unit, quantity, price, amount, gst, gst_amount, total, required_date, product attrs}]), <code>final_vendor</code> (selected vendor, set on approval), approved_status (""/approved/declined), approved_by, mail_status (""/send/failure), po_raised ("1"/absent).</p>
+<p><strong><code>quotation_duration</code></strong> — SLA audit per quot_number: indent_datetime, quot_datetime, proceed_duration/datetime, approved_duration/datetime, declined_duration/datetime, po_number, po_duration/datetime. <code>*_duration</code> are human strings via <code>secondsToWords</code>.</p>
+<h3>Procurement — Purchase Order</h3>
+<p><strong><code>purchase_master</code></strong> — header per <code>po_number</code> (<code>{short}{NNNN}</code>, no prefix); links quot_number + prf_number. Fields: emp_id, prf_number, quot_number, po_number, type/category/sub_category (category=="Marketing" skips inventory; type=="Door" triggers CFT), po_date, project_short/id, company (→vendor), contact_person/address/party_gst (vendor snapshot), reference_no/date, po_subject, order_type(+_short), work_ton, trans_amount/trans_tax, plain_amount/plain_tax, sum_cft, grand_total, payment, delivery_place/date, site_contact_person/mobile, description, note, date_time, cancel_status ("0"/"1"), mail_status (""/send/1/failure), received_status ("1" when received), bill_status (int 0/1/2).</p>
+<p><strong><code>purchase_table</code></strong> — PO line items, child via <code>po_number</code>; its <code>_id</code> is referenced by <code>inventory.purchase_id</code>. Fields: po_number, code, item, desc, quantity, unit, price, sgst/cgst, details, make, width/height, upvc_type, size, cft.</p>
+<h3>Inventory &amp; Stock</h3>
+<p><strong><code>inventory</code></strong> — per-PO-line stock record. <strong>Dual shape</strong> (legacy stock-tracking + newer billing-ledger):</p>
+<ul>
+<li>Common: po_number, purchase_id (→purchase_table._id), project_id/short, type/category/sub_category, code/item/desc, unit, price, sgst/cgst, product attrs, quantity, date_time, cancel_status, completed_status ("0"/"1").</li>
+<li>Stock-tracking: stock, return, usage, breakage, transfer, available, stock_percentage/return_percentage, transfer_site[{project_name, block_name, quantity}], mail_status.</li>
+<li>Billing-ledger: billed_qty, qty_ledger[{dc_no, qty, billed_qty, create_at (UTCDateTime)}].</li>
+</ul>
+<p><strong><code>stockupdate_in</code></strong> — inward events, child of inventory via inventory_id: po_number, emp_id, type (received/return/transfer), date_time, stock, received_qty, return_qty, return_type ("at delivery"/"after received"), return_reason, dc_no, sis_grn_no, vehicle_no, transfer_from (→project_details._id), transfer_qty.</p>
+<p><strong><code>stockupdate_use</code></strong> — consumption events: type (received/return/usage/breakage/balance/transfer in|out), emp_id, project_id, code/item, total_qty, balance_qty, date_time, po_details[{inventory_id, po_number, used_qty/balance_qty}], usage_details[{flat_no, contractor, quantity, reason}] (or string for transfers).</p>
+<h3>Billing</h3>
+<p><strong><code>purchase_bill</code></strong> — vendor bill consolidating POs (uses BSON dates). Fields: emp_id, sis_bill_no (<code>B-{short}{NNNN}</code>), project_name/short, block_list[], vendor_name, vendor_bill_no/date, bill_list[{po_number, po_date, po_type, project_id, bill_item_list[items w/ DC refs into inventory.qty_ledger], unloading_cost, loading_tax(+amt), transport_cost/tax(+amt), plain_cost/tax(+amt), sum_cft, sub_total}], grand_total, status (int 0 draft/1 confirmed/2 completed), credit_note, created_at (UTCDateTime).</p>
+<h3>HR / Payroll</h3>
+<p><strong><code>salary_list</code></strong> (current) / <strong><code>salary_history</code></strong> (archive, same shape) — emp_id, earnings (gross, basicpay, hra, conveyance, flexibleplan), deductions (pf, pt, advance, it, others, amount), total_amount, totalearnedamount, ndw/dw/leave/los, credited, salmonth/salyear/monthname, mode (→bank_list.name), inc, user_status. History adds name/designation snapshots for the payslip.</p>
+<p><strong><code>userleave_details</code></strong> — emp_id, leave_from/to, leave (numeric, can be fractional), reason, year_from/to (FY), duration ("YYYY - YYYY"), date_time. FY runs April→March.</p>
+<h3>Audit / Misc</h3>
+<p><strong><code>mail_details</code></strong> — outbound mail log: emp_id, date_time, type (indent/quotation/approver/purchase), prf_number/quot_number/po_number, from/to/cc/bcc, subject, content.</p>
+<p><strong><code>apartment_bookingtracker</code></strong> — real-estate sales (used by annual-sales report): current_date (UTCDateTime), + other fields used elsewhere.</p>
+<h3>Relationships (summary)</h3>
+<ul>
+<li>Procurement: <code>indent_master.prf_number</code> 1—N <code>indent_table</code>; 1—N <code>quotation_master</code>; <code>quotation_master.quot_number</code> 1—1 <code>quotation_duration</code>, ←<code>purchase_master.quot_number</code>; <code>purchase_master.po_number</code> 1—N <code>purchase_table</code>; <code>purchase_table._id</code> ←<code>inventory.purchase_id</code>; <code>inventory._id</code> ←<code>stockupdate_in.inventory_id</code> / <code>stockupdate_use.po_details[].inventory_id</code>; <code>purchase_bill.bill_list[].po_number</code>→<code>purchase_master</code>; bill items ref <code>inventory.qty_ledger[].dc_no</code>.</li>
+<li>People: <code>emp_id</code> links <code>signintable</code>↔<code>user_list</code> and is FK on nearly every collection.</li>
+<li>Projects: <code>project_details._id</code> ←<code>project_id</code> on indent/quotation/purchase/inventory/stockupdate_use/flat_details/bill.</li>
+<li>Vendors: <code>vendor_details.company_name</code> ←<code>purchase_master.company</code>, <code>vendor_product_list.vendor</code>, <code>purchase_bill.vendor_name</code>.</li>
+</ul>
+<hr>
+<h2>7. Business Workflows &amp; State Machines</h2>
+<h3>7.1 Procurement chain (core)</h3>
+<pre><code>INDENT (PRF)                QUOTATION (Q-)              PURCHASE ORDER (no prefix)     INVENTORY                 BILL (B-)
+indent_master/_table   →    quotation_master       →   purchase_master/_table     →  inventory             →  purchase_bill
+newindent              →    newquotation           →   pofromquotation+newpurchase   stockupdate_in           generatePurchaseBill
+sendindentmail              approvequotation           sendpomail                     stockupdate_use          confirmpurchasebill</code></pre>
+<p><strong>Stage 1 — Indent.</strong> <code>newindent()</code> creates header (<code>cancel_status:0</code>, <code>mail_status:0</code>, no <code>quot_status</code>) + items. <code>sendindentmail()</code> renders the PDF and emails it; on success sets <code>mail_status:"send"</code> + <code>mail_datetime</code>. Status shown in lists: if <code>quot_status==1</code>→<code>quot_status_details</code>; else if <code>mail_datetime</code>→"Raised &lt;duration&gt;"; else "-". <code>deleteindent</code> types: <code>removeindent</code>(cancel_status→1), <code>reopenindent</code>(→0), <code>deleteindent</code>(hard delete master+items by prf_number).</p>
+<p><strong>Stage 2 — Quotation.</strong> <code>newquotation(approve_status='save')</code> → draft (<code>approved_status:""</code>); <code>='approve'</code> → approved immediately (<code>approved_status:"approved"</code>, <code>mail_status:"send"</code>). Creates <code>quotation_duration</code>. On approval (<code>approvequotation</code>/<code>updateandapprovequotation</code>): <code>quot_list</code> collapses into <code>final_vendor</code>, timing recorded, and the parent indent gets <code>quot_status:"1"</code> + <code>quot_status_details:"Approved"</code>. <code>declined</code> sets <code>approved_status:"declined"</code>.</p>
+<p><strong>Stage 3 — Purchase Order.</strong> <code>pofromquotation()</code> returns a PO template + next po_number; <code>newpurchase()</code> persists <code>purchase_master</code>+<code>purchase_table</code>, creates <code>inventory</code> rows (unless category=="Marketing"), sets <code>quotation.po_raised:"1"</code> and indent <code>quot_status_details:"PO Partially Raised"/"PO Raised"</code>. <code>sendpomail()</code> sets <code>mail_status:"send"</code> and stamps vendor email.</p>
+<p><strong>Stage 4 — Inventory receipt.</strong> <code>stockupdate_in(status=receive)</code> increments <code>inventory.stock/available/stock_percentage</code>, appends a <code>qty_ledger</code> DC entry, sets <code>purchase_master.received_status:"1"</code>, recomputes <code>completed_status</code>, and logs <code>stockupdate_in</code>. Returns handled "at delivery" vs "after received".</p>
+<p><strong>Stage 5 — Inventory usage.</strong> <code>stockupdate_use(status=use|break|balance|transfer)</code> adjusts <code>available/usage/breakage/transfer</code> and records per-flat/block allocation (<code>usage_details</code>) or inter-site <code>transfer_site</code>.</p>
+<p><strong>Stage 6 — Billing.</strong> <code>getVendorPoList</code>/<code>billingPoDetails</code> surface received-but-unbilled PO qty (via <code>qty_ledger</code>). <code>generatePurchaseBill()</code> creates <code>purchase_bill</code> (<code>status:0</code>). <code>billcheckout</code> guards against a second pending bill. <code>confirmpurchasebill(status=1)</code> increments <code>inventory.billed_qty</code>/ledger <code>billed_qty</code> and sets <code>purchase_master.bill_status</code> (2 if fully billed else 0); <code>status=2</code> finalizes with optional <code>credit_note</code>.</p>
+<h3>7.2 Status value reference</h3>
+<table>
+<thead><tr><th>Collection.field</th><th>Values</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>indent_master.cancel_status</td><td>"0" / "1"</td><td>active / cancelled</td></tr>
+<tr><td>indent_master.mail_status</td><td>"0" / "send" / "failure"</td><td>not sent / sent / failed</td></tr>
+<tr><td>indent_master.quot_status</td><td>"1" / absent</td><td>quotation raised / none</td></tr>
+<tr><td>indent_master.quot_status_details</td><td>Quotation Raised / Approved / PO Partially Raised / PO Raised</td><td>lifecycle text</td></tr>
+<tr><td>quotation_master.approved_status</td><td>"" / approved / declined</td><td>draft / approved / rejected</td></tr>
+<tr><td>quotation_master.po_raised</td><td>"1" / absent</td><td>PO created / not</td></tr>
+<tr><td>purchase_master.cancel_status</td><td>"0" / "1"</td><td>active / cancelled</td></tr>
+<tr><td>purchase_master.mail_status</td><td>"" / send / failure / 1</td><td>not sent / sent / failed</td></tr>
+<tr><td>purchase_master.received_status</td><td>"1" / absent</td><td>received / not</td></tr>
+<tr><td>purchase_master.completed_status</td><td>"0" / "1"</td><td>receipt incomplete / complete</td></tr>
+<tr><td>purchase_master.bill_status</td><td>0 / 1 / 2</td><td>partial / pending / fully billed</td></tr>
+<tr><td>inventory.completed_status</td><td>"0" / "1"</td><td>(stock+return) &lt; qty / ≥ qty</td></tr>
+<tr><td>purchase_bill.status</td><td>0 / 1 / 2</td><td>draft / confirmed / completed</td></tr>
+<tr><td>user_list.status</td><td>Active / Inactive / Resigned / waiting</td><td>employment state</td></tr>
+</tbody>
+</table>
+<h3>7.3 PDF + email side-effects</h3>
+<p>Each stage renders a PDF then emails it; <code>mail_status</code> flips to <code>send</code>/<code>failure</code> based on the mailer result.</p>
+<table>
+<thead><tr><th>Doc</th><th>PDF script</th><th>Triggered by</th><th>Updates</th></tr></thead>
+<tbody>
+<tr><td>Indent</td><td><a href="../modules/materials/indent/indent_pdf.php">modules/materials/indent/indent_pdf.php</a></td><td>sendindentmail</td><td>indent_master.mail_status</td></tr>
+<tr><td>Quotation</td><td>modules/materials/quotation/quotation_pdf.php</td><td>approvequotation / updateandapprovequotation</td><td>quotation_master.mail_status</td></tr>
+<tr><td>PO</td><td>modules/materials/purchase/po_pdf.php</td><td>sendpomail</td><td>purchase_master.mail_status (+ vendor/inventory/quotation)</td></tr>
+<tr><td>Salary slip</td><td>modules/user/salaryslip_pdf.php</td><td>salary slip download</td><td>—</td></tr>
+</tbody>
+</table>
+<p>Mail is sent by <code>internalMailer()</code> (PHPMailer, Gmail SMTP, attachment + signature image, IMAP append to Sent). <strong>Generation pattern is fragile — see §8.4.</strong></p>
+<h3>7.4 HR / Payroll</h3>
+<ul>
+<li><strong>Users:</strong> create via <a href="../v1/adduser.php">v1/adduser.php</a> (default password <code>welcome2sis</code>, profile image upload, auto emp_id = max+1, seeds signintable/user_list/salary/permission). <code>userlist</code>/<code>userdetails</code>/<code>userdelete</code> (cascading), <code>changepwd</code>.</li>
+<li><strong>Leave:</strong> <code>leaveinsert</code> (FY auto-derived April→March), <code>leaveyear</code> (running total), <code>holidaycalc</code> (working days excl. Sundays + <code>holidays_list</code>).</li>
+<li><strong>Salary:</strong> <code>salarydetails</code>→<code>salaryupdate</code> (writes <code>salary_list</code> + appends <code>salary_history</code>; auto-resigns "waiting" users on month rollover; adds new bank to <code>bank_list</code>), <code>salaryhistory</code>, <code>getdirectorlist</code>.</li>
+<li><strong>Permissions:</strong> <code>permissiondetails</code>/<code>permissionupdate</code> maintain <code>permissiontable</code>; consumed client-side from localStorage.</li>
+</ul>
+<hr>
+<h2>8. Infrastructure, Setup &amp; Rewrite Notes</h2>
+<h3>8.1 Runtime &amp; deployment</h3>
+<ul>
+<li>Served by XAMPP/Apache on Windows from <code>htdocs/sis-cloud-php</code>. SPA entry <code>index.html</code>; API under <code>/v1</code> routed by <a href="../v1/.htaccess">v1/.htaccess</a> (<code>web.config</code> mirrors for IIS).</li>
+<li>Composer deps: <code>mongodb/mongodb ^1.1</code>, <code>mpdf/mpdf ^7.0</code>, <code>phpmailer/phpmailer ^6.0</code>; Slim is vendored in <a href="../libs/Slim">libs/Slim</a>. <code>v1/index.php</code> sets <code>max_execution_time = 1800</code> (PDF/mail can be slow).</li>
+<li>PHP version note: code uses PHP 5/7-era idioms (curly-brace offsets in mPDF, unguarded array access) → emits many Deprecated/Notice messages on PHP 8. Harmless to file-writing PDFs but noisy; keep <code>display_errors</code> Off in production.</li>
+</ul>
+<h3>8.2 Configuration &amp; secrets (migration concern)</h3>
+<ul>
+<li><strong>Mongo URI with embedded credentials</strong> in <a href="../include/db_connect.php">include/db_connect.php</a> and <a href="../include/conn.php">include/conn.php</a> (replica set <code>mongodineamik</code>, DB <code>sis_crm_DB</code>). Many dated backup copies exist — exclude from rewrite.</li>
+<li><strong>Gmail SMTP app password hardcoded</strong> in <a href="../include/db_handler.php">include/db_handler.php</a> (<code>internalMailer</code>), plus per-user <code>mail_pwd</code> in <code>signintable</code>.</li>
+<li><strong>FTP creds</strong> in <code>curlupload.php</code> (legacy, broken).</li>
+<li>Action: externalize ALL secrets to environment variables; rotate the exposed credentials.</li>
+</ul>
+<h3>8.3 Authentication model (today)</h3>
+<ul>
+<li><code>userlogin</code> compares <strong>plaintext</strong> password against <code>signintable</code>; gated by joined <code>user_list.status=="Active"</code>. Collects IP/MAC via Windows <code>ipconfig</code> (device licensing) — not portable.</li>
+<li>No server sessions/JWT; the client holds identity + permission JSON in <code>localStorage</code> (tamperable). RBAC is advisory (client-side only).</li>
+<li>Rewrite: hash passwords (bcrypt/argon2 + migration), issue JWT/refresh in HTTP-only cookies, enforce RBAC in API middleware, drop the ipconfig/MAC mechanism (or replace with proper device/2FA).</li>
+</ul>
+<h3>8.4 File handling &amp; the fragile PDF pattern</h3>
+<ul>
+<li>Uploads: <code>modules/uploads/</code> (PDFs + <code>profile/</code> images); add-user posts multipart to <code>v1/adduser.php</code>.</li>
+<li><strong>PDF generation is a synchronous HTTP self-call:</strong> <code>db_handler</code> builds <code>$this-&gt;path = protocol://$_SERVER['SERVER_NAME']</code> (no port, <strong>no subdirectory</strong>) and does <code>file_get_contents($this-&gt;path.'/modules/materials/&lt;doc&gt;/&lt;doc&gt;_pdf.php?type=upload&amp;id=&lt;num&gt;')</code>, then <code>sleep(8)</code>, then <code>file_exists(...)</code> before mailing. This breaks when: the app isn't at the web root (e.g. <code>localhost/sis-cloud-php</code>), <code>SERVER_NAME</code> doesn't resolve/loopback, <code>allow_url_fopen</code> is off, HTTPS cert issues, or generation exceeds 8s — in which case <code>file_exists</code> is false and the caller silently returns <code>"Network Error, Try Again !!!"</code> with <code>mail_status</code> left at <code>"0"</code>.</li>
+<li>Rewrite: generate PDFs in-process (or via a dedicated service: Puppeteer/Headless Chrome / a queue), store in object storage, attach from there; never self-HTTP-call.</li>
+</ul>
+<h3>8.5 Known bugs / quirks to NOT carry over</h3>
+<ul>
+<li>Numbering race (max+1, no lock) on PRF/PO/quotation/bill → duplicates (e.g. duplicate <code>PRF-LX0556</code>). Use sequences/unique constraints.</li>
+<li><code>updatepoproduct</code> count&gt;1 branch sets a misspelled <code>codeo</code>. <code>editpurchaseorder</code> <code>vat_list</code> from an undefined var. <code>usertransfer</code> returns empty body when no prior transfer record exists.</li>
+<li>Methods that always return <code>"Success"</code> regardless of outcome (<code>deleteall*</code>, <code>stockupdate_use</code>, <code>get_flatlist</code>, <code>getprojectdetails</code>, <code>getBillingVendorList</code>).</li>
+<li>Double-encoded <code>jsonArrayData</code>/<code>jsonSupplierData</code> payloads; inconsistent <code>code</code> vocabulary; some methods omit <code>code</code>.</li>
+<li><code>userlogin</code> shells out to <code>ipconfig</code> (Windows-only).</li>
+</ul>
+<h3>8.6 Target architecture mapping (Next.js / React + Drizzle)</h3>
+<table>
+<thead><tr><th>Concern</th><th>Current</th><th>Target</th></tr></thead>
+<tbody>
+<tr><td>Frontend</td><td>AngularJS 1.x SPA, global scripts</td><td>Next.js (App Router) + React + TypeScript; React Query for server state</td></tr>
+<tr><td>Routing</td><td>ui-router <code>{filter}</code> strings</td><td>Next.js routes + typed search params</td></tr>
+<tr><td>API</td><td>Slim <code>/v1/*.php</code>, one giant handler</td><td>Next.js route handlers / tRPC, modular services per domain</td></tr>
+<tr><td>Auth</td><td>plaintext + localStorage</td><td>hashed creds + JWT cookies + server RBAC middleware</td></tr>
+<tr><td>DB</td><td>MongoDB (denormalized, string dates, enum drift)</td><td>Postgres + Drizzle; normalize subdoc arrays to child tables; real <code>timestamp</code>/<code>date</code>; proper enums</td></tr>
+<tr><td>Keys</td><td>app-generated max+1</td><td>surrogate PKs + unique business-key columns via sequences</td></tr>
+<tr><td>PDF</td><td>mPDF via HTTP self-call + sleep</td><td>in-process/service render → object storage</td></tr>
+<tr><td>Email</td><td>PHPMailer + Gmail + hardcoded pw</td><td>provider API (SES/SendGrid) via queue; secrets in env</td></tr>
+<tr><td>Files</td><td>local FS / FTP</td><td>object storage (S3/R2) with signed URLs</td></tr>
+</tbody>
+</table>
+<p><strong>Schema normalization highlights:</strong> merge <code>signintable</code>+<code>user_list</code> → one <code>users</code> table (auth + profile); merge <code>salary_list</code>+<code>salary_history</code> → <code>salaries</code> with a period/active flag; split subdocument arrays (<code>supplier_list</code>, <code>quot_list.table_items</code>, <code>qty_ledger</code>, <code>transfer_site</code>, <code>po_details</code>, <code>usage_details</code>, <code>permission</code>, <code>bill_list</code>) into child tables; reconcile the dual-shape <code>inventory</code> into inventory + receipts(qty_ledger) + movements(stockupdate_in/use). Standardize all timestamps to UTC (legacy stored Asia/Kolkata local time).</p>
+<hr>
+<h2>9. Cross-cutting notes (quick reference for the rewrite)</h2>
+<ul>
+<li>One DB connection, one God-class (<code>DbHandler</code>) — split into per-domain services.</li>
+<li>Status fields are the real state machine; normalize their values during migration (§7.2).</li>
+<li>Business keys (<code>prf_number</code>, <code>quot_number</code>, <code>po_number</code>, <code>sis_bill_no</code>, <code>product_code</code>) are user-visible and must be preserved, but generated safely.</li>
+<li>No automated tests and no build pipeline today — add both in the rewrite.</li>
+</ul>
+<hr>
+<p>*This document was generated from a multi-agent read of the codebase. Verify any field/endpoint against the source before relying on it for a migration script; the schema is inferred from code usage, not a formal DDL.*</p>
+
+</body></html>

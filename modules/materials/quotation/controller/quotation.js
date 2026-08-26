@@ -16,63 +16,126 @@ app.controller('quotationCtrl', function($scope, $http, $timeout, $state, $state
             var splitData = $stateParams.filter.split("_");
             $scope.project_short = splitData[0];
             $scope.tabletype = splitData[1];
-            $scope.entryLimit = splitData[2];
+            $scope.entryLimit = parseInt(splitData[2]) || 10;
             $scope.search = splitData[3];
-            $scope.pageNo = splitData[4];
+            $scope.pageNo = parseInt(splitData[4]) || 1;
         }
         
         if(!$scope.project_short){ $scope.project_short = ''; }
         if(!$scope.tabletype){ $scope.tabletype = ''; }
-        if(!$scope.entryLimit){ $scope.entryLimit = '10'; }
+        if(!$scope.entryLimit){ $scope.entryLimit = 10; }
         if(!$scope.search){ $scope.search = ''; }
         if(!$scope.pageNo){ $scope.pageNo = 1; }
+
+        $scope.entryLimit = parseInt($scope.entryLimit) || 10;
+
+        $scope.currentPage = $scope.pageNo;
+        $scope.totalRecords = 0;
+        $scope.totalPages = 0;
+        $scope.filteredItems = 0;
+        $scope.list = [];
+        $scope.projects = [];
+        $scope.searchTimeout = null;
         
-        //change table type
-        $scope.tableData = function(x, y) {
+        $scope.tableData = function() {
             $('#preloader').show();
+
+            var requestData = {
+                emp_id: localStorage.getItem("user_id"),
+                project_short: $scope.project_short || '',
+                status: $scope.tabletype || '',
+                page: $scope.currentPage,
+                limit: parseInt($scope.entryLimit),
+                search: $scope.search
+            };
+
             $http({
-                url: './v1/getquotationlist',
+                url: './v1/getquotationlistPaginated',
                 method: "POST",
-                data: {'status': x, 'emp_id': localStorage.getItem("user_id"), 'project_short': y}
+                data: requestData
             })
             .then(function (response){
                 $scope.projects = response.data.site_list;
                 $scope.list = response.data.quotation_data;
-                $scope.filteredItems = $scope.list.length;
-                $scope.setPage($scope.pageNo);
-                $scope.filter();
+
+                if (response.data.pagination) {
+                    $scope.totalRecords = response.data.pagination.total_records;
+                    $scope.totalPages = response.data.pagination.total_pages;
+                    $scope.filteredItems = response.data.pagination.total_records;
+                }
+
+                localStorage.setItem("quot_nos", JSON.stringify($scope.list));
                 $scope.showDelBtn = false;
+                $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
+            })
+            .catch(function (error) {
+                console.error('Error fetching data:', error);
+                $scope.list = [];
+                $scope.filteredItems = 0;
                 $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
             });
         };
-        
-        $scope.setPage = function(pageNo) {
-            $scope.currentPage = pageNo;
+
+        $scope.pageChanged = function() {
+            $scope.tableData();
         };
+
+        $scope.pageEntries = function() {
+            $scope.entryLimit = parseInt($scope.entryLimit) || 10;
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
+        $scope.projectChanged = function() {
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
+        $scope.tableTypeChanged = function() {
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
         $scope.filter = function() {
-            $timeout(function() { 
-				$scope.filteredItems = $scope.filtered.length;				
-				localStorage.setItem("quot_nos",JSON.stringify($scope.filtered));
-				
-            }, 10);
+            if ($scope.searchTimeout) {
+                $timeout.cancel($scope.searchTimeout);
+            }
+            $scope.searchTimeout = $timeout(function() {
+                $scope.currentPage = 1;
+                $scope.tableData();
+            }, 500);
         };
+
         $scope.sort_by = function(predicate) {
             $scope.predicate = predicate;
             $scope.reverse = !$scope.reverse;
+        };
+
+        $scope.getShowingText = function() {
+            if ($scope.totalRecords === 0) {
+                return 'No entries';
+            }
+            var start = (($scope.currentPage - 1) * parseInt($scope.entryLimit)) + 1;
+            var end = Math.min($scope.currentPage * parseInt($scope.entryLimit), $scope.totalRecords);
+            return 'Showing ' + start + ' to ' + end + ' of ' + $scope.totalRecords + ' entries';
+        };
+
+        $scope.getFilterString = function() {
+            return $scope.project_short + '_' + $scope.tabletype + '_' + $scope.entryLimit + '_' + $scope.search + '_' + $scope.currentPage;
         };
         
         //edit
         $scope.onEdit = function(x) {
             if(!$scope.project_short){ $scope.project_short = ''; }
             localStorage.setItem("quot_number", x);
-            $state.go('home.quotation_update', { filter: $scope.project_short+'_'+$scope.tabletype+'_'+$scope.entryLimit+'_'+$scope.search+'_'+$scope.currentPage });
+            $state.go('home.quotation_update', { filter: $scope.getFilterString() });
         }
         
         //view
         $scope.onView = function(x) {
             if(!$scope.project_short){ $scope.project_short = ''; }
             localStorage.setItem("quot_number", x);
-            $state.go('home.quotation_view', { filter: $scope.project_short+'_'+$scope.tabletype+'_'+$scope.entryLimit+'_'+$scope.search+'_'+$scope.currentPage });
+            $state.go('home.quotation_view', { filter: $scope.getFilterString() });
         }
         
         //pdf
@@ -114,7 +177,7 @@ app.controller('quotationCtrl', function($scope, $http, $timeout, $state, $state
             .then(function(response) {
                 $('#mailModal').modal('hide');
                 $scope.alert = true;
-                $scope.tableData($scope.tabletype, $scope.project_short);
+                $scope.tableData();
                 if(response.data.code == 'Success'){
                     $(".alert").removeClass().addClass('alert alert-success');
                     $scope.alert_content = "Mail send successfully !!!";
@@ -145,7 +208,7 @@ app.controller('quotationCtrl', function($scope, $http, $timeout, $state, $state
             .then(function(response){
                 $('#confirmModal').modal('hide');
                 $scope.alert = true;
-                $scope.tableData($scope.tabletype, $scope.project_short);
+                $scope.tableData();
                 if(response.data.code == 'Success'){
                     $(".alert").removeClass().addClass('alert alert-success');
                     $scope.alert_content = 'Deleted Successfully !!!';
@@ -161,4 +224,6 @@ app.controller('quotationCtrl', function($scope, $http, $timeout, $state, $state
         $scope.onAddOrder = function(x) {
             $state.go('home.new_purchase', { filter: '_usage_10__1_'+x });
         }
+
+        $scope.tableData();
 });

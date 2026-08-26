@@ -296,6 +296,13 @@ $app->post('/getquotationlist', function() use($app) {
     echo json_encode($result);
 });
 
+$app->post('/getquotationlistPaginated', function() use($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();
+    $result = $db->getquotationlistPaginated($postData);
+    echo json_encode($result);
+});
+
 $app->post('/viewpurchasequotation', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();	

@@ -2342,130 +2342,247 @@ public function getindentlistPaginated($getData)
     }
     
     //purchase quotation list
+    private function buildQuotationListMatch($jsonData, $siteData)
+    {
+        $match = array();
+
+        if (!empty($jsonData['project_short'])) {
+            $match['project_short'] = $jsonData['project_short'];
+        } elseif (empty($siteData['all_sites'])) {
+            $proShortArray = isset($siteData['project_short_list']) ? $siteData['project_short_list'] : array();
+            if (empty($proShortArray)) {
+                return null;
+            }
+            $match['project_short'] = array('$in' => $proShortArray);
+        }
+
+        if (isset($jsonData['status']) && $jsonData['status'] === 'pending') {
+            $match['approved_status'] = array('$nin' => array('approved', 'declined'));
+        } elseif (!empty($jsonData['status'])) {
+            $match['approved_status'] = $jsonData['status'];
+        } else {
+            $match['approved_status'] = array('$in' => array('', 'approved', 'declined'));
+        }
+
+        return $match;
+    }
+
+    private function quotationListProjection()
+    {
+        return array(
+            'prf_number' => 1,
+            'quot_number' => 1,
+            'quot_date' => 1,
+            'description' => 1,
+            'mail_status' => 1,
+            'approved_status' => 1,
+            'po_raised' => 1
+        );
+    }
+
+    private function getQuotationDurationMap($quotNumbers)
+    {
+        $durationMap = array();
+        if (empty($quotNumbers)) {
+            return $durationMap;
+        }
+
+        $collectionDuration = $this->conn->quotation_duration;
+        $chunks = array_chunk(array_values($quotNumbers), 1000);
+        foreach ($chunks as $chunk) {
+            $durCursor = $collectionDuration->find(
+                array('quot_number' => array('$in' => $chunk)),
+                array('projection' => array(
+                    'quot_number' => 1,
+                    'approved_duration' => 1,
+                    'declined_duration' => 1,
+                    'proceed_datetime' => 1,
+                    'quot_datetime' => 1,
+                    'po_duration' => 1,
+                    'approved_datetime' => 1
+                ))
+            );
+            foreach ($durCursor as $dur) {
+                $durationMap[$dur['quot_number']] = $dur;
+            }
+        }
+
+        return $durationMap;
+    }
+
+    private function formatQuotationListRow($rows, $dur, $now)
+    {
+        $product = array();
+        $product['prf_number'] = isset($rows['prf_number']) ? $rows['prf_number'] : '';
+        $product['quot_number'] = isset($rows['quot_number']) ? $rows['quot_number'] : '';
+        $product['quot_date'] = isset($rows['quot_date']) ? $rows['quot_date'] : '';
+        $product['summary'] = isset($rows['description']) ? $rows['description'] : '';
+        $product['mail_status'] = isset($rows['mail_status']) ? $rows['mail_status'] : '';
+        $product['approved_status'] = !empty($rows['approved_status']) ? $rows['approved_status'] : '';
+        $product['po_raised'] = isset($rows['po_raised']) ? $rows['po_raised'] : '';
+
+        if (!empty($dur['approved_duration'])) {
+            $product['quot_status'] = 'Approved<br>'.$dur['approved_duration'];
+        } elseif (!empty($dur['declined_duration'])) {
+            $product['quot_status'] = 'Declined<br>'.$dur['declined_duration'];
+        } elseif (!empty($dur['proceed_datetime'])) {
+            $product['quot_status'] = 'Approval Pending<br>'.$this->secondsToWords($dur['proceed_datetime'], $now);
+        } elseif (!empty($dur['quot_datetime'])) {
+            $product['quot_status'] = 'Raised<br>'.$this->secondsToWords($dur['quot_datetime'], $now);
+        } else {
+            $product['quot_status'] = '-';
+        }
+
+        if (!empty($dur['po_duration'])) {
+            $product['po_status'] = 'Raised<br>'.$dur['po_duration'];
+        } elseif (!empty($dur['approved_datetime'])) {
+            $product['po_status'] = 'Pending<br>'.$this->secondsToWords($dur['approved_datetime'], $now);
+        } else {
+            $product['po_status'] = '-';
+        }
+
+        return $product;
+    }
+
+    private function mapQuotationListRows($cursor)
+    {
+        $quotes = array();
+        $quotNumbers = array();
+        foreach ($cursor as $rows) {
+            $quotes[] = $rows;
+            if (!empty($rows['quot_number'])) {
+                $quotNumbers[] = $rows['quot_number'];
+            }
+        }
+
+        $durationMap = $this->getQuotationDurationMap($quotNumbers);
+        $now = date("Y-m-d H:i:s");
+        $list = array();
+        foreach ($quotes as $rows) {
+            $quotNumber = isset($rows['quot_number']) ? $rows['quot_number'] : '';
+            $dur = ($quotNumber !== '' && isset($durationMap[$quotNumber])) ? $durationMap[$quotNumber] : array();
+            $list[] = $this->formatQuotationListRow($rows, $dur, $now);
+        }
+
+        return $list;
+    }
+
     public function getquotationlist($getData) 
     {
         $response = array();
         $response['quotation_data'] = array();
         $jsonData = json_decode($getData, true);
-      
-		  $response["jsonData"] = $jsonData;
-		
-		// collection
+
         $collectionMaster = $this->conn->quotation_master;
-        
-        //site list
         $siteData = $this->internalsitelist($jsonData['emp_id']);
         $response['site_list'] = $siteData["site_list"];
-        
-        $proShortArray = $siteData["project_short_list"];		
-        if($jsonData['project_short']!='') { $proShortArray = array($jsonData['project_short']); }
-		 if($jsonData["status"]!='') { $statusArray = array($jsonData["status"]); }
-		else
-		{
-			$statusArray = array("", "approved", "declined");	
-		}
-	
-		
-		if( $jsonData['status'] == 'pending')
-		{			 
-		$result = $collectionMaster->aggregate(array(
-            array( '$match' => array(
-               '$and' => array(
-        array('approved_status' => array('$nin' => array('approved', 'declined')))       
-    ),
-                "project_short" => array( '$in' => $proShortArray )
-            )),
-            array( '$lookup' => array(
+
+        $match = $this->buildQuotationListMatch($jsonData, $siteData);
+        if ($match === null) {
+            $response["code"] = "Success";
+            return $response;
+        }
+
+        $cursor = $collectionMaster->find($match, array(
+            'projection' => $this->quotationListProjection(),
+            'sort' => array('_id' => -1)
+        ));
+
+        $response['quotation_data'] = $this->mapQuotationListRows($cursor);
+        $response["code"] = "Success";
+        return $response;
+    }
+
+    public function getquotationlistPaginated($getData)
+    {
+        $response = array();
+        $response['quotation_data'] = array();
+        $jsonData = json_decode($getData, true);
+
+        $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+        $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+        $search = isset($jsonData['search']) ? trim($jsonData['search']) : '';
+        if ($page < 1) { $page = 1; }
+        if ($limit < 1) { $limit = 10; }
+        $skip = ($page - 1) * $limit;
+
+        $collectionMaster = $this->conn->quotation_master;
+
+        $siteData = $this->internalsitelist($jsonData['emp_id']);
+        $response['site_list'] = $siteData["site_list"];
+
+        $proShortArray = isset($siteData["project_short_list"]) ? $siteData["project_short_list"] : array();
+        if (!empty($jsonData['project_short'])) {
+            $proShortArray = array($jsonData['project_short']);
+        }
+
+        $status = isset($jsonData['status']) ? $jsonData['status'] : '';
+        if ($status == 'pending') {
+            $matchConditions = array(
+                'approved_status' => array('$nin' => array('approved', 'declined')),
+                'project_short' => array('$in' => $proShortArray)
+            );
+        } else {
+            if ($status != '') {
+                $statusArray = array($status);
+            } else {
+                $statusArray = array('', 'approved', 'declined');
+            }
+            $matchConditions = array(
+                'approved_status' => array('$in' => $statusArray),
+                'project_short' => array('$in' => $proShortArray)
+            );
+        }
+
+        if ($search != '') {
+            $matchConditions['$or'] = array(
+                array('quot_number' => array('$regex' => $search, '$options' => 'i')),
+                array('prf_number' => array('$regex' => $search, '$options' => 'i')),
+                array('description' => array('$regex' => $search, '$options' => 'i'))
+            );
+        }
+
+        $countPipeline = array(
+            array('$match' => $matchConditions),
+            array('$count' => 'total')
+        );
+        $countResult = $collectionMaster->aggregate($countPipeline)->toArray();
+        $totalCount = isset($countResult[0]['total']) ? $countResult[0]['total'] : 0;
+
+        $result = $collectionMaster->aggregate(array(
+            array('$match' => $matchConditions),
+            array('$sort' => array('_id' => -1)),
+            array('$skip' => $skip),
+            array('$limit' => $limit),
+            array('$project' => $this->quotationListProjection()),
+            array('$lookup' => array(
                 'from' => 'quotation_duration',
                 'localField' => 'quot_number',
                 'foreignField' => 'quot_number',
                 'as' => 'duration_data'
-            )),
-            array( '$sort' => array( 
-                '_id' => -1
-            ))
-        ));	
-			
-		}
-		else
-		{
-		$result = $collectionMaster->aggregate(array(
-            array( '$match' => array(
-                "approved_status" => array( '$in' =>$statusArray ),
-                "project_short" => array( '$in' => $proShortArray )
-            )),
-            array( '$lookup' => array(
-                'from' => 'quotation_duration',
-                'localField' => 'quot_number',
-                'foreignField' => 'quot_number',
-                'as' => 'duration_data'
-            )),
-            array( '$sort' => array( 
-                '_id' => -1
             ))
         ));
-		}
- 
-        if($result)
-        {
-            $product = array();
-            foreach($result as $rows)
-            {
-                if(!$rows['approved_status']){ $rows['approved_status']=''; }
-                $product['prf_number'] = $rows['prf_number'];
-                $product['quot_number'] = $rows['quot_number'];
-                $product['quot_date'] = $rows['quot_date'];
-                $product['summary'] = $rows['description'];
-                $product['mail_status'] = $rows['mail_status'];
-                $product['approved_status'] = $rows['approved_status'];
-                $product['po_raised'] = $rows['po_raised'];
-                
-                //indent status
-                if($rows['duration_data'][0]['approved_duration'])
-                {
-                    $product['quot_status'] = 'Approved<br>'.$rows['duration_data'][0]['approved_duration'];
-                }
-                elseif($rows['duration_data'][0]['declined_duration'])
-                {
-                    $product['quot_status'] = 'Declined<br>'.$rows['duration_data'][0]['declined_duration'];
-                }
-                elseif($rows['duration_data'][0]['proceed_datetime'])
-                {
-                    $respDuration = $this->secondsToWords($rows['duration_data'][0]['proceed_datetime'], date("Y-m-d H:i:s"));
-                    $product['quot_status'] = 'Approval Pending<br>'.$respDuration;
-                }
-                else {
-                    if($rows['duration_data'][0]['quot_datetime']) {
-                        $respDuration = $this->secondsToWords($rows['duration_data'][0]['quot_datetime'], date("Y-m-d H:i:s"));
-                        $product['quot_status'] = 'Raised<br>'.$respDuration;
-                    }
-                    else {
-                        $product['quot_status'] = '-';
-                    }
-                }
 
-                //po status
-                if($rows['duration_data'][0]['po_duration'])
-                {
-                    $product['po_status'] = 'Raised<br>'.$rows['duration_data'][0]['po_duration'];
-                }
-                else {
-                    if($rows['duration_data'][0]['approved_datetime']) {
-                        $respDuration = $this->secondsToWords($rows['duration_data'][0]['approved_datetime'], date("Y-m-d H:i:s"));
-                        $product['po_status'] = 'Pending<br>'.$respDuration;
-                    }
-                    else {
-                        $product['po_status'] = '-';
-                    }
-                }
-                
-                array_push($response['quotation_data'], $product);
+        if ($result) {
+            $now = date("Y-m-d H:i:s");
+            foreach ($result as $rows) {
+                $dur = isset($rows['duration_data'][0]) ? $rows['duration_data'][0] : array();
+                array_push($response['quotation_data'], $this->formatQuotationListRow($rows, $dur, $now));
             }
+
+            $response['pagination'] = array(
+                'current_page' => $page,
+                'per_page' => $limit,
+                'total_records' => $totalCount,
+                'total_pages' => $limit > 0 ? ceil($totalCount / $limit) : 0,
+                'has_next' => ($page * $limit) < $totalCount,
+                'has_previous' => $page > 1
+            );
             $response["code"] = "Success";
-        }
-        else {
+        } else {
             $response["code"] = "failed";
         }
+
         return $response;
     }
     
@@ -8637,27 +8754,33 @@ public function getbillinglistPaginated($getData)
         
         $response['site_list'] = array();
         $response['project_short_list'] = array(); //for query
+        $response['all_sites'] = false;
         
         $cursorData = $collection->findOne(array("emp_id" => (int)$emp_id));
         if($cursorData['site_list'])
         {
             if($cursorData['site_list']=='All') {
-                //vendors
-                $projectData = $collectionProject->aggregate(array(
-                    array( '$group' => array(
-                        '_id' => array(
-                            'project_name' => '$project_name',
-                            'project_short' => '$project_short'
-                        )
-                    ))
-                ));
+                $response['all_sites'] = true;
+                $projectData = $collectionProject->find(
+                    array(),
+                    array('projection' => array('project_name' => 1, 'project_short' => 1))
+                );
+                $seen = array();
                 foreach($projectData as $rowData)
                 {
-                    $product['project_name'] = $rowData['_id']['project_name'];
-                    $product['project_short'] = $rowData['_id']['project_short'];
-                    
+                    $projectName = isset($rowData['project_name']) ? $rowData['project_name'] : '';
+                    $projectShort = isset($rowData['project_short']) ? $rowData['project_short'] : '';
+                    $key = $projectName."\0".$projectShort;
+                    if (isset($seen[$key])) {
+                        continue;
+                    }
+                    $seen[$key] = true;
+                    $product = array(
+                        'project_name' => $projectName,
+                        'project_short' => $projectShort
+                    );
                     array_push($response['site_list'], $product);
-                    array_push($response['project_short_list'], $rowData['_id']['project_short']);
+                    array_push($response['project_short_list'], $projectShort);
                 }
             }
             else {
