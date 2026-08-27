@@ -12,35 +12,88 @@ else{
 $state.go('home.dashboard');
 }
 
-//change table type
-$scope.tableData = function(x) {
-console.log("data",x);
+if(!$scope.tabletype){ $scope.tabletype = 'usage'; }
+if(!$scope.entryLimit){ $scope.entryLimit = 10; }
+if(!$scope.search){ $scope.search = ''; }
+
+$scope.entryLimit = parseInt($scope.entryLimit) || 10;
+$scope.currentPage = 1;
+$scope.totalRecords = 0;
+$scope.totalPages = 0;
+$scope.filteredItems = 0;
+$scope.list = [];
+$scope.searchTimeout = null;
+
+$scope.tableData = function() {
 $('#preloader').show();
 $http({
-url: './v1/getproductdetails',
+url: './v1/getproductdetailsPaginated',
 method: "POST",
-data: {'cancel_status': x}
+data: {
+    cancel_status: $scope.tabletype || 'usage',
+    page: $scope.currentPage,
+    limit: parseInt($scope.entryLimit),
+    search: $scope.search
+}
 })
 .then(function (response) {
-console.log("response",response.data.product_details)
 $scope.category_list = response.data.category_list;
-$scope.list = response.data.product_details;
-$scope.filteredItems = $scope.list.length;
-$scope.filter();
+$scope.list = response.data.product_details || [];
+if (response.data.pagination) {
+    $scope.totalRecords = response.data.pagination.total_records;
+    $scope.totalPages = response.data.pagination.total_pages;
+    $scope.filteredItems = response.data.pagination.total_records;
+} else {
+    $scope.totalRecords = $scope.list.length;
+    $scope.filteredItems = $scope.list.length;
+}
 $scope.showDelBtn = false;
+$timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
+})
+.catch(function () {
+$scope.list = [];
+$scope.filteredItems = 0;
+$scope.totalRecords = 0;
 $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
 });
 };
+
+$scope.pageChanged = function() {
+$scope.tableData();
+};
+
+$scope.pageEntries = function() {
 $scope.currentPage = 1;
+$scope.tableData();
+};
+
+$scope.tableTypeChanged = function() {
+$scope.currentPage = 1;
+$scope.tableData();
+};
 
 $scope.filter = function() {
-$timeout(function() { 
-$scope.filteredItems = $scope.filtered.length;
-}, 10);
+if ($scope.searchTimeout) {
+    $timeout.cancel($scope.searchTimeout);
+}
+$scope.searchTimeout = $timeout(function() {
+    $scope.currentPage = 1;
+    $scope.tableData();
+}, 500);
 };
+
 $scope.sort_by = function(predicate) {
 $scope.predicate = predicate;
 $scope.reverse = !$scope.reverse;
+};
+
+$scope.getShowingText = function() {
+if ($scope.totalRecords === 0) {
+    return 'No entries';
+}
+var start = (($scope.currentPage - 1) * parseInt($scope.entryLimit)) + 1;
+var end = Math.min($scope.currentPage * parseInt($scope.entryLimit), $scope.totalRecords);
+return 'Showing ' + start + ' to ' + end + ' of ' + $scope.totalRecords + ' entries';
 };
 
 //change type
@@ -108,7 +161,7 @@ data: $scope.addCategoryForm
 .then(function(response){
 $('#addcategoryModal').modal('hide');
 $scope.alert = true;
-// $scope.tableData($scope.tabletype);
+// $scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Added Successfully !!!';
@@ -142,7 +195,7 @@ data: $scope.addProductForm
 .then(function(response){
 $('#addModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Added Successfully !!!';
@@ -181,7 +234,7 @@ data: $scope.editProductForm
     console.log("update",response)
 $('#editModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Updated Successfully !!!';
@@ -210,7 +263,7 @@ data: {'type': 'removeproduct','id': x}
 .then(function(response){
 $('#confirmModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Removed Successfully !!!';
@@ -239,7 +292,7 @@ data: {'type': 'reopenproduct','id': x}
 .then(function(response){
 $('#confirmModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Reopened Successfully !!!';
@@ -268,7 +321,7 @@ data: {'type': 'deleteproduct', 'id': x}
 .then(function(response){
 $('#confirmModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 $scope.alert_content = 'Deleted Successfully !!!';
@@ -284,7 +337,7 @@ $timeout(function() { $scope.alert = false; }, 2000);
 //display delete button
 $scope.deleteShow = function () {
 var count=0;
-angular.forEach($scope.filtered,function(x){
+angular.forEach($scope.list,function(x){
 if(x.singlecheck) {
 count++;
 }
@@ -300,7 +353,7 @@ $scope.showDelBtn = false;
 //delete all
 $scope.deleteall = function() {
 $scope.tableItems = [];
-angular.forEach($scope.filtered,function(x){
+angular.forEach($scope.list,function(x){
 if(x.singlecheck) {
 $scope.tableItems.push({ type: $scope.tabletype, id: x._id.$oid });  
 }
@@ -332,7 +385,7 @@ data: {'jsonArrayData': x}
 .then(function(response){
 $('#confirmModal').modal('hide');
 $scope.alert = true;
-$scope.tableData($scope.tabletype);
+$scope.tableData();
 if(response.data.code == 'Success'){
 $(".alert").removeClass().addClass('alert alert-success');
 }
@@ -348,5 +401,7 @@ $timeout(function() { $scope.alert = false; }, 2000);
 $scope.export = function () {
 window.location.href = 'modules/materials/purchase/products_export.php?status='+$scope.tabletype+'&search='+$scope.search;
 }
+
+$scope.tableData();
 
 });

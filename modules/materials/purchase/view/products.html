@@ -43,7 +43,7 @@
 </div>
 
 <div id="preloader"></div>
-<div class="mainpart" data-ng-init="tableData('usage')">
+<div class="mainpart">
 
 <div ng-show="alert" class="alert">
 <strong>{{alert_content}}</strong>
@@ -51,17 +51,17 @@
 
 <div class="row pleft20">
 <div class="col-md-2 col-xs-6 pr20">Type:
-<select ng-init="tabletype='usage'" ng-model="tabletype" ng-change="tableData(tabletype)">
+<select ng-model="tabletype" ng-change="tableTypeChanged()">
 <option value="usage">In Usage</option>
 <option value="cancel">Deleted</option>
 </select>
 </div>
 <div class="col-md-2 col-xs-6 pr20">PageSize:
-<select ng-init="entryLimit='10'" ng-model="entryLimit" ng-change="pageEntries()" >
-<option>10</option>
-<option>25</option>
-<option>50</option>
-<option>100</option>
+<select ng-model="entryLimit" ng-change="pageEntries()" >
+<option value="10">10</option>
+<option value="25">25</option>
+<option value="50">50</option>
+<option value="100">100</option>
 </select>
 </div>
 <div class="col-md-2 col-xs-6 pull-right padt13 pr20">
@@ -84,8 +84,8 @@
 <th width="10%" class="hidden-xs hidden-sm">GST</th>
 <th width="5%" ng-if="deletePermission=='1' || editPermission=='1'">ACTION</th>
 </thead>
-<tbody ng-show="filteredItems > 0">
-<tr ng-repeat="x in filtered = (list | filter:search | orderBy : predicate :reverse) | startFrom:(currentPage-1)*entryLimit | limitTo:entryLimit">
+<tbody ng-show="list.length > 0">
+<tr ng-repeat="x in list track by $index">
 <td width="5%" ng-if="deletePermission=='1'"><input type="checkbox" ng-model="x.singlecheck" ng-change="deleteShow()" id="{{ x._id.$oid }}"/>
 <label class="" for="{{ x._id.$oid }}"></label></td>
 <td width="5%" ng-if="deletePermission!='1'">{{ ((currentPage-1)*entryLimit)+$index+1 }}</td>
@@ -103,20 +103,32 @@
 </td>
 </tr>
 </tbody>
-<tbody ng-show="filteredItems == 0">
+<tbody ng-show="list.length == 0">
 <tr><td colspan="7">No records found</td></tr>
 </tbody>
 </table>
 </div>
 </div>
 </div>
-<div class="row pad20" ng-show="filteredItems > 0">
+<div class="row pad20" ng-show="totalRecords > 0">
 <div class="col-md-6 showitem"><br>
-The selected page no: {{currentPage}}/{{filteredItems}} Entries
+{{ getShowingText() }}
 </div>
 <div class="col-md-6">
 <div class="p-r">
-<ul uib-pagination boundary-links="true" total-items="filtered.length"  items-per-page="entryLimit" ng-model="currentPage" num-pages="smallnumPages" max-size="5" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></ul>
+<ul uib-pagination
+    boundary-links="true"
+    total-items="totalRecords"
+    items-per-page="entryLimit"
+    ng-model="currentPage"
+    ng-change="pageChanged()"
+    max-size="5"
+    class="pagination pagination-sm"
+    previous-text="&lsaquo;"
+    next-text="&rsaquo;"
+    first-text="&laquo;"
+    last-text="&raquo;">
+</ul>
 </div>
 </div>
 </div>

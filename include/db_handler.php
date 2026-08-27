@@ -587,6 +587,86 @@ class DbHandler
         }
         return $response;        
     }
+
+    public function getproductdetailsPaginated($getData)
+    {
+        $response = array();
+        $response['product_details'] = array();
+        $jsonData = json_decode($getData, true);
+
+        $response["category_list"] = $this->internalcategorylist();
+
+        $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+        $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+        $search = isset($jsonData['search']) ? trim($jsonData['search']) : '';
+        if ($page < 1) { $page = 1; }
+        if ($limit < 1) { $limit = 10; }
+        if ($limit > 100) { $limit = 100; }
+        $skip = ($page - 1) * $limit;
+
+        if ($jsonData['cancel_status'] == 'usage') { $cancelStatus = 0; }
+        else { $cancelStatus = 1; }
+
+        $collection = $this->conn->product_list;
+
+        $matchConditions = array(
+            "cancel_status" => $cancelStatus,
+            "product_code" => array('$exists' => true, '$nin' => array(null, ''))
+        );
+
+        if ($search !== '') {
+            $matchConditions['$or'] = array(
+                array('product_name' => array('$regex' => $search, '$options' => 'i')),
+                array('product_code' => array('$regex' => $search, '$options' => 'i')),
+                array('category' => array('$regex' => $search, '$options' => 'i')),
+                array('code' => array('$regex' => $search, '$options' => 'i')),
+                array('unit' => array('$regex' => $search, '$options' => 'i'))
+            );
+        }
+
+        $countResult = $collection->aggregate(array(
+            array('$match' => $matchConditions),
+            array('$count' => 'total')
+        ))->toArray();
+        $totalCount = isset($countResult[0]['total']) ? $countResult[0]['total'] : 0;
+
+        $result = $collection->aggregate(array(
+            array('$match' => $matchConditions),
+            array('$sort' => array('_id' => -1)),
+            array('$skip' => $skip),
+            array('$limit' => $limit)
+        ));
+
+        if ($result) {
+            foreach ($result as $rowData) {
+                if ($rowData['code'] == '') { $rowData['code'] = '-'; }
+                $sendData = array();
+                $sendData['_id'] = $rowData['_id'];
+                $sendData['category'] = $rowData['category'];
+                $sendData['code'] = $rowData['code'];
+                $sendData['product_name'] = $rowData['product_name'];
+                $sendData['product_code'] = $rowData['product_code'];
+                $sendData['unit'] = $rowData['unit'];
+                $sendData['price'] = $rowData['price'];
+                $sendData['gst'] = $rowData['sgst'] + $rowData['cgst'];
+                array_push($response["product_details"], $sendData);
+            }
+
+            $response['pagination'] = array(
+                'current_page' => $page,
+                'per_page' => $limit,
+                'total_records' => $totalCount,
+                'total_pages' => $limit > 0 ? ceil($totalCount / $limit) : 0,
+                'has_next' => ($page * $limit) < $totalCount,
+                'has_previous' => $page > 1
+            );
+            $response["code"] = "Success";
+        } else {
+            $response["code"] = "failed";
+        }
+        return $response;
+    }
+
     // get single produt
 	   public function getsingleproductdetails($getData) 
     {
@@ -5356,6 +5436,120 @@ private function updateMailStatus($poNumber, $status)
         } 
         else {
             $response["code"] = "failed";               
+        }
+        return $response;
+    }
+
+    public function getinventorylistPaginated($getData)
+    {
+        $response = array();
+        $response['inventory'] = array();
+        $jsonData = json_decode($getData, true);
+
+        $page = isset($jsonData['page']) ? (int)$jsonData['page'] : 1;
+        $limit = isset($jsonData['limit']) ? (int)$jsonData['limit'] : 10;
+        $search = isset($jsonData['search']) ? trim($jsonData['search']) : '';
+        if ($page < 1) { $page = 1; }
+        if ($limit < 1) { $limit = 10; }
+        if ($limit > 100) { $limit = 100; }
+        $skip = ($page - 1) * $limit;
+
+        if ($jsonData['cancel_status'] == 'incomplete') { $compStatus = '0'; }
+        else { $compStatus = '1'; }
+
+        $collection_inventory = $this->conn->inventory;
+
+        $siteData = $this->internalsitelist($jsonData['emp_id']);
+        $response['site_list'] = $siteData["site_list"];
+
+        $proShortArray = $siteData["project_short_list"];
+        if ($jsonData['project_short'] != '') {
+            $proShortArray = array($jsonData['project_short']);
+        }
+
+        $matchConditions = array(
+            "cancel_status" => '0',
+            "mail_status" => '1',
+            "project_short" => array('$in' => $proShortArray),
+            "completed_status" => $compStatus
+        );
+
+        if ($search !== '') {
+            $matchConditions['$or'] = array(
+                array('po_number' => array('$regex' => $search, '$options' => 'i')),
+                array('item' => array('$regex' => $search, '$options' => 'i')),
+                array('code' => array('$regex' => $search, '$options' => 'i')),
+                array('company' => array('$regex' => $search, '$options' => 'i'))
+            );
+        }
+
+        $countResult = $collection_inventory->aggregate(array(
+            array('$match' => $matchConditions),
+            array('$count' => 'total')
+        ))->toArray();
+        $totalCount = isset($countResult[0]['total']) ? $countResult[0]['total'] : 0;
+
+        $cursor = $collection_inventory->aggregate(array(
+            array('$match' => $matchConditions),
+            array('$sort' => array('_id' => -1)),
+            array('$skip' => $skip),
+            array('$limit' => $limit),
+            array('$lookup' => array(
+                'from' => 'purchase_master',
+                'localField' => 'po_number',
+                'foreignField' => 'po_number',
+                'as' => 'purchase_data'
+            )),
+            array('$lookup' => array(
+                'from' => 'project_details',
+                'localField' => 'project_id',
+                'foreignField' => '_id',
+                'as' => 'project_data'
+            ))
+        ));
+
+        if ($cursor) {
+            foreach ($cursor as $rowData) {
+                if (!$rowData['quantity']) { $rowData['quantity'] = '-'; }
+                if (!$rowData['stock']) { $rowData['stock'] = '0'; }
+                if (!$rowData['stock_percentage']) { $rowData['stock_percentage'] = '0'; }
+                if (!$rowData['return']) { $rowData['return'] = '0'; }
+                if (!$rowData['return_percentage']) { $rowData['return_percentage'] = '0'; }
+                if (!$rowData['purchase_data'][0]['po_number']) { $rowData['purchase_data'][0]['po_number'] = '-'; }
+                if (!$rowData['purchase_data'][0]['po_date']) { $rowData['purchase_data'][0]['po_date'] = '-'; }
+                if (!$rowData['purchase_data'][0]['delivery_date']) { $rowData['purchase_data'][0]['delivery_date'] = '-'; }
+
+                $sendData = array();
+                $sendData['_id'] = $rowData['_id'];
+                $sendData['po_number'] = $rowData['purchase_data'][0]['po_number'];
+                $sendData['project_name'] = $rowData['project_data'][0]['project_name'];
+                $sendData['block_name'] = $rowData['project_data'][0]['block_name'];
+                $sendData['item'] = $rowData['item'];
+                $sendData['code'] = $rowData['code'];
+                $sendData['quantity'] = $rowData['quantity'];
+                $sendData['vendorname'] = $rowData['purchase_data'][0]['company'];
+                $sendData['stock'] = $rowData['stock'];
+                $sendData['stock_percentage'] = $rowData['stock_percentage'];
+                $sendData['return'] = $rowData['return'];
+                $sendData['unit'] = $rowData['unit'];
+                $sendData['return_percentage'] = $rowData['return_percentage'];
+                $sendData['po_date'] = $rowData['purchase_data'][0]['po_date'];
+                $sendData['delivery_date'] = $rowData['purchase_data'][0]['delivery_date'];
+
+                array_push($response['inventory'], $sendData);
+            }
+
+            $response['pagination'] = array(
+                'current_page' => $page,
+                'per_page' => $limit,
+                'total_records' => $totalCount,
+                'total_pages' => $limit > 0 ? ceil($totalCount / $limit) : 0,
+                'has_next' => ($page * $limit) < $totalCount,
+                'has_previous' => $page > 1
+            );
+            $response["code"] = "Success";
+        } else {
+            $response["code"] = "failed";
         }
         return $response;
     }

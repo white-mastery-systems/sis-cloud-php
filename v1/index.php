@@ -110,6 +110,13 @@ $app->post('/getproductdetails', function() use($app) {
     $result = $db->getproductdetails($postData);
     echo json_encode($result);
 });
+
+$app->post('/getproductdetailsPaginated', function() use($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();
+    $result = $db->getproductdetailsPaginated($postData);
+    echo json_encode($result);
+});
 $app->post('/getsingleproductdetails', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();	
@@ -474,6 +481,13 @@ $app->post('/getinventorylist', function() use($app) {
     $postData = $app->request->getBody();
     $db = new DbHandler();	
     $result = $db->getinventorylist($postData);
+    echo json_encode($result);
+});
+
+$app->post('/getinventorylistPaginated', function() use($app) {
+    $postData = $app->request->getBody();
+    $db = new DbHandler();
+    $result = $db->getinventorylistPaginated($postData);
     echo json_encode($result);
 });
 

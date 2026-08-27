@@ -11,34 +11,96 @@ app.controller('inventoryCtrl', function($scope, $http, $timeout, $state) {
             $state.go('home.dashboard');
         }
 
-        //change table type
-        $scope.tableData = function(x, y) {
-          
+        if (!$scope.project_short) { $scope.project_short = ''; }
+        if (!$scope.tabletype) { $scope.tabletype = 'incomplete'; }
+        if (!$scope.entryLimit) { $scope.entryLimit = 10; }
+        if (!$scope.search) { $scope.search = ''; }
+
+        $scope.entryLimit = parseInt($scope.entryLimit) || 10;
+        $scope.currentPage = 1;
+        $scope.totalRecords = 0;
+        $scope.totalPages = 0;
+        $scope.filteredItems = 0;
+        $scope.list = [];
+        $scope.projects = [];
+        $scope.searchTimeout = null;
+
+        $scope.tableData = function() {
             $('#preloader').show();
             $http({
-                url: './v1/getinventorylist',
+                url: './v1/getinventorylistPaginated',
                 method: "POST",
-                data: {'cancel_status': x, 'emp_id': localStorage.getItem("user_id"), 'project_short': y}
+                data: {
+                    cancel_status: $scope.tabletype || 'incomplete',
+                    emp_id: localStorage.getItem("user_id"),
+                    project_short: $scope.project_short || '',
+                    page: $scope.currentPage,
+                    limit: parseInt($scope.entryLimit),
+                    search: $scope.search
+                }
             })
             .then(function (response){
                 $scope.projects = response.data.site_list;
-                $scope.list = response.data.inventory;
-				console.log($scope.list)
-                $scope.filteredItems = $scope.list.length;
-                $scope.filter();
+                $scope.list = response.data.inventory || [];
+                if (response.data.pagination) {
+                    $scope.totalRecords = response.data.pagination.total_records;
+                    $scope.totalPages = response.data.pagination.total_pages;
+                    $scope.filteredItems = response.data.pagination.total_records;
+                } else {
+                    $scope.totalRecords = $scope.list.length;
+                    $scope.filteredItems = $scope.list.length;
+                }
+                $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
+            })
+            .catch(function () {
+                $scope.list = [];
+                $scope.filteredItems = 0;
+                $scope.totalRecords = 0;
                 $timeout(function() { $('#preloader').fadeOut("slow"); }, 200);
             });
         };
-        $scope.currentPage = 1;
-        
-        $scope.filter = function() {
-            $timeout(function() { 
-				$scope.filteredItems = $scope.filtered.length;
-            }, 10);
+
+        $scope.pageChanged = function() {
+            $scope.tableData();
         };
+
+        $scope.pageEntries = function() {
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
+        $scope.projectChanged = function() {
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
+        $scope.tableTypeChanged = function() {
+            $scope.currentPage = 1;
+            $scope.tableData();
+        };
+
+        $scope.filter = function() {
+            if ($scope.searchTimeout) {
+                $timeout.cancel($scope.searchTimeout);
+            }
+            $scope.searchTimeout = $timeout(function() {
+                $scope.currentPage = 1;
+                $scope.tableData();
+            }, 500);
+        };
+
         $scope.sort_by = function(predicate) {
             $scope.predicate = predicate;
             $scope.reverse = !$scope.reverse;
+        };
+
+        $scope.getShowingText = function() {
+            if ($scope.totalRecords === 0) {
+                return 'No entries';
+            }
+            var start = (($scope.currentPage - 1) * parseInt($scope.entryLimit)) + 1;
+            var end = Math.min($scope.currentPage * parseInt($scope.entryLimit), $scope.totalRecords);
+            return 'Showing ' + start + ' to ' + end + ' of ' + $scope.totalRecords + ' entries';
         };
         
         $scope.onEdit = function(x) {
@@ -221,7 +283,7 @@ app.controller('inventoryCtrl', function($scope, $http, $timeout, $state) {
             .then(function (response){
                 $('#stockModal').modal('hide');
                 $scope.alert = true;
-                $scope.tableData($scope.tabletype, $scope.project_short);
+                $scope.tableData();
                 if(response.data.code == 'Success'){
                     $(".alert").removeClass().addClass('alert alert-success');
                     $scope.alert_content = 'Updated Successfully !!!';
@@ -241,5 +303,7 @@ app.controller('inventoryCtrl', function($scope, $http, $timeout, $state) {
         window.location.href = 'modules/materials/inventory/inventory_export.php?status='+$scope.tabletype+'&project_short='+$scope.project_short+'&emp_id='+localStorage.getItem("user_id");
 		console.log ('export');
     }
+
+    $scope.tableData();
 		
 });
