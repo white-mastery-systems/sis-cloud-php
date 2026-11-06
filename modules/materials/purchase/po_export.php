@@ -36,12 +36,16 @@ $endDate = date('Y-m-d H:i:s');
 
 // Build the match condition
 $match = [
-    'cancel_status' => $status === 'usage' ? '0' : '1',
-    'date_time' => [
+    'cancel_status' => $status === 'usage' ? '0' : '1'
+];
+
+// Florence exports the complete report, other projects only the last 12 months
+if ($project_short != 'FL') {
+    $match['date_time'] = [
         '$gte' => $startDate,
         '$lte' => $endDate
-    ]
-];
+    ];
+}
 
 if ($project_short != '') {
     $match['project_short'] = $project_short;

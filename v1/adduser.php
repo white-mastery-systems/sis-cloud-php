@@ -76,7 +76,7 @@ if($_POST['addData'])
         "designation" => $jsonData['designation'],
         "department" => $jsonData['department'],
         "username" => $jsonData['firstname'].$empId,
-        "password" => "welcome2sis",
+        "password" => generatePassword(),
         "site" => $jsonData['site'],
         "mail_id"=>$jsonData['email']
     ));
@@ -132,5 +132,16 @@ if($_POST['addData'])
     ));
     
     echo "Success";
+}
+
+//random password, skips look-alike characters (0/O, 1/l/I)
+function generatePassword($length = 10)
+{
+    $chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789@#$%';
+    $password = '';
+    for($i = 0; $i < $length; $i++) {
+        $password .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    return $password;
 }
 ?>

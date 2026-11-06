@@ -128,7 +128,7 @@ if(!empty($_FILES["employee_file"]["name"]))
                     "department" => $department,
                     "site" => $site,
                     "mail_id"=> $email,
-                    "password" => "welcome2sis"
+                    "password" => generatePassword()
                 ));
                 
                 //transfer history
@@ -166,5 +166,16 @@ if(!empty($_FILES["employee_file"]["name"]))
     }
     fclose($handle);
 	echo "File Uploaded successfully !";
+}
+
+//random password, skips look-alike characters (0/O, 1/l/I)
+function generatePassword($length = 10)
+{
+    $chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789@#$%';
+    $password = '';
+    for($i = 0; $i < $length; $i++) {
+        $password .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    return $password;
 }
 ?>
