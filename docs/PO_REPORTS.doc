@@ -1,0 +1,133 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8">
+<title>Purchase Order Reports</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;line-height:1.55;color:#1f2328;max-width:1080px;margin:32px auto;padding:0 24px;}
+h1{font-size:30px;border-bottom:3px solid #00bcd4;padding-bottom:8px;}
+h2{font-size:23px;border-bottom:1px solid #d0d7de;padding-bottom:6px;margin-top:34px;}
+h3{font-size:18px;margin-top:26px;}
+h4{font-size:15px;color:#444;}
+code{background:#f0f3f6;padding:1px 5px;border-radius:4px;font-family:Consolas,'Courier New',monospace;font-size:90%;}
+pre{background:#0d1117;color:#e6edf3;padding:14px 16px;border-radius:8px;overflow:auto;}
+pre code{background:none;color:inherit;padding:0;font-size:13px;}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px;}
+th,td{border:1px solid #d0d7de;padding:7px 10px;text-align:left;vertical-align:top;}
+th{background:#00bcd4;color:#fff;}
+tr:nth-child(even) td{background:#f6f8fa;}
+blockquote{border-left:4px solid #00bcd4;background:#f6fdff;margin:14px 0;padding:8px 16px;color:#444;}
+a{color:#0969da;text-decoration:none;}a:hover{text-decoration:underline;}
+hr{border:none;border-top:1px solid #d0d7de;margin:24px 0;}
+
+@page{size:A4;margin:2cm;}
+table{font-size:10pt;}
+body{font-size:11pt;}
+</style></head>
+<body>
+<h1>Purchase Order Reports</h1>
+<p>Last updated: 6 Nov 2026</p>
+<p>One command, <code>python scripts/po_reports.py &lt;CODE&gt;</code>, exports three purchase order CSV reports for any project, straight from the live database.</p>
+<h2>What it does</h2>
+<ul>
+<li><strong>Script:</strong> <code>scripts/po_reports.py</code></li>
+<li><strong>Data:</strong> active purchase orders only (<code>cancel_status = '0'</code>). Cancelled POs are left out.</li>
+<li><strong>Period:</strong> full project history by default. Use <code>--from</code> / <code>--to</code> for a date range.</li>
+<li><strong>Output folder:</strong> <code>exports/&lt;Project name&gt;/</code>, for example <code>exports/Sintra/</code>. Running it again overwrites that project's files.</li>
+<li><strong>Safety:</strong> it only reads from the database. Nothing in the app or the database is changed.</li>
+</ul>
+<h2>One-time setup</h2>
+<ol>
+<li>Check Python 3 is installed: <code>python --version</code></li>
+<li>Install the MongoDB driver: <code>pip install pymongo</code></li>
+<li>Open a terminal in the project folder: <code>cd D:\Projects\sis-cloud-php</code></li>
+</ol>
+<p>The database connection is read from <code>include/conn.php</code>, so there is nothing else to configure.</p>
+<h2>Commands</h2>
+<p>Run these from the project folder. Project codes are not case-sensitive (<code>sn</code> works the same as <code>SN</code>).</p>
+<table>
+<thead><tr><th>What you want</th><th>Command</th></tr></thead>
+<tbody>
+<tr><td>See all project codes and PO counts</td><td><code>python scripts/po_reports.py --list</code></td></tr>
+<tr><td>Full report for one project</td><td><code>python scripts/po_reports.py SN</code></td></tr>
+<tr><td>Several projects at once</td><td><code>python scripts/po_reports.py AP LX RI</code></td></tr>
+<tr><td>Every project</td><td><code>python scripts/po_reports.py all</code></td></tr>
+<tr><td>A date range</td><td><code>python scripts/po_reports.py FL --from 2025-11-01 --to 2026-10-31</code></td></tr>
+<tr><td>From a date up to today</td><td><code>python scripts/po_reports.py IF --from 2026-04-01</code></td></tr>
+<tr><td>Save to a different folder</td><td><code>python scripts/po_reports.py SN --out D:\Reports\Sintra</code></td></tr>
+<tr><td>Show help</td><td><code>python scripts/po_reports.py --help</code></td></tr>
+</tbody>
+</table>
+<p>Dates are <code>YYYY-MM-DD</code> and are matched on the date the PO was created. Each run prints the PO count, the month range, the grand total and the paths of the files it wrote.</p>
+<p>Example output:</p>
+<pre><code>&gt; python scripts/po_reports.py SN
+SN (S.I.S Sintra): 1307 POs, 4735 items, Mar-2021 to Sep-2025, grand total 138,866,440.72
+  D:\Projects\sis-cloud-php\exports\Sintra\Orderlist_SN_complete.csv
+  D:\Projects\sis-cloud-php\exports\Sintra\Orderlist_SN_items_complete.csv
+  D:\Projects\sis-cloud-php\exports\Sintra\SN_monthwise_quantities_complete.csv</code></pre>
+<h2>Project codes</h2>
+<p>These projects had active POs on 6 Nov 2026. Run <code>--list</code> for current counts; new projects show up there automatically.</p>
+<table>
+<thead><tr><th>Code</th><th>Project</th><th>Output folder</th><th>Active POs (6 Nov 2026)</th></tr></thead>
+<tbody>
+<tr><td>FL</td><td>S.I.S Florence</td><td>exports/Florence</td><td>3,418</td></tr>
+<tr><td>SN</td><td>S.I.S Sintra</td><td>exports/Sintra</td><td>1,307</td></tr>
+<tr><td>FA</td><td>S.I.S Florida</td><td>exports/Florida</td><td>1,034</td></tr>
+<tr><td>AP</td><td>S.I.S Acropole</td><td>exports/Acropole</td><td>1,011</td></tr>
+<tr><td>IF</td><td>S.I.S Isfahan</td><td>exports/Isfahan</td><td>971</td></tr>
+<tr><td>H</td><td>Head Office</td><td>exports/Head Office</td><td>738</td></tr>
+<tr><td>LX</td><td>S.I.S Luxor</td><td>exports/Luxor</td><td>537</td></tr>
+<tr><td>RI</td><td>SIS RIGA</td><td>exports/RIGA</td><td>149</td></tr>
+<tr><td>CT</td><td>S.I.S Capetown</td><td>exports/Capetown</td><td>63</td></tr>
+<tr><td>QT</td><td>S.I.S Queenstown</td><td>exports/Queenstown</td><td>6</td></tr>
+<tr><td>GP</td><td>S.I.S Grand Palace</td><td>exports/Grand Palace</td><td>2</td></tr>
+<tr><td>SF</td><td>S.I.S Safaa</td><td>exports/Safaa</td><td>1</td></tr>
+</tbody>
+</table>
+<h2>Output files</h2>
+<p>Each run writes three CSV files per project. <code>&lt;tag&gt;</code> is <code>complete</code> for the full history, or the date range (for example <code>2025-11-01_to_2026-10-31</code>). The files open directly in Excel.</p>
+<table>
+<thead><tr><th>File</th><th>One row per</th><th>Columns</th></tr></thead>
+<tbody>
+<tr><td><code>Orderlist_&lt;CODE&gt;_&lt;tag&gt;.csv</code></td><td>PO</td><td>PO_no, PO_Date, Project, Company, Grandtotal, Category</td></tr>
+<tr><td><code>Orderlist_&lt;CODE&gt;_items_&lt;tag&gt;.csv</code></td><td>PO item, plus transport and plain charge rows</td><td>PO_no, PO_Date, Project, Company, Category, Item_No, HSN_Code, Item, Description, Make, Size, CFT, Qty, Unit, Price, Amount, GST_%, SGST_Amt, CGST_Amt, Item_Total, PO_Grandtotal</td></tr>
+<tr><td><code>&lt;CODE&gt;_monthwise_quantities_&lt;tag&gt;.csv</code></td><td>Item and unit</td><td>Category, Item, Unit, one column per month (Mar-2021, Apr-2021 …), Total_Qty, No_of_POs, Total_Value_incl_GST</td></tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Summary and items files:</strong> both end with a Total row.</li>
+<li><strong>Items file:</strong> PO_Grandtotal is filled only on each PO's first row, so summing that column counts each PO once.</li>
+<li><strong>Month-wise file:</strong> every month between the first and last PO gets a column, even months with no purchases. A blank cell means nothing was ordered that month.</li>
+</ul>
+<h2>How amounts are calculated</h2>
+<p>The calculations match the PO PDF (<code>modules/materials/purchase/po_pdf.php</code>), so each PO's rows add up to its grand total.</p>
+<table>
+<thead><tr><th>Row type</th><th>Amount</th><th>Tax</th></tr></thead>
+<tbody>
+<tr><td>Standard, Steel, Work, UPVC items</td><td>Qty × Price</td><td>SGST % + CGST % of Amount</td></tr>
+<tr><td>Door (timber) items</td><td>CFT × Price (priced per cubic foot)</td><td>SGST % + CGST % of Amount</td></tr>
+<tr><td>Transport charges</td><td>trans_amount from the PO</td><td>trans_tax % of Amount, split half SGST, half CGST</td></tr>
+<tr><td>Plain charges (Door POs)</td><td>plain_amount × the PO's total CFT</td><td>plain_tax % of Amount, split half SGST, half CGST</td></tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Item_Total</strong> = Amount + SGST_Amt + CGST_Amt.</li>
+<li><strong>Mismatch check:</strong> if any PO's rows differ from its grand total by more than ₹1, the script prints a WARNING listing those POs.</li>
+<li><strong>Month-wise file:</strong> quantities come from item rows only. Transport and plain charges have no quantity, so they are not included there.</li>
+</ul>
+<h2>Notes and troubleshooting</h2>
+<ul>
+<li><strong>IGST vendors:</strong> tax is always split into SGST and CGST, as stored in the database. The PO PDF shows the same tax as IGST for these vendors, so add the two columns together.</li>
+<li><strong>Item names are free text.</strong> The same material typed differently on different POs (for example "M Fold Tissue" and "M-Fold Tissue") shows as separate rows in the month-wise file. Rows are merged only when the name and unit match, ignoring capitalisation and spacing.</li>
+<li><strong>Ordered, not received.</strong> Quantities are what was ordered on POs, not what was received at site.</li>
+<li><strong>Months come from the PO date</strong> (<code>po_date</code>). The <code>--from</code> / <code>--to</code> filter uses the PO creation time (<code>date_time</code>), which is normally the same day.</li>
+<li><strong>Files open in Excel?</strong> Close a CSV in Excel before re-running, or the script can't overwrite it (PermissionError).</li>
+<li><code>ModuleNotFoundError: No module named 'pymongo'</code> → run <code>pip install pymongo</code>.</li>
+<li><code>unknown project code</code> → check the code with <code>python scripts/po_reports.py --list</code>.</li>
+<li><strong>Connection timeout</strong> → check the internet connection; the database servers are remote.</li>
+</ul>
+<h2>Updating this document</h2>
+<p>Edit <code>docs/PO_REPORTS.md</code>, then regenerate the HTML and Word versions:</p>
+<pre><code>cd docs
+node _md2html.js PO_REPORTS.md</code></pre>
+
+</body></html>

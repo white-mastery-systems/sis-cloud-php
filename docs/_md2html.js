@@ -1,11 +1,15 @@
 // Self-contained Markdown -> HTML / Word(.doc) converter for PROJECT_DOCUMENTATION.md
+// (or another .md in this folder: node _md2html.js PO_REPORTS.md)
 // No external deps. Handles: headings, fenced code, GFM tables, lists, blockquotes,
 // hr, paragraphs, inline bold/code/links. Strips HTML comments.
 const fs = require('fs');
 const path = require('path');
 
-const SRC = path.join(__dirname, 'PROJECT_DOCUMENTATION.md');
+const SRC = path.join(__dirname, process.argv[2] || 'PROJECT_DOCUMENTATION.md');
+const BASE = path.basename(SRC, '.md');
 const md = fs.readFileSync(SRC, 'utf8');
+const firstH1 = md.match(/^#\s+(.*)$/m);
+const TITLE = BASE === 'PROJECT_DOCUMENTATION' ? 'SIS Cloud — Project Documentation' : (firstH1 ? firstH1[1] : BASE);
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -127,17 +131,17 @@ hr{border:none;border-top:1px solid #d0d7de;margin:24px 0;}
 // Plain HTML
 const htmlDoc = `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<title>SIS Cloud — Project Documentation</title>
+<title>${TITLE}</title>
 <style>${css}</style></head>
 <body>
 ${html}
 </body></html>`;
-fs.writeFileSync(path.join(__dirname, 'PROJECT_DOCUMENTATION.html'), htmlDoc, 'utf8');
+fs.writeFileSync(path.join(__dirname, BASE + '.html'), htmlDoc, 'utf8');
 
 // Word-compatible .doc (HTML + Word XML namespaces; Word opens this natively)
 const docDoc = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head><meta charset="utf-8">
-<title>SIS Cloud — Project Documentation</title>
+<title>${TITLE}</title>
 <!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
 <style>${css}
 @page{size:A4;margin:2cm;}
@@ -147,6 +151,6 @@ body{font-size:11pt;}
 <body>
 ${html}
 </body></html>`;
-fs.writeFileSync(path.join(__dirname, 'PROJECT_DOCUMENTATION.doc'), docDoc, 'utf8');
+fs.writeFileSync(path.join(__dirname, BASE + '.doc'), docDoc, 'utf8');
 
-console.log('Wrote PROJECT_DOCUMENTATION.html and PROJECT_DOCUMENTATION.doc');
+console.log(`Wrote ${BASE}.html and ${BASE}.doc`);
